@@ -1,0 +1,1112 @@
+<!DOCTYPE html>
+<html lang="th">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover" />
+<meta name="theme-color" content="#ffffff" />
+<meta name="apple-mobile-web-app-capable" content="yes" />
+<meta name="mobile-web-app-capable" content="yes" />
+<meta name="apple-mobile-web-app-status-bar-style" content="default" />
+<meta name="apple-mobile-web-app-title" content="Affiliate" />
+<link rel="apple-touch-icon" href="data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAALQAAAC0CAIAAACyr5FlAAAC9klEQVR42u3dUU7DMBREUa8ChMQuWT1fhQXwgaCJZ55PdVfwfBS1qROv97dX6ceWEQgOwSE4BIfgEByCQ3AIDsEhwSE4BIfgEByCQ3AIDsEhOCQ4BIfgEByCY1ufHy+GcCiO77X/f3AAAcpQHJeCOAfKYoKS4ThCWAwjspigZBqOChbtRBYZfAzBUcqilMjCApFuHMNktPhYWCBSiWO8jHAfiww+mnAcxSKZyCKDjw4ch8tI87HI4CMdBxCBPhYZfOTigCDWxyKDj0QcFj7cBxxw5OGw5Pk+Fhl8BOGwzC0+4IAjBocFLvKxDpTx+OvnNB9wwBGAI+fK3I7jNh9wwLEbR9R3ugE47vGxDvyFMgPHDT7ggGMfjsBbBWNwXO0DDjjggCMNR+Yd6Ek4LvUBBxw7cMT+dzUMx3U+4IADDjhycCRviZiH4yIfcMABBxxwwJGOI3wb5kgcV/iAAw444IADjmgc+Y9+TMXxdB9wwNGP4zHrAwcccMABBxxwwAEHHHDAAQcccMABRy+OwNuaR+F4rg9XDlcOOOCAAw444IADDjjggAMOOOCAAw447CG1hxQOODy34rkVOOCAAw444JiDw/s5vJ8DDjjggAMOOLyH1HtI4YADDjgqcTg1wakJcMDhpCYnNcEBBxxwOFd2NA6HDsMxGoez7Btl3IcjyscAHPcsGRxwBODI8dGO47b1ggOODBwVT7WctlE0CAcfLTLggCMMBx8VMrbh4CNfxk4cfITLgAOOVBx8JMvYj4OPWBkROPjIlJGCg49AGUE4+EiTkYWDjygZcTj4iFqLOBwn+0hbiEQcBxLJXIJcHOf4iJ1/NI4TfCQPPx3HYCL5Y+/AMc9HxcxrcIwhUjTtMhzVROrmXImj0UfjkFtxFBHpHW83jmQlA6Y6BEcUkTHzHIVjr5J5Y5yJ4zYos0c3H8fToZwzrrNw/EaPIcAhOASH4BAcgkNwCA7BITgkOASH4BAcgkNwCA7BITgEh+CQ4BAcgkNwaE9fYpJ4xzZl9DEAAAAASUVORK5CYII=" />
+<link rel="icon" href="data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAALQAAAC0CAIAAACyr5FlAAAC9klEQVR42u3dUU7DMBREUa8ChMQuWT1fhQXwgaCJZ55PdVfwfBS1qROv97dX6ceWEQgOwSE4BIfgEByCQ3AIDsEhwSE4BIfgEByCQ3AIDsEhOCQ4BIfgEByCY1ufHy+GcCiO77X/f3AAAcpQHJeCOAfKYoKS4ThCWAwjspigZBqOChbtRBYZfAzBUcqilMjCApFuHMNktPhYWCBSiWO8jHAfiww+mnAcxSKZyCKDjw4ch8tI87HI4CMdBxCBPhYZfOTigCDWxyKDj0QcFj7cBxxw5OGw5Pk+Fhl8BOGwzC0+4IAjBocFLvKxDpTx+OvnNB9wwBGAI+fK3I7jNh9wwLEbR9R3ugE47vGxDvyFMgPHDT7ggGMfjsBbBWNwXO0DDjjggCMNR+Yd6Ek4LvUBBxw7cMT+dzUMx3U+4IADDjhycCRviZiH4yIfcMABBxxwwJGOI3wb5kgcV/iAAw444IADjmgc+Y9+TMXxdB9wwNGP4zHrAwcccMABBxxwwAEHHHDAAQcccMABRy+OwNuaR+F4rg9XDlcOOOCAAw444IADDjjggAMOOOCAAw447CG1hxQOODy34rkVOOCAAw444JiDw/s5vJ8DDjjggAMOOLyH1HtI4YADDjgqcTg1wakJcMDhpCYnNcEBBxxwOFd2NA6HDsMxGoez7Btl3IcjyscAHPcsGRxwBODI8dGO47b1ggOODBwVT7WctlE0CAcfLTLggCMMBx8VMrbh4CNfxk4cfITLgAOOVBx8JMvYj4OPWBkROPjIlJGCg49AGUE4+EiTkYWDjygZcTj4iFqLOBwn+0hbiEQcBxLJXIJcHOf4iJ1/NI4TfCQPPx3HYCL5Y+/AMc9HxcxrcIwhUjTtMhzVROrmXImj0UfjkFtxFBHpHW83jmQlA6Y6BEcUkTHzHIVjr5J5Y5yJ4zYos0c3H8fToZwzrrNw/EaPIcAhOASH4BAcgkNwCA7BITgkOASH4BAcgkNwCA7BITgEh+CQ4BAcgkNwaE9fYpJ4xzZl9DEAAAAASUVORK5CYII=" />
+<title>ศูนย์วางแผน Affiliate</title>
+<script src="https://cdn.tailwindcss.com"></script>
+<link href="https://fonts.googleapis.com/css2?family=IBM+Plex+Sans+Thai:wght@400;500;600&display=swap" rel="stylesheet" />
+<style>
+  body { font-family: 'IBM Plex Sans Thai', system-ui, sans-serif; }
+  .toast { transition: opacity .2s, transform .2s; }
+  .inp { width: 100%; border: 1px solid #d6d3d1; border-radius: .5rem; padding: .5rem .75rem; font-size: .875rem; background: #fff; }
+  .inp:focus { outline: none; box-shadow: 0 0 0 3px #fed7aa; border-color: #fdba74; }
+  html { -webkit-text-size-adjust: 100%; }
+  button, summary, label, select { touch-action: manipulation; -webkit-tap-highlight-color: transparent; }
+  .noscroll { scrollbar-width: none; -webkit-overflow-scrolling: touch; }
+  .noscroll::-webkit-scrollbar { display: none; }
+  /* iOS จะซูมหน้าจอเองถ้าช่องกรอกมีตัวอักษรเล็กกว่า 16px */
+  @media (max-width: 639px) { input, select, textarea { font-size: 16px !important; } }
+</style>
+</head>
+<body class="bg-stone-50 text-stone-800 min-h-screen">
+
+<!-- ส่วนหัว -->
+<header class="bg-white border-b border-stone-200 sm:sticky sm:top-0 z-20" style="padding-top: env(safe-area-inset-top)">
+  <div class="max-w-6xl mx-auto px-4 pt-3">
+    <div class="flex items-center justify-between gap-3">
+      <div class="flex items-center gap-2">
+        <div class="w-8 h-8 rounded-lg bg-stone-900 text-white grid place-items-center font-semibold">อ</div>
+        <div>
+          <h1 class="font-semibold leading-tight">ศูนย์วางแผน Affiliate</h1>
+          <p class="text-xs text-stone-500 leading-tight hidden sm:block">สินค้า · ลิงก์ · แผนคอนเทนต์ ครบทุกแพลตฟอร์ม</p>
+        </div>
+      </div>
+      <button id="btnAdd" class="hidden sm:block text-sm px-3 py-1.5 rounded-lg bg-stone-900 text-white hover:bg-stone-700 shrink-0">+ เพิ่มรายการ</button>
+    </div>
+
+    <!-- 1. ตัวเลือกแพลตฟอร์ม -->
+    <div id="platformChips" class="noscroll flex gap-2 overflow-x-auto pt-3 pb-2 -mx-4 px-4 sm:-mx-1 sm:px-1"></div>
+    <!-- 1b. ตัวเลือกหมวดหมู่ -->
+    <div id="catChips" class="noscroll flex gap-2 overflow-x-auto pb-3 -mx-4 px-4 sm:-mx-1 sm:px-1"></div>
+
+    <nav class="hidden sm:flex gap-1 -mb-px" id="tabs">
+      <button data-tab="items" class="tab px-3 py-2 text-sm border-b-2">🛍️ สินค้า/บริการ</button>
+      <button data-tab="links" class="tab px-3 py-2 text-sm border-b-2">🔗 ลิงก์</button>
+      <button data-tab="plan" class="tab px-3 py-2 text-sm border-b-2">🗓️ แผนคอนเทนต์</button>
+    </nav>
+  </div>
+</header>
+
+<main class="max-w-6xl mx-auto px-4 pt-4 pb-28 sm:py-6">
+
+  <div id="installHint" class="hidden mb-4 rounded-2xl bg-orange-50 border border-orange-200 p-3 text-sm flex items-start gap-3">
+    <div class="flex-1">📲 ใช้บน iPhone: แตะปุ่ม <b>แชร์</b> (สี่เหลี่ยมมีลูกศรขึ้น) → <b>เพิ่มลงในหน้าจอโฮม</b> จะเปิดได้เหมือนแอป และข้อมูลไม่หายง่าย</div>
+    <button id="hintClose" class="text-stone-400 text-2xl leading-none w-8 h-8" aria-label="ปิด">✕</button>
+  </div>
+
+  <!-- สรุปตัวเลข -->
+  <div id="stats" class="noscroll flex gap-2 overflow-x-auto -mx-4 px-4 sm:mx-0 sm:px-0 sm:grid sm:grid-cols-4 sm:gap-3 mb-4 sm:mb-6"></div>
+
+  <!-- 2. สินค้า/บริการ -->
+  <section data-panel="items" class="space-y-4">
+    <details id="syncBox" class="bg-white rounded-2xl border border-stone-200 p-4">
+      <summary class="cursor-pointer text-sm font-medium flex flex-wrap items-center justify-between gap-2">
+        <span>🔄 ซิงค์จาก Google Sheets</span><span id="syncStatus" class="text-xs font-normal text-stone-400"></span>
+      </summary>
+      <div class="mt-3 space-y-3">
+        <div class="flex flex-col sm:flex-row gap-2">
+          <input data-cfg="sheetUrl" type="url" inputmode="url" autocapitalize="off" autocorrect="off" spellcheck="false" class="inp flex-1" placeholder="วางลิงก์ Google Sheets ที่นี่" />
+          <button id="btnSync" class="px-4 py-3 sm:py-2 rounded-lg bg-stone-900 text-white text-sm hover:bg-stone-700 disabled:opacity-50">ซิงค์ตอนนี้</button>
+        </div>
+        <label class="flex items-center gap-2 text-sm"><input type="checkbox" id="sheetAuto" class="accent-stone-900" /> ซิงค์ให้อัตโนมัติทุกครั้งที่เปิดหน้านี้</label>
+        <p id="syncMsg" class="hidden text-sm rounded-lg px-3 py-2"></p>
+        <div class="text-xs text-stone-500 bg-stone-50 rounded-lg p-3 space-y-1">
+          <div><b>วิธีเตรียมชีต</b></div>
+          <div>กดแชร์ในชีต ตั้งเป็น <b>"ทุกคนที่มีลิงก์ → ผู้ดู"</b> แล้ววางลิงก์ชีตปกติ (ที่ลงท้าย /edit...) ใช้ได้ทั้งดับเบิ้ลคลิกเปิดไฟล์และเปิดผ่านเว็บ</div>
+          <div>ถ้ามีหลายแผ่นงาน ให้เปิดแผ่นที่ต้องการก่อนคัดลอกลิงก์ (ลิงก์จะมี gid= ต่อท้าย)</div>
+          <div>ซิงค์จะ <b>เพิ่ม/อัปเดต</b> รายการตามชีต (ชื่อหรือลิงก์ตรงกัน) แต่ <b>ไม่ลบ</b> รายการที่หายไปจากชีต และไม่แตะแผนโพสต์เดิม</div>
+        </div>
+      </div>
+    </details>
+    <div class="bg-white rounded-2xl border border-stone-200 p-4 grid grid-cols-2 sm:grid-cols-3 gap-3">
+      <label class="block col-span-2 sm:col-span-1"><span class="text-xs text-stone-500">ค้นหา</span>
+        <input id="fSearch" class="inp mt-1" placeholder="ชื่อสินค้า/บริการ..." /></label>
+      <label class="block"><span class="text-xs text-stone-500">คอมมิชชันขั้นต่ำ: <b id="fCommVal">0</b>%</span>
+        <input id="fComm" type="range" min="0" max="20" value="0" class="mt-3 w-full accent-stone-900" /></label>
+      <label class="block"><span class="text-xs text-stone-500">เรียงตาม</span>
+        <select id="fSort" class="inp mt-1">
+          <option value="comm">คอมมิชชัน % สูงสุด</option>
+          <option value="earn">ค่าคอมต่อชิ้น (บาท) สูงสุด</option>
+          <option value="new">เพิ่มล่าสุด</option>
+          <option value="priceAsc">ราคาต่ำ → สูง</option>
+        </select></label>
+    </div>
+    <div id="grid" class="grid sm:grid-cols-2 lg:grid-cols-3 gap-3 sm:gap-4"></div>
+    <p id="emptyItems" class="hidden text-center text-stone-500 py-12">ไม่พบรายการที่ตรงกับตัวกรอง</p>
+  </section>
+
+  <!-- 3. ศูนย์รวมลิงก์ -->
+  <section data-panel="links" class="space-y-4 hidden">
+    <div class="bg-white rounded-2xl border border-stone-200 p-5">
+      <h2 class="font-semibold mb-1">แปลงลิงก์ Affiliate</h2>
+      <p class="text-sm text-stone-500 mb-4">วางลิงก์สินค้าหรือโรงแรม ระบบจะดูให้ว่าเป็นของแพลตฟอร์มไหน แล้วแปลงเป็นลิงก์ Affiliate ของคุณ</p>
+      <div class="flex flex-col sm:flex-row gap-2">
+        <input id="rawLink" type="url" inputmode="url" autocapitalize="off" autocorrect="off" spellcheck="false" class="inp flex-1" placeholder="https://shopee.co.th/...  หรือ  https://www.lazada.co.th/...  หรือ  https://th.trip.com/hotels/..." />
+        <input id="subId" class="inp sm:w-40" placeholder="รหัสแคมเปญ (ไม่บังคับ)" />
+        <button id="btnPaste" class="px-4 py-3 sm:py-2 rounded-lg border border-stone-300 text-sm hover:bg-stone-100">📋 วางจากคลิปบอร์ด</button>
+        <button id="btnConvert" class="px-4 py-3 sm:py-2 rounded-lg bg-stone-900 text-white text-sm hover:bg-stone-700">แปลงลิงก์</button>
+      </div>
+      <div id="convOut" class="hidden mt-3 rounded-xl bg-stone-50 border border-stone-200 p-3 space-y-2">
+        <div class="flex items-center gap-2 text-sm"><span id="convBadge"></span><span id="convNote" class="text-stone-500 text-xs"></span></div>
+        <div class="flex items-start gap-2">
+          <code id="convLink" class="flex-1 text-xs break-all"></code>
+          <button id="btnCopyConv" class="shrink-0 text-xs px-3 py-2.5 sm:py-1.5 rounded-md bg-white border border-stone-300 hover:bg-stone-100">📋 คัดลอก</button>
+        </div>
+        <div class="flex flex-wrap items-center gap-2 pt-1">
+          <span class="text-xs text-stone-500">บันทึกลิงก์นี้ให้:</span>
+          <select id="attachItem" class="inp !w-auto !py-1 text-xs"></select>
+          <button id="btnAttach" class="text-xs px-3 py-2.5 sm:py-1.5 rounded-md border border-stone-300 bg-white hover:bg-stone-100">บันทึก</button>
+          <button id="btnNewFromLink" class="text-xs px-3 py-2.5 sm:py-1.5 rounded-md border border-stone-300 bg-white hover:bg-stone-100">+ สร้างรายการใหม่จากลิงก์นี้</button>
+        </div>
+      </div>
+      <p id="convErr" class="hidden mt-2 text-sm text-red-600"></p>
+    </div>
+
+    <details class="bg-white rounded-2xl border border-stone-200 p-5" id="settingsBox">
+      <summary class="font-semibold cursor-pointer">⚙️ ตั้งค่ารหัส Affiliate ของแต่ละแพลตฟอร์ม</summary>
+      <div class="grid sm:grid-cols-2 gap-4 mt-4 text-sm">
+        <div class="space-y-1">
+          <div class="font-medium">Shopee</div>
+          <input data-cfg="shopeeId" class="inp" placeholder="รหัสนายหน้า (ตัวเลขหลัง an_)" />
+          <p class="text-xs text-stone-400">ดูได้ที่ Shopee Affiliate → บัญชีของฉัน</p>
+        </div>
+        <div class="space-y-1">
+          <div class="font-medium">Trip.com</div>
+          <div class="grid grid-cols-2 gap-2">
+            <input data-cfg="tripAid" class="inp" placeholder="Allianceid" />
+            <input data-cfg="tripSid" class="inp" placeholder="SID" />
+          </div>
+          <p class="text-xs text-stone-400">ดูได้ที่ Trip.com Affiliate → Tools → Link</p>
+        </div>
+        <div class="space-y-1 sm:col-span-2">
+          <div class="font-medium">Lazada</div>
+          <input data-cfg="lazadaTpl" class="inp" placeholder="แม่แบบลิงก์ เช่น https://c.lazada.co.th/t/c.XXXX?url={url}&sub_aff_id={sub}" />
+          <p class="text-xs text-stone-400">คัดลอกรูปแบบ Deep Link จากพอร์ทัล Lazada Affiliate แล้วใส่ <code>{url}</code> ตรงตำแหน่งลิงก์สินค้า และ <code>{sub}</code> ตรงรหัสแคมเปญ</p>
+        </div>
+        <div class="sm:col-span-2 text-xs text-stone-500 bg-stone-50 rounded-lg p-3">
+          TikTok Shop: สร้างลิงก์ได้ในแอปเท่านั้น ให้คัดลอกลิงก์จากแอปมาใส่ในช่องลิงก์ของรายการได้เลย ·
+          Facebook / Instagram / Lemon8: เป็นช่องทางโพสต์ ใช้ลิงก์ของ Shopee/Lazada/Trip.com/TikTok Shop ไปแปะ
+        </div>
+      </div>
+    </details>
+
+    <div class="bg-white rounded-2xl border border-stone-200 p-5">
+      <h2 class="font-semibold mb-3">ลิงก์ของทุกรายการ</h2>
+      <div id="linkList" class="divide-y divide-stone-100"></div>
+    </div>
+  </section>
+
+  <!-- 4. แผนคอนเทนต์ -->
+  <section data-panel="plan" class="space-y-4 hidden">
+    <div class="bg-white rounded-2xl border border-stone-200 p-4 flex flex-wrap items-center gap-3 text-sm">
+      <span class="text-stone-500">กดช่อง <b>+</b> เพื่อวางแผนโพสต์ · กดป้ายสถานะเพื่อเปลี่ยน</span>
+      <span class="flex-1"></span>
+      <label class="flex items-center gap-2"><span class="text-xs text-stone-500">แสดง</span>
+        <select id="fStatus" class="inp !w-auto !py-1 text-xs">
+          <option value="">ทุกสถานะ</option>
+          <option value="idea">มีไอเดีย</option>
+          <option value="doing">กำลังทำ</option>
+          <option value="posted">โพสต์แล้ว</option>
+          <option value="none">ยังไม่วางแผน</option>
+        </select></label>
+    </div>
+    <div id="planCards" class="sm:hidden space-y-3"></div>
+    <div class="hidden sm:block bg-white rounded-2xl border border-stone-200 overflow-x-auto">
+      <table class="w-full text-sm">
+        <thead id="planHead" class="bg-stone-50 text-xs text-stone-500"></thead>
+        <tbody id="planBody" class="divide-y divide-stone-100"></tbody>
+      </table>
+    </div>
+    <p id="emptyPlan" class="hidden text-center text-stone-500 py-8">ไม่พบรายการ</p>
+  </section>
+
+  <div class="flex flex-wrap justify-end gap-2 mt-8">
+    <button id="btnTemplate" class="text-xs px-3 py-2.5 sm:py-1.5 rounded-lg border border-stone-300 bg-white hover:bg-stone-100">📄 ไฟล์ตัวอย่าง CSV</button>
+    <label class="text-xs px-3 py-2.5 sm:py-1.5 rounded-lg border border-stone-900 bg-stone-900 text-white hover:bg-stone-700 cursor-pointer">📥 นำเข้า CSV<input id="csvImport" type="file" accept=".csv,text/csv" class="hidden" /></label>
+    <button id="btnExport" class="text-xs px-3 py-2.5 sm:py-1.5 rounded-lg border border-stone-300 bg-white hover:bg-stone-100">💾 สำรองข้อมูล</button>
+    <label class="text-xs px-3 py-2.5 sm:py-1.5 rounded-lg border border-stone-300 bg-white hover:bg-stone-100 cursor-pointer">📂 กู้คืนข้อมูล<input id="fileImport" type="file" accept=".json" class="hidden" /></label>
+  </div>
+</main>
+
+<!-- หน้าต่างเพิ่ม/แก้ไข -->
+<div id="modal" class="hidden fixed inset-0 z-30 bg-black/40 flex items-end sm:items-center justify-center sm:p-4">
+  <form id="form" class="bg-white rounded-t-3xl sm:rounded-2xl w-full max-w-lg p-5 space-y-3 max-h-[92vh] overflow-y-auto" style="padding-bottom: calc(1.25rem + env(safe-area-inset-bottom))">
+    <div class="sm:hidden mx-auto w-10 h-1.5 rounded-full bg-stone-300"></div>
+    <h3 id="modalTitle" class="font-semibold">เพิ่มรายการ</h3>
+    <div class="grid grid-cols-[1fr_5rem] gap-3">
+      <input name="name" required class="inp" placeholder="ชื่อสินค้า / โรงแรม / ตั๋ว" />
+      <input name="emoji" class="inp text-center" placeholder="อีโมจิ" maxlength="4" />
+    </div>
+    <div class="grid grid-cols-2 gap-3">
+      <label class="block"><span class="text-xs text-stone-500">หมวดหมู่</span><select name="cat" class="inp mt-1"></select></label>
+      <label class="block"><span class="text-xs text-stone-500">แหล่งลิงก์ (ได้ค่าคอมจาก)</span><select name="source" class="inp mt-1"></select></label>
+      <label class="block"><span class="text-xs text-stone-500">ราคา (บาท)</span><input name="price" type="number" inputmode="decimal" min="0" required class="inp mt-1" /></label>
+      <label class="block"><span class="text-xs text-stone-500">คอมมิชชัน (%)</span><input name="comm" type="number" inputmode="decimal" min="0" max="100" step="0.5" required class="inp mt-1" /></label>
+    </div>
+    <input name="url" type="url" inputmode="url" autocapitalize="off" autocorrect="off" spellcheck="false" class="inp" placeholder="ลิงก์สินค้า (ลิงก์ปกติหรือลิงก์ Affiliate ก็ได้)" />
+    <input name="img" type="url" inputmode="url" autocapitalize="off" autocorrect="off" spellcheck="false" class="inp" placeholder="ลิงก์รูปสินค้า (คลิกขวาที่รูป → คัดลอกที่อยู่รูปภาพ)" />
+    <div>
+      <span class="text-xs text-stone-500">จะโพสต์ที่</span>
+      <div id="formPosts" class="flex flex-wrap gap-2 mt-1"></div>
+    </div>
+    <textarea name="note" rows="2" class="inp" placeholder="ไอเดียคอนเทนต์ เช่น ถ่ายคลิปแกะกล่อง 15 วิ แล้วตัดรูปไปเขียนรีวิวลง Lemon8"></textarea>
+    <div class="flex justify-end gap-2 pt-1">
+      <button type="button" id="btnCancel" class="flex-1 sm:flex-none text-sm px-4 py-3 sm:py-2 rounded-lg border border-stone-300">ยกเลิก</button>
+      <button class="flex-1 sm:flex-none text-sm px-4 py-3 sm:py-2 rounded-lg bg-stone-900 text-white">บันทึก</button>
+    </div>
+  </form>
+</div>
+
+<!-- มือถือ: ปุ่มเพิ่ม + เมนูล่าง -->
+<button id="btnAddFab" class="sm:hidden fixed right-4 z-20 w-14 h-14 rounded-full bg-orange-500 text-white text-3xl leading-none shadow-lg grid place-items-center active:scale-95" style="bottom: calc(4.75rem + env(safe-area-inset-bottom))" aria-label="เพิ่มรายการ">+</button>
+<nav id="bottomNav" class="sm:hidden fixed bottom-0 inset-x-0 z-20 bg-white/95 backdrop-blur border-t border-stone-200 grid grid-cols-3" style="padding-bottom: env(safe-area-inset-bottom)">
+  <button data-tab="items" class="btab"><span class="text-xl leading-none">🛍️</span>สินค้า</button>
+  <button data-tab="links" class="btab"><span class="text-xl leading-none">🔗</span>ลิงก์</button>
+  <button data-tab="plan" class="btab"><span class="text-xl leading-none">🗓️</span>แผนคอนเทนต์</button>
+</nav>
+
+<!-- Hook & แผนกระจายคอนเทนต์ -->
+<div id="studio" class="hidden fixed inset-0 z-30 bg-black/40 flex justify-center sm:p-6 overflow-y-auto">
+  <div id="studioBody" class="bg-white sm:rounded-2xl w-full max-w-2xl min-h-full sm:min-h-0 h-fit sm:my-auto p-4 sm:p-5 space-y-6" style="padding-bottom: calc(1rem + env(safe-area-inset-bottom))"></div>
+</div>
+
+<div id="toast" class="toast fixed bottom-24 sm:bottom-5 left-1/2 -translate-x-1/2 translate-y-4 opacity-0 pointer-events-none bg-stone-900 text-white text-sm px-4 py-2 rounded-lg z-40"></div>
+
+<script>
+// ================= ข้อมูลพื้นฐาน =================
+const PLATFORMS = {
+  tiktok:    { name: 'TikTok',    dot: 'bg-stone-900',  soft: 'bg-stone-100 text-stone-800',   fmt: 'คลิปสั้น' },
+  shopee:    { name: 'Shopee',    dot: 'bg-orange-500', soft: 'bg-orange-100 text-orange-800', fmt: 'Shopee Video' },
+  lazada:    { name: 'Lazada',    dot: 'bg-indigo-600', soft: 'bg-indigo-100 text-indigo-800', fmt: 'Lazada Live' },
+  facebook:  { name: 'Facebook',  dot: 'bg-blue-600',   soft: 'bg-blue-100 text-blue-800',     fmt: 'โพสต์แปะลิงก์' },
+  instagram: { name: 'Instagram', dot: 'bg-pink-500',   soft: 'bg-pink-100 text-pink-800',     fmt: 'Reels' },
+  lemon8:    { name: 'Lemon8',    dot: 'bg-lime-500',   soft: 'bg-lime-100 text-lime-800',     fmt: 'รูป + บทความ' },
+  trip:      { name: 'Trip.com',  dot: 'bg-sky-500',    soft: 'bg-sky-100 text-sky-800',       fmt: 'รีวิว Trip Moments' },
+};
+// แพลตฟอร์มที่เป็น "แหล่งลิงก์" (ได้ค่าคอม) — tiktok ในที่นี้คือ TikTok Shop
+const SOURCES = { shopee: 'Shopee', lazada: 'Lazada', trip: 'Trip.com', tiktok: 'TikTok Shop' };
+const FORMATS = ['คลิปสั้น', 'Reels', 'Stories', 'รูป + บทความ', 'Carousel', 'โพสต์แปะลิงก์', 'ไลฟ์', 'Shopee Video', 'Lazada Live', 'รีวิว Trip Moments'];
+const STATUS = [
+  { k: 'idea',   label: 'ไอเดีย',     cls: 'bg-stone-200 text-stone-700' },
+  { k: 'doing',  label: 'กำลังทำ',   cls: 'bg-amber-200 text-amber-900' },
+  { k: 'posted', label: 'โพสต์แล้ว', cls: 'bg-emerald-200 text-emerald-900' },
+];
+const CATS = {
+  gadget: 'แกดเจ็ต/ไอที', daily: 'ของใช้', home: 'ของแต่งบ้าน', beauty: 'ความงาม/สกินแคร์',
+  pet: 'สัตว์เลี้ยง', hotel: 'โรงแรม/ที่พัก', ticket: 'ตั๋ว/ทัวร์/กิจกรรม',
+};
+
+const P = (fmt, status = 'idea') => ({ fmt, status });
+const SAMPLE = [
+  { id: 1,  name: 'หูฟังบลูทูธตัดเสียงรบกวน', emoji: '🎧', cat: 'gadget', source: 'shopee', price: 590, comm: 8,  url: 'https://shopee.co.th/product/111/1001',
+    plan: { tiktok: P('คลิปสั้น', 'posted'), lemon8: P('รูป + บทความ', 'doing'), facebook: P('โพสต์แปะลิงก์') }, note: 'คลิปเทสตัดเสียงในรถไฟฟ้า' },
+  { id: 2,  name: 'ไฟ LED ติดหลังจอคอม', emoji: '💡', cat: 'gadget', source: 'lazada', price: 199, comm: 10, url: 'https://www.lazada.co.th/products/led-i1002.html',
+    plan: { tiktok: P('คลิปสั้น'), instagram: P('Reels') }, note: 'Before/After โต๊ะทำงานตอนกลางคืน' },
+  { id: 3,  name: 'แก้วเก็บความเย็น 900ml', emoji: '🥤', cat: 'daily', source: 'tiktok', price: 259, comm: 12, url: '',
+    plan: { tiktok: P('ไลฟ์', 'doing') }, note: '' },
+  { id: 4,  name: 'เครื่องพ่นอโรม่า', emoji: '🌿', cat: 'home', source: 'shopee', price: 499, comm: 13, url: 'https://shopee.co.th/product/333/3003',
+    plan: { lemon8: P('Carousel'), instagram: P('Reels') }, note: 'มุมห้องนอนโทนอบอุ่น' },
+  { id: 5,  name: 'เซรั่มวิตามินซี 30ml', emoji: '🍊', cat: 'beauty', source: 'lazada', price: 350, comm: 15, url: 'https://www.lazada.co.th/products/vitc-i1005.html',
+    plan: { tiktok: P('คลิปสั้น'), lemon8: P('รูป + บทความ', 'posted') }, note: 'รีวิวใช้ครบ 14 วัน' },
+  { id: 6,  name: 'น้ำพุแมวอัตโนมัติ', emoji: '🐱', cat: 'pet', source: 'shopee', price: 389, comm: 12, url: 'https://shopee.co.th/product/222/2001',
+    plan: { tiktok: P('คลิปสั้น') }, note: '' },
+  { id: 7,  name: 'โรงแรมริมทะเล หัวหิน (2 คืน)', emoji: '🏖️', cat: 'hotel', source: 'trip', price: 4200, comm: 5, url: 'https://th.trip.com/hotels/hua-hin-hotel-detail-123456/',
+    plan: { tiktok: P('คลิปสั้น'), instagram: P('Reels'), lemon8: P('รูป + บทความ'), facebook: P('โพสต์แปะลิงก์'), trip: P('รีวิว Trip Moments') }, note: 'Room tour + พิกัดคาเฟ่ใกล้ที่พัก' },
+  { id: 8,  name: 'ตั๋วสวนน้ำ พัทยา', emoji: '🎟️', cat: 'ticket', source: 'trip', price: 890, comm: 6, url: 'https://th.trip.com/things-to-do/detail/987654/',
+    plan: { facebook: P('โพสต์แปะลิงก์'), trip: P('รีวิว Trip Moments') }, note: '' },
+];
+
+const KEY = 'affHub.v1';
+function load() {
+  try { const d = JSON.parse(localStorage.getItem(KEY)); if (d && Array.isArray(d.items)) return { cfg: {}, ...d }; } catch (e) {}
+  return { items: SAMPLE, cfg: {} };
+}
+let state = load();
+const save = () => { try { localStorage.setItem(KEY, JSON.stringify(state)); } catch (e) {} };
+
+let ui = { platform: 'all', cat: 'all', tab: 'items' };
+try { ui.tab = localStorage.getItem(KEY + '.tab') || 'items'; } catch (e) {}
+let editingId = null, lastConv = null;
+
+const canShare = typeof navigator !== 'undefined' && !!navigator.share;
+const $ = (id) => document.getElementById(id);
+const esc = (s) => String(s ?? '').replace(/[&<>"']/g, c => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;' }[c]));
+const badge = (k, txt) => `<span class="inline-flex items-center gap-1 text-[11px] px-2 py-0.5 rounded-full ${PLATFORMS[k].soft}"><span class="w-1.5 h-1.5 rounded-full ${PLATFORMS[k].dot}"></span>${esc(txt || PLATFORMS[k].name)}</span>`;
+const srcName = (k) => SOURCES[k] || PLATFORMS[k]?.name || k;
+
+function toast(msg) {
+  const t = $('toast'); t.textContent = msg;
+  t.classList.remove('opacity-0', 'translate-y-4');
+  clearTimeout(t._h); t._h = setTimeout(() => t.classList.add('opacity-0', 'translate-y-4'), 1800);
+}
+async function copy(text) {
+  try { await navigator.clipboard.writeText(text); }
+  catch (e) {
+    const ta = document.createElement('textarea'); ta.value = text; document.body.appendChild(ta);
+    ta.select(); document.execCommand('copy'); ta.remove();
+  }
+  toast('คัดลอกแล้ว ✓');
+}
+
+// ================= แปลงลิงก์ =================
+function detect(host) {
+  host = host.toLowerCase();
+  if (/(^|\.)shopee\.|(^|\.)shp\.ee$/.test(host)) return 'shopee';
+  if (/(^|\.)lazada\./.test(host)) return 'lazada';
+  if (/(^|\.)trip\.com$/.test(host)) return 'trip';
+  if (/(^|\.)tiktok\.com$/.test(host)) return 'tiktok';
+  return null;
+}
+
+// คืนค่า { platform, link, note } หรือ throw Error พร้อมข้อความภาษาไทย
+function convert(raw, sub = '') {
+  const cfg = state.cfg;
+  let u;
+  try { u = new URL(String(raw).trim()); } catch (e) { throw new Error('ลิงก์ไม่ถูกต้อง ต้องขึ้นต้นด้วย https://'); }
+  const p = detect(u.hostname);
+  const host = u.hostname.toLowerCase();
+  if (!p) throw new Error('ยังไม่รองรับลิงก์จากเว็บนี้ (รองรับ Shopee, Lazada, Trip.com, TikTok)');
+
+  if (p === 'shopee') {
+    if (/^s\.shopee\.|shp\.ee$/.test(host)) return { platform: p, link: u.href, note: 'เป็นลิงก์สั้น Affiliate อยู่แล้ว' };
+    if (!cfg.shopeeId) throw new Error('ใส่รหัสนายหน้า Shopee ในส่วนตั้งค่าก่อน');
+    const out = new URL(u.origin + u.pathname);
+    out.searchParams.set('utm_source', 'an_' + String(cfg.shopeeId).replace(/^an_/, ''));
+    out.searchParams.set('utm_medium', 'affiliates');
+    if (sub) { out.searchParams.set('utm_campaign', sub); out.searchParams.set('utm_content', sub); }
+    return { platform: p, link: out.href, note: 'เพิ่มรหัสนายหน้าแล้ว' };
+  }
+  if (p === 'lazada') {
+    if (/^(s|c)\.lazada\./.test(host)) return { platform: p, link: u.href, note: 'เป็นลิงก์ Affiliate อยู่แล้ว' };
+    if (!cfg.lazadaTpl || !cfg.lazadaTpl.includes('{url}')) throw new Error('ใส่แม่แบบลิงก์ Lazada (ที่มี {url}) ในส่วนตั้งค่าก่อน');
+    const clean = u.origin + u.pathname;
+    return { platform: p, link: cfg.lazadaTpl.replace('{url}', encodeURIComponent(clean)).replace('{sub}', encodeURIComponent(sub)), note: 'ใช้แม่แบบ Deep Link ของคุณ' };
+  }
+  if (p === 'trip') {
+    if (!cfg.tripAid || !cfg.tripSid) throw new Error('ใส่ Allianceid และ SID ของ Trip.com ในส่วนตั้งค่าก่อน');
+    u.searchParams.set('Allianceid', cfg.tripAid);
+    u.searchParams.set('SID', cfg.tripSid);
+    if (sub) u.searchParams.set('trip_sub1', sub); else u.searchParams.delete('trip_sub1');
+    return { platform: p, link: u.href, note: 'เพิ่ม Allianceid และ SID แล้ว' };
+  }
+  // TikTok: แปลงเองไม่ได้ ใช้ลิงก์จากแอปตามเดิม
+  return { platform: p, link: u.href, note: 'ลิงก์ TikTok Shop ต้องสร้างในแอป ระบบจึงใช้ลิงก์เดิม' };
+}
+
+// ลิงก์ที่จะคัดลอกของแต่ละรายการ (ถ้าแปลงไม่ได้ ใช้ลิงก์เดิม)
+function itemLink(it) {
+  if (!it.url) return { link: '', ok: false, note: 'ยังไม่มีลิงก์' };
+  try { const r = convert(it.url); return { link: r.link, ok: true, note: r.note }; }
+  catch (e) { return { link: it.url, ok: false, note: e.message }; }
+}
+
+// ================= ตัวกรอง =================
+const catOk = (it) => ui.cat === 'all' || it.cat === ui.cat;
+const platOk = (it, p = ui.platform) => p === 'all' || it.source === p || !!(it.plan && it.plan[p]);
+function matchPlatform(it) { return catOk(it) && platOk(it); }
+function filteredItems() {
+  const q = $('fSearch').value.trim().toLowerCase();
+  const minComm = +$('fComm').value, sort = $('fSort').value;
+  const list = state.items.filter(it => matchPlatform(it) &&
+    it.comm >= minComm && (!q || it.name.toLowerCase().includes(q)));
+  const s = {
+    comm: (a, b) => b.comm - a.comm,
+    earn: (a, b) => b.price * b.comm - a.price * a.comm,
+    new: (a, b) => b.id - a.id,
+    priceAsc: (a, b) => a.price - b.price,
+  }[sort];
+  return list.sort(s);
+}
+
+// ================= วาดหน้า =================
+function renderChips() {
+  const all = [['all', 'ทุกแพลตฟอร์ม', 'bg-stone-400'], ...Object.entries(PLATFORMS).map(([k, v]) => [k, v.name, v.dot])];
+  $('platformChips').innerHTML = all.map(([k, name, dot]) => {
+    const n = state.items.filter(it => catOk(it) && platOk(it, k)).length;
+    const on = ui.platform === k;
+    return `<button data-platform="${k}" class="shrink-0 inline-flex items-center gap-1.5 text-sm px-3 py-2 sm:py-1.5 rounded-full border transition
+      ${on ? 'bg-stone-900 text-white border-stone-900' : 'bg-white border-stone-300 hover:bg-stone-100'}">
+      <span class="w-2 h-2 rounded-full ${dot}"></span>${name}<span class="text-xs ${on ? 'text-stone-300' : 'text-stone-400'}">${n}</span></button>`;
+  }).join('');
+  const cats = [['all', 'ทุกหมวด'], ...Object.entries(CATS)];
+  $('catChips').innerHTML = cats.map(([k, name]) => {
+    const n = state.items.filter(it => platOk(it) && (k === 'all' || it.cat === k)).length;
+    const on = ui.cat === k;
+    return `<button data-cat="${k}" class="shrink-0 text-xs px-3 py-1.5 sm:py-1 rounded-lg border transition
+      ${on ? 'bg-orange-100 text-orange-900 border-orange-300 font-medium' : 'bg-white border-stone-200 text-stone-600 hover:bg-stone-100'}">${name} <span class="opacity-60">${n}</span></button>`;
+  }).join('');
+}
+
+function renderTabs() {
+  document.querySelectorAll('.tab').forEach(b => {
+    const on = b.dataset.tab === ui.tab;
+    b.className = `tab px-3 py-2 text-sm border-b-2 ${on ? 'border-stone-900 font-medium' : 'border-transparent text-stone-500 hover:text-stone-800'}`;
+  });
+  document.querySelectorAll('.btab').forEach(b => {
+    const on = b.dataset.tab === ui.tab;
+    b.className = `btab flex flex-col items-center justify-center gap-0.5 min-h-[56px] text-[11px] ${on ? 'text-stone-900 font-semibold' : 'text-stone-400'}`;
+  });
+  document.querySelectorAll('[data-panel]').forEach(s => s.classList.toggle('hidden', s.dataset.panel !== ui.tab));
+}
+
+function renderStats() {
+  const items = state.items.filter(matchPlatform);
+  let posts = 0, posted = 0;
+  items.forEach(it => Object.entries(it.plan || {}).forEach(([k, pl]) => {
+    if (ui.platform !== 'all' && k !== ui.platform) return;
+    posts++; if (pl.status === 'posted') posted++;
+  }));
+  const avg = items.length ? (items.reduce((s, i) => s + i.comm, 0) / items.length).toFixed(1) : 0;
+  const box = (label, val, sub = '') => `<div class="shrink-0 min-w-[130px] sm:min-w-0 bg-white rounded-2xl border border-stone-200 p-3 sm:p-4">
+    <div class="text-xs text-stone-500">${label}</div><div class="text-xl sm:text-2xl font-semibold mt-1">${val}</div><div class="text-xs text-stone-400">${sub}</div></div>`;
+  $('stats').innerHTML = box('รายการ', items.length, ui.platform === 'all' ? 'ทุกแพลตฟอร์ม' : PLATFORMS[ui.platform].name)
+    + box('โพสต์ที่วางแผนไว้', posts) + box('โพสต์แล้ว', posted, posts ? Math.round(posted / posts * 100) + '% ของแผน' : '')
+    + box('คอมมิชชันเฉลี่ย', avg + '%');
+}
+
+function planBadges(it) {
+  return Object.entries(it.plan || {}).map(([k, pl]) => {
+    const st = STATUS.find(s => s.k === pl.status) || STATUS[0];
+    return `<span title="${esc(PLATFORMS[k].name + ' · ' + pl.fmt + ' · ' + st.label)}" class="inline-flex items-center gap-1 text-[11px] px-2 py-0.5 rounded-full ${st.cls}">
+      <span class="w-1.5 h-1.5 rounded-full ${PLATFORMS[k].dot}"></span>${PLATFORMS[k].name}</span>`;
+  }).join('');
+}
+
+function renderItems() {
+  const list = filteredItems();
+  $('emptyItems').classList.toggle('hidden', list.length > 0);
+  $('grid').innerHTML = list.map(it => {
+    const src = PLATFORMS[it.source] || PLATFORMS.shopee;
+    const earn = Math.round(it.price * it.comm / 100).toLocaleString();
+    const posts = planBadges(it);
+    return `<article class="bg-white rounded-2xl border border-stone-200 overflow-hidden flex flex-col">
+      <div class="flex sm:flex-col sm:flex-1">
+        <div class="w-24 sm:w-full min-h-[7rem] sm:min-h-0 sm:h-36 shrink-0 ${src.soft} grid place-items-center text-4xl sm:text-5xl relative overflow-hidden">
+          ${esc(it.emoji || '📦')}
+          ${it.img ? `<img src="${esc(it.img)}" alt="" loading="lazy" referrerpolicy="no-referrer" class="absolute inset-0 w-full h-full object-cover" onerror="this.remove()">` : ''}
+          <span class="absolute top-2 left-2 hidden sm:block">${badge(it.source, srcName(it.source))}</span>
+          <span class="absolute top-2 right-2 text-xs font-semibold bg-white/90 px-2 py-0.5 rounded-full hidden sm:block">${it.comm}%</span>
+        </div>
+        <div class="p-3 sm:p-4 flex-1 min-w-0 flex flex-col gap-2 sm:gap-3">
+          <div>
+            <div class="flex items-center gap-1.5 flex-wrap mb-1 sm:hidden">${badge(it.source, srcName(it.source))}<span class="text-[11px] font-semibold bg-stone-100 px-2 py-0.5 rounded-full">คอม ${it.comm}%</span></div>
+            <div class="text-[11px] text-stone-500">${esc(CATS[it.cat] || it.cat)}</div>
+            <h3 class="font-medium leading-snug line-clamp-2 sm:line-clamp-none">${esc(it.name)}</h3>
+            <p class="text-sm text-stone-500 mt-1">฿${it.price.toLocaleString()} · ได้ประมาณ <b class="text-stone-700">฿${earn}</b></p>
+          </div>
+          <div>
+            <div class="text-[11px] text-stone-400 mb-1">จะโพสต์ที่</div>
+            <div class="flex flex-wrap gap-1">${posts || '<span class="text-xs text-stone-400">ยังไม่วางแผน</span>'}</div>
+          </div>
+          ${it.hook ? `<p class="text-xs text-amber-900 bg-amber-50 border border-amber-100 rounded-lg px-3 py-2">🎬 Hook: “${esc(it.hook)}”</p>` : ''}
+          ${it.note ? `<p class="text-xs text-stone-600 bg-stone-50 rounded-lg px-3 py-2">💡 ${esc(it.note)}</p>` : ''}
+        </div>
+      </div>
+      <div class="px-3 pb-3 sm:px-4 sm:pb-4 flex flex-col gap-2">
+        <button data-studio="${it.id}" class="text-sm px-3 py-2.5 sm:py-2 rounded-lg border border-stone-300 hover:bg-stone-100">🎬 Hook 3 วิ & แผนกระจายคอนเทนต์</button>
+        <div class="flex gap-2">
+          <button data-copy="${it.id}" class="flex-1 text-sm px-3 py-2.5 sm:py-2 min-h-[44px] sm:min-h-0 rounded-lg bg-stone-900 text-white hover:bg-stone-700">📋 คัดลอกลิงก์</button>
+          ${canShare ? `<button data-share="${it.id}" class="w-11 sm:w-auto sm:px-3 min-h-[44px] sm:min-h-0 text-sm rounded-lg border border-stone-300 hover:bg-stone-100" title="แชร์">📤</button>` : ''}
+          <button data-edit="${it.id}" class="w-11 sm:w-auto sm:px-3 min-h-[44px] sm:min-h-0 text-sm rounded-lg border border-stone-300 hover:bg-stone-100" title="แก้ไข">✏️</button>
+          <button data-del="${it.id}" class="w-11 sm:w-auto sm:px-3 min-h-[44px] sm:min-h-0 text-sm rounded-lg border border-stone-300 hover:bg-red-50" title="ลบ">🗑️</button>
+        </div>
+      </div>
+    </article>`;
+  }).join('');
+}
+
+function renderLinks() {
+  const list = state.items.filter(matchPlatform);
+  $('linkList').innerHTML = list.map(it => {
+    const r = itemLink(it);
+    return `<div class="py-3 flex items-center gap-3">
+      <span class="text-xl">${esc(it.emoji || '📦')}</span>
+      <div class="flex-1 min-w-0">
+        <div class="text-sm font-medium truncate">${esc(it.name)} ${badge(it.source, srcName(it.source))}</div>
+        <div class="text-xs truncate ${r.ok ? 'text-stone-500' : 'text-amber-600'}">${r.link ? esc(r.link) : '—'} ${!r.ok ? '· ' + esc(r.note) : ''}</div>
+      </div>
+      <button data-copy="${it.id}" ${r.link ? '' : 'disabled'} class="shrink-0 text-xs px-3 py-2.5 sm:py-1.5 rounded-md border border-stone-300 hover:bg-stone-100 disabled:opacity-40">📋 คัดลอก</button>
+    </div>`;
+  }).join('') || '<p class="text-sm text-stone-500 py-4">ไม่มีรายการ</p>';
+  $('attachItem').innerHTML = state.items.map(it => `<option value="${it.id}">${esc(it.name)}</option>`).join('');
+  document.querySelectorAll('[data-cfg]').forEach(inp => { if (document.activeElement !== inp) inp.value = state.cfg[inp.dataset.cfg] || ''; });
+}
+
+function renderPlan() {
+  const cols = ui.platform === 'all' ? Object.keys(PLATFORMS) : [ui.platform];
+  const fs = $('fStatus').value;
+  const list = filteredItems().filter(it => {
+    const plans = cols.map(k => it.plan?.[k]).filter(Boolean);
+    if (fs === 'none') return plans.length === 0;
+    return !fs || plans.some(pl => pl.status === fs);
+  });
+  $('emptyPlan').classList.toggle('hidden', list.length > 0);
+  $('planHead').innerHTML = `<tr><th class="text-left font-medium px-3 py-2 min-w-[180px]">รายการ</th>
+    ${cols.map(k => `<th class="text-left font-medium px-2 py-2">${badge(k)}</th>`).join('')}
+    <th class="text-left font-medium px-3 py-2 min-w-[220px]">ไอเดีย / โน้ต</th></tr>`;
+  $('planBody').innerHTML = list.map(it => `<tr class="align-top">
+    <td class="px-3 py-3"><div class="font-medium leading-snug">${esc(it.emoji || '📦')} ${esc(it.name)}</div>
+      <div class="text-[11px] text-stone-400 mt-0.5">${esc(srcName(it.source))} · ${it.comm}%</div>
+      <button data-studio="${it.id}" class="mt-1.5 text-[11px] px-2 py-1 rounded-md border border-stone-200 hover:bg-stone-100">🎬 Hook & แผนกระจาย</button></td>
+    ${cols.map(k => `<td class="px-2 py-3">${planCell(it, k)}</td>`).join('')}
+    <td class="px-3 py-3"><textarea data-note="${it.id}" rows="2" class="inp text-xs !bg-stone-50 resize-y" placeholder="จดไอเดีย...">${esc(it.note || '')}</textarea></td>
+  </tr>`).join('');
+  $('planCards').innerHTML = list.map(it => {
+    const planned = cols.filter(k => it.plan?.[k]), free = cols.filter(k => !it.plan?.[k]);
+    return `<div class="bg-white rounded-2xl border border-stone-200 p-3 space-y-3">
+      <div class="flex items-start gap-2">
+        <span class="text-2xl">${esc(it.emoji || '📦')}</span>
+        <div class="flex-1 min-w-0"><div class="font-medium leading-snug">${esc(it.name)}</div>
+          <div class="text-[11px] text-stone-400">${esc(srcName(it.source))} · ${it.comm}%</div></div>
+        <button data-studio="${it.id}" class="shrink-0 text-xs px-3 py-2.5 rounded-lg border border-stone-300">🎬 Hook</button>
+      </div>
+      ${planned.map(k => {
+        const pl = it.plan[k], st = STATUS.find(x => x.k === pl.status) || STATUS[0];
+        const fmts = FORMATS.includes(pl.fmt) ? FORMATS : [pl.fmt, ...FORMATS];
+        return `<div class="flex items-center gap-2">
+          <span class="w-[5.5rem] shrink-0">${badge(k)}</span>
+          <select data-fmt="${it.id}" data-p="${k}" class="flex-1 min-w-0 border border-stone-200 rounded-lg px-2 py-2.5 bg-white">${fmts.map(f => `<option ${f === pl.fmt ? 'selected' : ''}>${esc(f)}</option>`).join('')}</select>
+          <button data-status="${it.id}" data-p="${k}" class="shrink-0 text-xs rounded-lg px-3 py-3 ${st.cls}">${st.label}</button>
+          <button data-rmplan="${it.id}" data-p="${k}" class="shrink-0 w-9 h-9 text-stone-300" title="เอาออก">✕</button></div>`;
+      }).join('')}
+      ${free.length ? `<div><div class="text-[11px] text-stone-400 mb-1.5">เพิ่มแพลตฟอร์ม</div><div class="flex flex-wrap gap-2">${free.map(k =>
+        `<button data-addplan="${it.id}" data-p="${k}" class="text-xs px-3 py-2 rounded-full border border-dashed border-stone-300 text-stone-600">+ ${PLATFORMS[k].name}</button>`).join('')}</div></div>` : ''}
+      <textarea data-note="${it.id}" rows="2" class="inp !bg-stone-50 resize-y" placeholder="จดไอเดีย...">${esc(it.note || '')}</textarea>
+    </div>`;
+  }).join('');
+}
+
+function planCell(it, k) {
+  const pl = it.plan?.[k];
+  if (!pl) return `<button data-addplan="${it.id}" data-p="${k}" class="w-full min-w-[110px] h-16 rounded-lg border border-dashed border-stone-200 text-stone-300 hover:text-stone-600 hover:border-stone-400 text-lg">+</button>`;
+  const st = STATUS.find(s => s.k === pl.status) || STATUS[0];
+  const fmts = FORMATS.includes(pl.fmt) ? FORMATS : [pl.fmt, ...FORMATS];
+  return `<div class="min-w-[120px] space-y-1">
+    <select data-fmt="${it.id}" data-p="${k}" class="w-full text-xs border border-stone-200 rounded-md px-1 py-1 bg-white">${fmts.map(f => `<option ${f === pl.fmt ? 'selected' : ''}>${esc(f)}</option>`).join('')}</select>
+    <div class="flex gap-1">
+      <button data-status="${it.id}" data-p="${k}" class="flex-1 text-[11px] rounded-md px-1 py-1 ${st.cls}">${st.label}</button>
+      <button data-rmplan="${it.id}" data-p="${k}" class="text-xs px-1 text-stone-300 hover:text-red-500" title="เอาออก">✕</button>
+    </div></div>`;
+}
+
+function render() {
+  renderChips(); renderTabs(); renderStats();
+  if (ui.tab === 'items') renderItems();
+  if (ui.tab === 'links') renderLinks();
+  if (ui.tab === 'plan') renderPlan();
+}
+
+// ================= คลัง Hook 3 วินาที + แผนกระจายคอนเทนต์ =================
+// รูปแบบ: [ประเภท, ประโยคพูด/ข้อความบนจอ, ภาพที่ต้องถ่าย]
+const HOOKS = {
+  gadget: [
+    ['ปัญหา', 'ของที่ใช้ทุกวัน แต่ทำให้หงุดหงิดทุกวัน… จนเจอ {name}', 'เปิดด้วยภาพปัญหาจริง เช่น สายพันกัน แบตหมด เสียงรบกวน แล้วตัดเข้าสินค้า'],
+    ['Before/After', 'ก่อนมี vs หลังมี {name} ต่างกันขนาดนี้เลย', 'แบ่งจอซ้าย-ขวา หรือตัดสลับภาพเดิมมุมเดิมภายใน 1 วินาที'],
+    ['ตัวเลข', 'ของชิ้นเดียว ฿{price} เปลี่ยนโต๊ะทำงานทั้งโต๊ะ', 'ซูมตัวเลขราคาเป็นข้อความใหญ่บนจอ พร้อมภาพสินค้าเต็มเฟรม'],
+    ['คำถาม', 'ทำไมไม่มีใครบอกเร็วกว่านี้ว่ามี {name}?', 'ถือสินค้าหน้ากล้อง ทำหน้าตกใจ 1 วิ แล้วเริ่มใช้งานทันที'],
+    ['ทดสอบจริง', 'ลองกดให้ดูตรงๆ เลย… ได้ผลจริงไหม?', 'ไม่มีบทนำ เริ่มจากมือกดใช้งานจริงตั้งแต่เฟรมแรก'],
+  ],
+  daily: [
+    ['ปัญหา', 'บ้านใครเป็นแบบนี้บ้าง… หาของไม่เจอ ของเลอะ เกะกะไปหมด', 'ถ่ายความรกจริง 1–2 วินาที ไม่ต้องจัดฉากให้สวย'],
+    ['Before/After', 'จากรกเป็นเป๊ะ ใน 10 วินาที ด้วย {name}', 'ไทม์แลปส์ก่อน → หลัง จบด้วยภาพเรียบร้อย'],
+    ['ตัวเลข', 'ของใช้ ฿{price} ที่ใช้ทุกวันจนขาดไม่ได้', 'เปิดด้วยฉากใช้งานในชีวิตประจำวัน แล้วขึ้นราคาบนจอ'],
+    ['คำถาม', 'ของแค่นี้ ทำไมชีวิตง่ายขึ้นเยอะ?', 'โชว์ของ 1 วิ ตามด้วยฉากที่ใช้แล้วสะดวกขึ้น'],
+    ['ห้ามพลาด', 'อย่าเพิ่งซื้อของแบบนี้… ดูอันนี้ก่อน', 'ถือของเดิมที่เคยใช้ เทียบกับ {name} ข้างกัน'],
+  ],
+  home: [
+    ['ปัญหา', 'ห้องดูโล่งๆ เหมือนขาดอะไรสักอย่างไหม?', 'แพนมุมห้องที่ยังว่างเปล่า 2 วินาที'],
+    ['Before/After', 'มุมเดิม vs มุมเดิมหลังมี {name}', 'ถ่ายมุมกล้องเดียวกันทั้งสองภาพ แล้วตัดสลับ'],
+    ['ตัวเลข', 'แต่งห้องให้ดูแพง ใช้งบแค่ ฿{price}', 'ภาพห้องสวยเต็มเฟรม แล้วขึ้นตัวเลขราคาบนจอ'],
+    ['คำถาม', 'เดาซิ มุมนี้แต่งด้วยเงินเท่าไหร่?', 'แพนห้อง ปิดท้ายที่สินค้า แล้วเฉลยราคา'],
+    ['ห้องจริง', 'ห้องเล็กๆ ก็ทำได้ ดูเลย', 'ถ่ายห้องจริงให้เห็นขนาดจำกัด เพิ่มความน่าเชื่อถือ'],
+  ],
+  beauty: [
+    ['ปัญหา', 'ผิวหมองจนแต่งหน้าไม่ติดใช่ไหม? ลองดูอันนี้', 'โคลสอัพผิวจริง ไม่ใส่ฟิลเตอร์ แสงธรรมชาติ'],
+    ['Before/After', 'ใช้ {name} ต่อเนื่อง 14 วัน ได้ผลแบบนี้', 'ภาพวันแรก vs วันที่ 14 แสงและมุมเดียวกัน (ผลลัพธ์แต่ละคนต่างกัน)'],
+    ['ตัวเลข', 'สกินแคร์ ฿{price} คุ้มกว่าที่คิด', 'ขึ้นราคาบนจอ พร้อมภาพเนื้อสัมผัสผลิตภัณฑ์'],
+    ['คำถาม', 'ทำไมคนผิวดีๆ ถึงมีสิ่งนี้ติดกระเป๋า?', 'ล้วงของออกจากกระเป๋าเป็นเฟรมแรก'],
+    ['รีวิวตรง', 'รีวิวตรงๆ ใช้จริง มีทั้งข้อดีและข้อเสีย', 'ถือสินค้าหน้ากล้อง พูดตรงๆ เพิ่มความน่าเชื่อถือ'],
+  ],
+  pet: [
+    ['ปัญหา', 'น้องทำแบบนี้ทุกวัน ใครเป็นบ้าง?', 'เปิดด้วยภาพสัตว์เลี้ยงทำเรื่องวุ่นๆ ตามธรรมชาติ'],
+    ['Before/After', 'ก่อนให้น้องใช้ vs หลังให้น้องใช้ {name}', 'ภาพพฤติกรรมเดิม ตัดเป็นพฤติกรรมใหม่ที่ดีขึ้น'],
+    ['ปฏิกิริยา', 'ดูปฏิกิริยาน้องตอนเจอของชิ้นนี้ครั้งแรก', 'ตั้งกล้องไว้ก่อน ถ่ายตอนวางของให้น้อง'],
+    ['ตัวเลข', 'ทาสต้องมี ฿{price} คุ้มมาก', 'ภาพน้องใช้งานจริง พร้อมราคาบนจอ'],
+    ['คำถาม', 'ทำไมน้องถึงติดของชิ้นนี้ขนาดนี้?', 'ภาพน้องวนกลับมาที่ของชิ้นนี้ซ้ำๆ'],
+  ],
+  hotel: [
+    ['เผยวิว', 'ห้องพักวิวนี้ คืนละไม่ถึง ฿{price}?!', 'เปิดประตูหรือเปิดม่านให้เห็นวิวทันที (reveal shot)'],
+    ['ปัญหา', 'เบื่อโรงแรมที่รูปสวยแต่ของจริงไม่ตรงปกไหม?', 'วางรูปในหน้าจองเทียบกับห้องจริง'],
+    ['ตัวเลข', '{name} ราคา ฿{price} ได้อะไรบ้าง? ดูให้ครบใน 20 วินาที', 'ตัดเร็วๆ ห้องนอน ห้องน้ำ อาหารเช้า สระ'],
+    ['คำถาม', 'ไปเที่ยวทริปนี้งบเท่าไหร่? สรุปให้แล้ว', 'ข้อความสรุปงบบนจอ สลับกับภาพสถานที่'],
+    ['ทัวร์ห้อง', 'พาทัวร์ห้องนี้แบบเร็วๆ ก่อนจองให้ดู', 'ถ่ายเดินตามต่อเนื่อง ไม่ตัดต่อมาก'],
+  ],
+  ticket: [
+    ['ตัวเลข', 'ตั๋วนี้ ฿{price} เล่นได้ทั้งวัน คุ้มจริงไหม?', 'ภาพบรรยากาศเต็มเฟรม พร้อมราคาบนจอ'],
+    ['ปัญหา', 'ไม่อยากต่อคิวซื้อตั๋วหน้างาน? ดูวิธีนี้', 'ภาพคนต่อคิวยาว (ถ้าถ่ายได้) ตัดเป็นหน้าจอจองบนมือถือ'],
+    ['คาดหวัง vs จริง', 'คาดหวังกับความเป็นจริงของกิจกรรมนี้', 'ตัดสลับภาพโฆษณา กับภาพที่ถ่ายเอง'],
+    ['คำถาม', 'ไปที่นี่ต้องเตรียมอะไรบ้าง? สรุปให้ใน 15 วินาที', 'ลิสต์ของที่ต้องเตรียมขึ้นบนจอทีละข้อ'],
+    ['ไฮไลต์', 'ไฮไลต์ที่ห้ามพลาดที่นี่ มี 3 อย่าง', 'ตัดภาพไฮไลต์ 3 จุด จุดละ 2–3 วินาที'],
+  ],
+};
+const TIPS = {
+  gadget: 'ถ่ายตอนใช้งานจริงใกล้ๆ พร้อมเสียงจริงของสินค้า ถ้ามีข้อจำกัดบอกตรงๆ จะน่าเชื่อถือขึ้น',
+  daily: 'ถ่ายในบ้านจริง แสงธรรมชาติ ไม่ต้องจัดฉากให้สวยเกินไป คนดูจะรู้สึกว่า "บ้านเราก็เป็น"',
+  home: 'ถ่ายมุมเดียวกันทั้งก่อนและหลัง และให้เห็นขนาดจริงของห้อง',
+  beauty: 'เล่าตามที่ใช้จริง หลีกเลี่ยงการรับประกันผลลัพธ์ เช่น "หายแน่นอน" และบอกว่าผลต่างกันในแต่ละคน',
+  pet: 'ปล่อยให้น้องแสดงปฏิกิริยาจริง ตั้งกล้องไว้ก่อนวางของ และให้ความสำคัญกับความปลอดภัยของสัตว์เลี้ยง',
+  hotel: 'ถ่ายห้องจริงให้ตรงปก บอกราคาและช่วงวันที่ชัดเจน และเช็กราคาล่าสุดก่อนโพสต์เสมอ',
+  ticket: 'บอกเงื่อนไขสำคัญ เช่น วันที่ใช้ได้ การยกเลิก และเช็กราคาล่าสุดก่อนโพสต์',
+};
+const TAGS = {
+  gadget: ['รีวิวแกดเจ็ต', 'ของมันต้องมี', 'ไอที'], daily: ['ของใช้ในบ้าน', 'ของดีบอกต่อ', 'รีวิวของใช้'],
+  home: ['แต่งห้อง', 'แต่งบ้าน', 'ของแต่งบ้าน'], beauty: ['สกินแคร์', 'รีวิวสกินแคร์', 'ผิวสวย'],
+  pet: ['ทาสแมว', 'ของใช้สัตว์เลี้ยง', 'รีวิวของน้อง'], hotel: ['ที่พัก', 'รีวิวโรงแรม', 'เที่ยวไทย'],
+  ticket: ['เที่ยวไทย', 'ตั๋วเที่ยว', 'กิจกรรมเที่ยว'],
+};
+// วิธีปรับ 1 คอนเทนต์ให้เข้ากับแต่ละแพลตฟอร์ม · link: inline = แปะลิงก์ในแคปชั่นได้, bio = ใช้ลิงก์ในโปรไฟล์, cart = ติดตะกร้า/แท็กสินค้า
+const CROSS = {
+  tiktok: { link: 'cart', steps: ['ถ่ายแนวตั้ง 9:16 ความยาว 15–30 วินาที ถ่ายต้นฉบับชุดเดียว ใช้ต่อได้ทุกแพลตฟอร์ม', 'ใส่ Hook เป็นข้อความตัวใหญ่ใน 3 วินาทีแรก', 'ติดตะกร้า/ลิงก์สินค้า แล้วบอกคนดูว่า "กดตะกร้าได้เลย"', 'แคปชั่นสั้นๆ พร้อมแฮชแท็ก 3–5 อัน'] },
+  instagram: { link: 'bio', steps: ['ใช้คลิปเดียวกับ TikTok (ส่งออกแบบไม่มีลายน้ำ)', 'ใช้เป็น Reels และเลือกเฟรมที่มี Hook เป็นปก', 'วางลิงก์ในไบโอ หรือสติกเกอร์ลิงก์ใน Stories', 'ลง Stories ซ้ำอีกรอบ พร้อมโหวตหรือถามคำถามให้คนมีส่วนร่วม'] },
+  lemon8: { link: 'bio', steps: ['แคปเฟรมเด่นจากคลิป 4–6 รูป', 'รูปแรกใส่ Hook เป็นข้อความตัวใหญ่ เพื่อหยุดคนเลื่อน', 'เขียนรีวิวสั้นๆ: ข้อดี 3 ข้อ และข้อเสีย 1 ข้อ', 'ใส่แฮชแท็กและลิงก์ตามที่แอปอนุญาต'] },
+  facebook: { link: 'inline', steps: ['โพสต์ข้อความสั้น 2–3 บรรทัด ขึ้นต้นด้วย Hook', 'แนบคลิปเดียวกัน (แนวตั้งลงเป็น Reels ได้)', 'แปะลิงก์ในโพสต์ หรือคอมเมนต์แรก', 'แชร์ลงกลุ่มที่เกี่ยวข้อง โดยเช็กกฎของกลุ่มก่อน'] },
+  shopee: { link: 'cart', steps: ['ถ้ามีสิทธิ์ ลง Shopee Video ด้วยคลิปเดียวกัน', 'แนบสินค้าในวิดีโอ', 'ใช้ Hook เป็นข้อความบนภาพช่วง 3 วินาทีแรก'] },
+  lazada: { link: 'cart', steps: ['ถ้ามีสิทธิ์ ใช้คลิปเดียวกันลงในช่องทางวิดีโอ/ไลฟ์ของ Lazada', 'แนบสินค้า/ลิงก์ตามที่แพลตฟอร์มกำหนด', 'ใช้ Hook เป็นข้อความบนภาพช่วง 3 วินาทีแรก'] },
+  trip: { link: 'inline', steps: ['เขียนรีวิวสั้นพร้อมรูป 3–5 รูป ไล่จากบรรยากาศ ห้อง ไปจนถึงราคา', 'แปะลิงก์ที่จองได้ในรีวิวหรือบทความ', 'ใส่ข้อมูลเดินทาง: ที่ตั้ง ช่วงเวลาแนะนำ ราคา'] },
+};
+
+const fillHook = (t, it) => t.replace(/\{name\}/g, it.name).replace(/\{price\}/g, Number(it.price).toLocaleString());
+const hookList = (it) => (HOOKS[it.cat] || HOOKS.gadget).map(([type, say, show]) => ({ type, say: fillHook(say, it), show: fillHook(show, it) }));
+
+function caption(it, k) {
+  const hook = it.hook || hookList(it)[0].say;
+  const mode = CROSS[k].link;
+  const { link } = itemLink(it);
+  const linkLine = mode === 'inline' ? '👉 ' + (link || '(ใส่ลิงก์ของรายการนี้)')
+    : mode === 'bio' ? '👉 ลิงก์อยู่ที่ไบโอ/โปรไฟล์' : '👉 กดตะกร้า/แท็กสินค้าใต้วิดีโอ';
+  const tags = (TAGS[it.cat] || []).map(t => '#' + t).join(' ');
+  return `${hook}\n\n${it.name} · ฿${Number(it.price).toLocaleString()}\n${linkLine}\n\n${tags}`;
+}
+
+let studioId = null;
+function openStudio(id) { studioId = id; renderStudio(); $('studio').classList.remove('hidden'); $('studio').scrollTop = 0; lockBody(true); }
+function closeStudio() { $('studio').classList.add('hidden'); lockBody(false); studioId = null; render(); }
+
+function updateCaptions() {
+  const it = byId(studioId); if (!it) return;
+  document.querySelectorAll('[data-cap]').forEach(t => { t.value = caption(it, t.dataset.cap); });
+}
+
+function renderStudio() {
+  const it = byId(studioId); if (!it) return;
+  const hooks = hookList(it);
+  const plat = Object.keys(it.plan || {});
+  const sec = (n, title, sub) => `<div class="mb-3"><h4 class="font-semibold">${n}) ${title}</h4><p class="text-xs text-stone-500 mt-0.5">${sub}</p></div>`;
+  $('studioBody').innerHTML = `
+  <div class="flex items-start gap-3 sticky top-0 bg-white z-10 -mx-4 px-4 pt-3 pb-2 border-b border-stone-100 sm:static sm:mx-0 sm:px-0 sm:pt-0 sm:pb-0 sm:border-0" style="padding-top: max(0.75rem, env(safe-area-inset-top))">
+    <div class="text-3xl">${esc(it.emoji || '📦')}</div>
+    <div class="flex-1 min-w-0"><h3 class="font-semibold leading-snug">${esc(it.name)}</h3>
+      <div class="text-xs text-stone-500">${esc(CATS[it.cat] || '')} · ฿${Number(it.price).toLocaleString()} · คอม ${it.comm}%</div></div>
+    <button data-closestudio="1" class="text-stone-400 hover:text-stone-900 text-2xl leading-none w-10 h-10 shrink-0" title="ปิด">✕</button>
+  </div>
+
+  <section>
+    ${sec(1, 'Hook 3 วินาทีแรก', 'เลือกประโยคเปิดคลิปที่หยุดคนดูได้ แล้วแก้ให้เป็นสำเนียงของคุณ พร้อมบอกว่าควรถ่ายภาพอะไรคู่กัน')}
+    <div class="space-y-2">${hooks.map((h, i) => {
+      const on = it.hook === h.say;
+      return `<div class="rounded-xl border p-3 ${on ? 'border-stone-900 bg-stone-50' : 'border-stone-200'}">
+        <span class="text-[11px] px-2 py-0.5 rounded-full bg-amber-100 text-amber-800">${esc(h.type)}</span>
+        <p class="text-sm mt-2">“${esc(h.say)}”</p>
+        <p class="text-xs text-stone-500 mt-1">🎥 ${esc(h.show)}</p>
+        <div class="flex gap-2 mt-2">
+          <button data-usehook="${i}" class="text-xs px-3 py-2.5 sm:py-1.5 rounded-md ${on ? 'bg-stone-900 text-white' : 'border border-stone-300 hover:bg-stone-100'}">${on ? '✓ ใช้อันนี้อยู่' : 'ใช้อันนี้'}</button>
+          <button data-copyhook="${i}" class="text-xs px-3 py-2.5 sm:py-1.5 rounded-md border border-stone-300 hover:bg-stone-100">📋 คัดลอก</button>
+        </div></div>`;
+    }).join('')}</div>
+    <label class="block mt-3"><span class="text-xs text-stone-500">Hook ที่จะใช้ (แก้ไขได้เอง)</span>
+      <textarea data-hookinput="1" rows="2" class="inp mt-1" placeholder="เลือกจากด้านบน หรือพิมพ์ Hook ของคุณเอง">${esc(it.hook || '')}</textarea></label>
+  </section>
+
+  <section>
+    ${sec(2, 'โครงคลิป 25 วินาที', 'ถ่ายครั้งเดียว ตัดตามนี้ แล้วเอาไปปรับใช้ต่อทุกแพลตฟอร์ม')}
+    <ol class="text-sm space-y-2">
+      <li class="flex gap-3"><span class="shrink-0 w-16 text-xs font-medium text-amber-700">0–3 วิ</span><span><b>Hook</b> — ${esc(it.hook || 'เลือก Hook ด้านบน')}</span></li>
+      <li class="flex gap-3"><span class="shrink-0 w-16 text-xs font-medium text-stone-500">3–10 วิ</span><span>โชว์ปัญหา หรือสภาพ "ก่อน" ให้คนดูรู้สึกว่านี่คือเรื่องของฉัน</span></li>
+      <li class="flex gap-3"><span class="shrink-0 w-16 text-xs font-medium text-stone-500">10–20 วิ</span><span>โชว์สินค้าเวลาใช้งานจริง 2–3 จุดเด่น แล้วตามด้วยภาพ "หลัง"</span></li>
+      <li class="flex gap-3"><span class="shrink-0 w-16 text-xs font-medium text-stone-500">20–25 วิ</span><span>สรุปสั้นๆ พร้อมบอกว่ากดลิงก์/ตะกร้าได้ที่ไหน</span></li>
+    </ol>
+    <p class="text-xs text-stone-600 bg-stone-50 rounded-lg px-3 py-2 mt-3">💡 ${esc(TIPS[it.cat] || '')}</p>
+  </section>
+
+  <section>
+    ${sec(3, 'แผนกระจายคอนเทนต์ (1 คลิป → หลายแพลตฟอร์ม)', 'เลือกแพลตฟอร์มที่จะลง ระบบจะบอกวิธีปรับ และเตรียมแคปชั่นให้คัดลอก')}
+    <div class="flex flex-wrap gap-2 mb-4">${Object.entries(PLATFORMS).map(([k, v]) => `<button data-tplan="${k}"
+      class="inline-flex items-center gap-1.5 text-xs px-2.5 py-1 rounded-full border ${it.plan?.[k] ? 'bg-stone-900 text-white border-stone-900' : 'border-stone-300 hover:bg-stone-100'}">
+      <span class="w-1.5 h-1.5 rounded-full ${v.dot}"></span>${v.name}</button>`).join('')}</div>
+    <div class="space-y-3">${plat.map(k => `<div class="rounded-xl border border-stone-200 p-3">
+      <div class="flex items-center justify-between mb-2">${badge(k)}<span class="text-xs text-stone-400">${esc(it.plan[k].fmt)}</span></div>
+      <ul class="text-sm space-y-1 list-disc pl-5 marker:text-stone-300">${CROSS[k].steps.map(x => `<li>${esc(x)}</li>`).join('')}</ul>
+      <div class="mt-3"><textarea data-cap="${k}" readonly rows="6" class="inp text-xs !bg-stone-50">${esc(caption(it, k))}</textarea>
+        <div class="flex gap-2 mt-2"><button data-copycap="${k}" class="text-xs px-3 py-2.5 sm:py-1.5 rounded-md border border-stone-300 hover:bg-stone-100">📋 คัดลอกแคปชั่น</button>${canShare ? `<button data-sharecap="${k}" class="text-xs px-3 py-2.5 sm:py-1.5 rounded-md border border-stone-300 hover:bg-stone-100">📤 แชร์</button>` : ''}</div></div>
+    </div>`).join('') || '<p class="text-sm text-stone-400 text-center py-6">ยังไม่ได้เลือกแพลตฟอร์ม กดปุ่มด้านบนเพื่อเริ่มวางแผน</p>'}</div>
+  </section>`;
+}
+
+// ================= อีเวนต์ =================
+const byId = (id) => state.items.find(x => x.id == id);
+
+$('platformChips').addEventListener('click', e => {
+  const b = e.target.closest('[data-platform]'); if (!b) return;
+  ui.platform = b.dataset.platform; render();
+});
+['tabs', 'bottomNav'].forEach(id => $(id).addEventListener('click', e => {
+  const b = e.target.closest('[data-tab]'); if (!b) return;
+  ui.tab = b.dataset.tab; try { localStorage.setItem(KEY + '.tab', ui.tab); } catch (err) {}
+  render(); window.scrollTo(0, 0);
+}));
+$('catChips').addEventListener('click', e => {
+  const b = e.target.closest('[data-cat]'); if (!b) return;
+  ui.cat = b.dataset.cat; render();
+});
+['fSearch', 'fSort'].forEach(id => $(id).addEventListener('input', render));
+$('fComm').addEventListener('input', e => { $('fCommVal').textContent = e.target.value; render(); });
+$('fStatus').addEventListener('change', renderPlan);
+
+// ปุ่มต่างๆ ในการ์ด / รายการลิงก์ / ตารางแผน
+document.addEventListener('click', e => {
+  const b = e.target.closest('button'); if (!b) return;
+  const d = b.dataset;
+  if (d.copy) { const r = itemLink(byId(d.copy)); if (!r.link) return toast('รายการนี้ยังไม่มีลิงก์'); copy(r.link); if (!r.ok) toast('คัดลอกลิงก์เดิม (' + r.note + ')'); }
+  else if (d.edit) openModal(byId(d.edit));
+  else if (d.del) { if (confirm('ลบรายการนี้?')) { state.items = state.items.filter(x => x.id != d.del); save(); render(); } }
+  else if (d.addplan) { const it = byId(d.addplan); (it.plan ||= {})[d.p] = P(PLATFORMS[d.p].fmt); save(); render(); }
+  else if (d.status) { const pl = byId(d.status).plan[d.p]; const i = STATUS.findIndex(s => s.k === pl.status); pl.status = STATUS[(i + 1) % STATUS.length].k; save(); render(); }
+  else if (d.rmplan) { delete byId(d.rmplan).plan[d.p]; save(); render(); }
+  else if (d.studio) openStudio(d.studio);
+  else if (d.closestudio) closeStudio();
+  else if (d.usehook) { const it = byId(studioId); it.hook = hookList(it)[+d.usehook].say; save(); renderStudio(); }
+  else if (d.copyhook) { const it = byId(studioId); copy(hookList(it)[+d.copyhook].say); }
+  else if (d.copycap) copy(caption(byId(studioId), d.copycap));
+  else if (d.share) {
+    const it = byId(d.share), r = itemLink(it);
+    if (!r.link) return toast('รายการนี้ยังไม่มีลิงก์');
+    navigator.share({ title: it.name, text: it.name + ' ฿' + Number(it.price).toLocaleString(), url: r.link }).catch(() => {});
+  }
+  else if (d.sharecap) navigator.share({ text: caption(byId(studioId), d.sharecap) }).catch(() => {});
+  else if (d.tplan) {
+    const it = byId(studioId); it.plan ||= {};
+    if (it.plan[d.tplan]) delete it.plan[d.tplan]; else it.plan[d.tplan] = P(PLATFORMS[d.tplan].fmt);
+    save(); renderStudio();
+  }
+});
+document.addEventListener('change', e => {
+  const d = e.target.dataset;
+  if (d.fmt) { byId(d.fmt).plan[d.p].fmt = e.target.value; save(); }
+});
+document.addEventListener('input', e => {
+  const d = e.target.dataset;
+  if (d.note) { byId(d.note).note = e.target.value; save(); }
+  if (d.hookinput && studioId) { byId(studioId).hook = e.target.value.trim(); save(); updateCaptions(); }
+  if (d.cfg) { state.cfg[d.cfg] = e.target.value.trim(); save(); }
+});
+
+// แปลงลิงก์
+$('btnConvert').addEventListener('click', () => {
+  $('convErr').classList.add('hidden'); $('convOut').classList.add('hidden');
+  try {
+    lastConv = { raw: $('rawLink').value.trim(), ...convert($('rawLink').value, $('subId').value.trim()) };
+    $('convBadge').innerHTML = badge(lastConv.platform, srcName(lastConv.platform));
+    $('convNote').textContent = lastConv.note;
+    $('convLink').textContent = lastConv.link;
+    $('convOut').classList.remove('hidden');
+  } catch (err) {
+    $('convErr').textContent = err.message; $('convErr').classList.remove('hidden');
+    if (/ตั้งค่า/.test(err.message)) $('settingsBox').open = true;
+  }
+});
+$('btnPaste').addEventListener('click', async () => {
+  try {
+    const t = (await navigator.clipboard.readText()).trim();
+    if (!t) return toast('คลิปบอร์ดว่าง');
+    $('rawLink').value = t; $('btnConvert').click();
+  } catch (e) { toast('วางอัตโนมัติไม่ได้ กดค้างที่ช่องแล้วเลือก "วาง"'); $('rawLink').focus(); }
+});
+$('rawLink').addEventListener('keydown', e => { if (e.key === 'Enter') $('btnConvert').click(); });
+$('btnCopyConv').addEventListener('click', () => lastConv && copy(lastConv.link));
+$('btnAttach').addEventListener('click', () => {
+  const it = byId($('attachItem').value); if (!it || !lastConv) return;
+  it.url = lastConv.raw; it.source = lastConv.platform; save(); render(); toast('บันทึกลิงก์ให้ "' + it.name + '" แล้ว');
+});
+$('btnNewFromLink').addEventListener('click', () => {
+  if (!lastConv) return;
+  openModal(null, { url: lastConv.raw, source: lastConv.platform, cat: lastConv.platform === 'trip' ? 'hotel' : 'gadget' });
+});
+
+// หน้าต่างเพิ่ม/แก้ไข
+const form = $('form');
+form.cat.innerHTML = Object.entries(CATS).map(([k, v]) => `<option value="${k}">${v}</option>`).join('');
+form.source.innerHTML = Object.entries(SOURCES).map(([k, v]) => `<option value="${k}">${v}</option>`).join('');
+let formPosts = new Set();
+function renderFormPosts() {
+  $('formPosts').innerHTML = Object.entries(PLATFORMS).map(([k, v]) => `<button type="button" data-fpost="${k}"
+    class="inline-flex items-center gap-1.5 text-xs px-2.5 py-1 rounded-full border ${formPosts.has(k) ? 'bg-stone-900 text-white border-stone-900' : 'border-stone-300'}">
+    <span class="w-1.5 h-1.5 rounded-full ${v.dot}"></span>${v.name}</button>`).join('');
+}
+$('formPosts').addEventListener('click', e => {
+  const b = e.target.closest('[data-fpost]'); if (!b) return;
+  e.stopPropagation();
+  formPosts.has(b.dataset.fpost) ? formPosts.delete(b.dataset.fpost) : formPosts.add(b.dataset.fpost);
+  renderFormPosts();
+});
+function openModal(it, preset = {}) {
+  editingId = it ? it.id : null;
+  $('modalTitle').textContent = it ? 'แก้ไขรายการ' : 'เพิ่มรายการ';
+  form.reset();
+  const src = { ...(it || {}), ...preset };
+  ['name', 'emoji', 'cat', 'source', 'price', 'comm', 'url', 'img', 'note'].forEach(k => { if (src[k] !== undefined) form[k].value = src[k]; });
+  formPosts = new Set(Object.keys(it?.plan || {}));
+  renderFormPosts();
+  $('modal').classList.remove('hidden'); lockBody(true); if (!matchMedia('(pointer: coarse)').matches) form.name.focus();
+}
+const lockBody = (on) => document.body.classList.toggle('overflow-hidden', on);
+const closeModal = () => { $('modal').classList.add('hidden'); lockBody(false); };
+$('btnAdd').addEventListener('click', () => openModal());
+$('btnAddFab').addEventListener('click', () => openModal());
+$('btnCancel').addEventListener('click', closeModal);
+$('modal').addEventListener('click', e => { if (e.target.id === 'modal') closeModal(); });
+$('studio').addEventListener('click', e => { if (e.target.id === 'studio') closeStudio(); });
+document.addEventListener('keydown', e => {
+  if (e.key !== 'Escape') return;
+  if (!$('studio').classList.contains('hidden')) closeStudio(); else closeModal();
+});
+form.addEventListener('submit', e => {
+  e.preventDefault();
+  const data = {
+    name: form.name.value.trim(), emoji: form.emoji.value.trim() || '📦', cat: form.cat.value, source: form.source.value,
+    price: +form.price.value, comm: +form.comm.value, url: form.url.value.trim(), img: form.img.value.trim(), note: form.note.value.trim(),
+  };
+  const it = editingId ? byId(editingId) : { id: Date.now(), plan: {} };
+  Object.assign(it, data);
+  // เก็บแผนเดิมไว้ เพิ่มแพลตฟอร์มที่เพิ่งติ๊ก และเอาที่ไม่ได้ติ๊กออก
+  Object.keys(it.plan).forEach(k => { if (!formPosts.has(k)) delete it.plan[k]; });
+  formPosts.forEach(k => { if (!it.plan[k]) it.plan[k] = P(PLATFORMS[k].fmt); });
+  if (!editingId) state.items.unshift(it);
+  save(); closeModal(); render(); toast('บันทึกแล้ว ✓');
+});
+
+// สำรอง / กู้คืน
+$('btnExport').addEventListener('click', () => {
+  const blob = new Blob([JSON.stringify(state, null, 2)], { type: 'application/json' });
+  const a = document.createElement('a'); a.href = URL.createObjectURL(blob);
+  a.download = 'affiliate-hub-backup.json'; a.click(); URL.revokeObjectURL(a.href);
+});
+$('fileImport').addEventListener('change', async e => {
+  const f = e.target.files[0]; if (!f) return;
+  try {
+    const d = JSON.parse(await f.text());
+    if (!Array.isArray(d.items)) throw 0;
+    state = { cfg: {}, ...d }; save(); render(); toast('กู้คืนข้อมูลแล้ว ✓');
+  } catch (err) { toast('ไฟล์สำรองไม่ถูกต้อง'); }
+  e.target.value = '';
+});
+
+// ================= นำเข้า / ส่งออก CSV =================
+const CSV_HEAD = ['ชื่อ', 'หมวดหมู่', 'แหล่งลิงก์', 'ราคา', 'คอมมิชชัน', 'ลิงก์', 'อีโมจิ', 'โพสต์ที่', 'ไอเดีย', 'Hook', 'รูป'];
+const COLS = {
+  name:   ['ชื่อ', 'ชื่อสินค้า', 'สินค้า', 'name', 'product'],
+  cat:    ['หมวดหมู่', 'หมวด', 'category'],
+  source: ['แหล่งลิงก์', 'แหล่ง', 'แพลตฟอร์ม', 'source', 'platform'],
+  price:  ['ราคา', 'price'],
+  comm:   ['คอมมิชชัน', 'คอมมิชชั่น', 'ค่าคอม', 'commission'],
+  url:    ['ลิงก์', 'ลิ้งก์', 'link', 'url'],
+  emoji:  ['อีโมจิ', 'emoji'],
+  posts:  ['โพสต์ที่', 'ช่องทางโพสต์', 'posts', 'post'],
+  note:   ['ไอเดีย', 'โน้ต', 'note', 'idea'],
+  hook:   ['hook', 'ฮุก'],
+  img:    ['รูป', 'รูปภาพ', 'image', 'img'],
+};
+const CAT_ALIAS = {
+  gadget: ['แกดเจ็ต', 'ไอที', 'it', 'gadget', 'มือถือ', 'คอม'],
+  daily:  ['ของใช้', 'daily'],
+  home:   ['บ้าน', 'home', 'เฟอร์นิเจอร์'],
+  beauty: ['ความงาม', 'สกินแคร์', 'skincare', 'beauty', 'เครื่องสำอาง'],
+  pet:    ['สัตว์เลี้ยง', 'pet', 'แมว', 'หมา', 'สุนัข'],
+  hotel:  ['โรงแรม', 'ที่พัก', 'hotel', 'รีสอร์ท'],
+  ticket: ['ตั๋ว', 'ทัวร์', 'กิจกรรม', 'ticket', 'tour'],
+};
+const PLATFORM_ALIAS = {
+  tiktok: ['tiktok', 'ติ๊กต็อก', 'tt'], shopee: ['shopee', 'ช้อปปี้'], lazada: ['lazada', 'ลาซาด้า'],
+  facebook: ['facebook', 'fb', 'เฟซบุ๊ก', 'เฟสบุ๊ค'], instagram: ['instagram', 'ig', 'ไอจี'],
+  lemon8: ['lemon8', 'เลมอน8'], trip: ['trip.com', 'trip', 'ทริป'],
+};
+
+function parseCSV(text) {
+  text = text.replace(/^﻿/, '');
+  const first = text.split(/\r?\n/)[0] || '';
+  const sep = (first.match(/;/g) || []).length > (first.match(/,/g) || []).length ? ';' : ',';
+  const rows = []; let row = [], cell = '', q = false;
+  for (let i = 0; i < text.length; i++) {
+    const ch = text[i];
+    if (q) {
+      if (ch === '"' && text[i + 1] === '"') { cell += '"'; i++; }
+      else if (ch === '"') q = false;
+      else cell += ch;
+    } else if (ch === '"') q = true;
+    else if (ch === sep) { row.push(cell); cell = ''; }
+    else if (ch === '\n' || ch === '\r') {
+      if (ch === '\r' && text[i + 1] === '\n') i++;
+      row.push(cell); rows.push(row); row = []; cell = '';
+    } else cell += ch;
+  }
+  if (cell !== '' || row.length) { row.push(cell); rows.push(row); }
+  return rows.filter(r => r.some(c => c.trim() !== ''));
+}
+const matchAlias = (v, table) => {
+  v = String(v || '').trim().toLowerCase(); if (!v) return null;
+  for (const [k, words] of Object.entries(table)) if (k === v || words.some(w => v.includes(w))) return k;
+  return null;
+};
+const findCat = (v) => matchAlias(v, CAT_ALIAS) || Object.keys(CATS).find(k => CATS[k] === String(v).trim()) || null;
+// "TikTok | Lemon8, IG" → ['tiktok','lemon8','instagram']
+const findPlatforms = (v) => String(v || '').split(/[|/,;]+/).map(x => matchAlias(x, PLATFORM_ALIAS)).filter(Boolean);
+const num = (v) => parseFloat(String(v || '').replace(/[฿,%\s]/g, ''));
+
+function importCSV(text) {
+  const rows = parseCSV(text);
+  if (rows.length < 2) throw new Error('ไม่พบข้อมูลในไฟล์');
+  const head = rows[0].map(h => h.trim().toLowerCase());
+  const idx = {};
+  for (const [k, names] of Object.entries(COLS)) idx[k] = head.findIndex(h => names.includes(h));
+  if (idx.name < 0 || idx.price < 0) throw new Error('ไฟล์ต้องมีคอลัมน์ "ชื่อ" และ "ราคา"');
+  const get = (r, k) => idx[k] >= 0 ? (r[idx[k]] || '').trim() : '';
+
+  let added = 0, updated = 0, skipped = 0, guessed = 0;
+  rows.slice(1).forEach((r, n) => {
+    const name = get(r, 'name'), price = num(get(r, 'price'));
+    if (!name || isNaN(price)) { skipped++; return; }
+    const url = get(r, 'url');
+    // แหล่งลิงก์: จากคอลัมน์ ถ้าไม่มีให้ดูจากลิงก์
+    let source = matchAlias(get(r, 'source'), PLATFORM_ALIAS);
+    if (!SOURCES[source]) { try { source = detect(new URL(url).hostname); } catch (e) { source = null; } }
+    if (!SOURCES[source]) source = 'shopee';
+    let cat = findCat(get(r, 'cat'));
+    if (!cat) { cat = source === 'trip' ? 'hotel' : 'gadget'; guessed++; }
+    const data = { name, cat, source, price, comm: num(get(r, 'comm')) || 0, url };
+    const emoji = get(r, 'emoji'), note = get(r, 'note'), hook = get(r, 'hook');
+    const exist = state.items.find(it => (url && it.url === url) || it.name === name);
+    const it = exist || { id: Date.now() + n, plan: {}, emoji: '📦', note: '' };
+    Object.assign(it, data);
+    if (emoji) it.emoji = emoji;
+    if (note) it.note = note;
+    if (hook) it.hook = hook;
+    const img = get(r, 'img'); if (img) it.img = img;
+    // เพิ่มแพลตฟอร์มที่จะโพสต์ (ไม่ลบแผนเดิม)
+    findPlatforms(get(r, 'posts')).forEach(k => { (it.plan ||= {})[k] ||= P(PLATFORMS[k].fmt); });
+    if (exist) updated++; else { state.items.push(it); added++; }
+  });
+  save(); render();
+  let msg = `นำเข้าเสร็จแล้ว\nเพิ่มใหม่ ${added} รายการ · อัปเดต ${updated} รายการ`;
+  if (skipped) msg += `\nข้าม ${skipped} แถว (ไม่มีชื่อหรือราคา)`;
+  if (guessed) msg += `\n${guessed} รายการไม่รู้หมวดหมู่ ระบบเดาให้ ตรวจดูอีกครั้งได้`;
+  return msg;
+}
+
+$('csvImport').addEventListener('change', async e => {
+  const f = e.target.files[0]; if (!f) return;
+  try { alert(importCSV(await f.text())); }
+  catch (err) { alert('นำเข้าไม่สำเร็จ: ' + err.message); }
+  e.target.value = '';
+});
+
+$('btnTemplate').addEventListener('click', () => {
+  const cell = (v) => /[",\n]/.test(String(v)) ? `"${String(v).replace(/"/g, '""')}"` : v;
+  const lines = [CSV_HEAD.join(','), ...state.items.map(it => [
+    it.name, CATS[it.cat] || '', srcName(it.source), it.price, it.comm, it.url || '', it.emoji || '',
+    Object.keys(it.plan || {}).map(k => PLATFORMS[k].name).join(' | '), it.note || '', it.hook || '', it.img || '',
+  ].map(cell).join(','))];
+  // BOM ช่วยให้ Excel อ่านภาษาไทยถูก
+  const blob = new Blob(['﻿' + lines.join('\r\n')], { type: 'text/csv;charset=utf-8' });
+  const a = document.createElement('a'); a.href = URL.createObjectURL(blob);
+  a.download = 'รายการ-affiliate.csv'; a.click(); URL.revokeObjectURL(a.href);
+});
+
+render();
+// ================= ซิงค์จาก Google Sheets =================
+function sheetCsvUrl(raw) {
+  raw = String(raw).trim();
+  let u; try { u = new URL(raw); } catch (e) { throw new Error('ลิงก์ไม่ถูกต้อง ต้องขึ้นต้นด้วย https://'); }
+  if (!/(^|\.)docs\.google\.com$/.test(u.hostname)) return u.href; // ลิงก์ CSV จากที่อื่น ใช้ตามเดิม
+  // ลิงก์ "เผยแพร่ทางเว็บ" → ใช้ตามเดิม แต่บังคับเป็น CSV
+  if (/\/spreadsheets\/d\/e\//.test(u.pathname)) { u.pathname = u.pathname.replace(/\/pubhtml$/, '/pub'); u.searchParams.set('output', 'csv'); return u.href; }
+  const m = u.pathname.match(/\/spreadsheets\/d\/([\w-]+)/);
+  if (!m) throw new Error('ไม่ใช่ลิงก์ Google Sheets');
+  const gid = (u.hash.match(/gid=(\d+)/) || [])[1] || u.searchParams.get('gid');
+  return `https://docs.google.com/spreadsheets/d/${m[1]}/gviz/tq?tqx=out:csv${gid ? '&gid=' + gid : ''}`;
+}
+
+function showSync(msg, ok) {
+  const p = $('syncMsg');
+  p.textContent = msg; p.classList.remove('hidden', 'bg-emerald-50', 'text-emerald-800', 'bg-red-50', 'text-red-700');
+  p.classList.add(...(ok ? ['bg-emerald-50', 'text-emerald-800'] : ['bg-red-50', 'text-red-700']));
+}
+function renderSync() {
+  const inp = document.querySelector('[data-cfg="sheetUrl"]');
+  if (document.activeElement !== inp) inp.value = state.cfg.sheetUrl || '';
+  $('sheetAuto').checked = !!state.cfg.sheetAuto;
+  $('syncStatus').textContent = state.cfg.sheetAt ? 'ซิงค์ล่าสุด ' + new Date(state.cfg.sheetAt).toLocaleString('th-TH', { dateStyle: 'short', timeStyle: 'short' }) : 'ยังไม่เคยซิงค์';
+}
+
+// โหลดชีตผ่านแท็ก <script> (JSONP) — ไม่ติดข้อจำกัด CORS จึงใช้ได้แม้ดับเบิ้ลคลิกเปิดไฟล์จากเครื่อง
+// ใช้ได้กับชีตที่แชร์เป็น "ทุกคนที่มีลิงก์ดูได้"
+function sheetIdOf(raw) {
+  try {
+    const u = new URL(String(raw).trim());
+    if (!/(^|\.)docs\.google\.com$/.test(u.hostname) || /\/spreadsheets\/d\/e\//.test(u.pathname)) return null;
+    const m = u.pathname.match(/\/spreadsheets\/d\/([\w-]+)/);
+    if (!m) return null;
+    const gid = (u.hash.match(/gid=(\d+)/) || [])[1] || u.searchParams.get('gid');
+    return { id: m[1], gid };
+  } catch (e) { return null; }
+}
+const csvCell = (v) => { v = v == null ? '' : String(v); return /[",\n\r]/.test(v) ? '"' + v.replace(/"/g, '""') + '"' : v; };
+
+function loadSheetJsonp({ id, gid }) {
+  return new Promise((resolve, reject) => {
+    const cb = '__sheetCb' + Date.now();
+    const tag = document.createElement('script');
+    const done = () => { clearTimeout(timer); delete window[cb]; tag.remove(); };
+    const timer = setTimeout(() => { done(); reject(new Error('ชีตตอบช้าเกินไป ลองใหม่อีกครั้ง')); }, 15000);
+    window[cb] = (res) => {
+      done();
+      if (!res || res.status !== 'ok') return reject(new Error('อ่านชีตไม่ได้: ' + (res?.errors?.[0]?.detailed_message || 'ไม่ทราบสาเหตุ')));
+      const cols = res.table.cols.map(c => c.label || '');
+      const rows = res.table.rows.map(r => (r.c || []).map(c => c ? c.v : ''));
+      // ถ้า Google ไม่รู้จักหัวตาราง (ป้ายคอลัมน์ว่างหมด) ให้ใช้แถวแรกเป็นหัวตาราง
+      const all = cols.some(Boolean) ? [cols, ...rows] : rows;
+      resolve(all.map(r => r.map(csvCell).join(',')).join('\n'));
+    };
+    tag.onerror = () => { done(); reject(new Error('เปิดชีตไม่ได้ ให้แน่ใจว่าแชร์เป็น "ทุกคนที่มีลิงก์ดูได้" และลิงก์ถูกต้อง')); };
+    tag.src = `https://docs.google.com/spreadsheets/d/${id}/gviz/tq?tqx=out:json;responseHandler:${cb}&headers=1${gid ? '&gid=' + gid : ''}`;
+    document.head.appendChild(tag);
+  });
+}
+
+async function syncSheet(silent = false) {
+  const raw = (state.cfg.sheetUrl || '').trim();
+  if (!raw) { if (!silent) { $('syncBox').open = true; showSync('วางลิงก์ Google Sheets ก่อน', false); } return; }
+  const btn = $('btnSync'); btn.disabled = true; btn.textContent = 'กำลังซิงค์...';
+  try {
+    let text;
+    const sid = sheetIdOf(raw);
+    if (sid) text = await loadSheetJsonp(sid);
+    else {
+      let res;
+      try { res = await fetch(sheetCsvUrl(raw), { cache: 'no-store' }); }
+      catch (e) {
+        if (!(e instanceof TypeError)) throw e;
+        if (/\/spreadsheets\/d\/e\//.test(raw) && location.protocol === 'file:')
+          throw new Error('ลิงก์ "เผยแพร่ทางเว็บ" ใช้ไม่ได้เมื่อดับเบิ้ลคลิกเปิดไฟล์จากเครื่อง ให้วางลิงก์ชีตปกติแทน (ที่ลงท้าย /edit... แล้วแชร์เป็น "ทุกคนที่มีลิงก์ดูได้")');
+        throw new Error('เชื่อมต่อชีตไม่ได้ ตรวจอินเทอร์เน็ต และให้แน่ใจว่าลิงก์เปิดได้โดยไม่ต้องล็อกอิน');
+      }
+      if (!res.ok) throw new Error(`เปิดชีตไม่ได้ (รหัส ${res.status}) ตรวจสิทธิ์การแชร์อีกครั้ง`);
+      text = await res.text();
+      if (/^\s*<(!doctype|html)/i.test(text)) throw new Error('ชีตยังไม่เปิดสิทธิ์ ให้แชร์เป็น "ทุกคนที่มีลิงก์ดูได้"');
+    }
+    const msg = importCSV(text);
+    state.cfg.sheetAt = Date.now(); save(); renderSync();
+    showSync('ซิงค์สำเร็จ · ' + msg.split('\n').slice(1).join(' · '), true);
+    toast('ซิงค์จากชีตแล้ว ✓');
+  } catch (err) {
+    showSync('ซิงค์ไม่สำเร็จ: ' + err.message, false);
+    if (silent) $('syncBox').open = true;
+  } finally { btn.disabled = false; btn.textContent = 'ซิงค์ตอนนี้'; }
+}
+$('btnSync').addEventListener('click', () => syncSheet(false));
+$('sheetAuto').addEventListener('change', e => { state.cfg.sheetAuto = e.target.checked; save(); });
+
+renderSync();
+if (state.cfg.sheetAuto && state.cfg.sheetUrl) syncSheet(true);
+
+// iOS: แนะนำให้เพิ่มลงหน้าจอโฮม (ข้อมูลใน Safari ปกติอาจถูกล้างถ้าไม่ได้เปิดนาน)
+try {
+  const ios = /iphone|ipad|ipod/i.test(navigator.userAgent);
+  const standalone = navigator.standalone || matchMedia('(display-mode: standalone)').matches;
+  if (ios && !standalone && !localStorage.getItem(KEY + '.hint')) $('installHint').classList.remove('hidden');
+} catch (e) {}
+$('hintClose').addEventListener('click', () => { $('installHint').classList.add('hidden'); try { localStorage.setItem(KEY + '.hint', '1'); } catch (e) {} });
+
+// กลับมาเปิดแอปจากพื้นหลัง: ซิงค์ใหม่ถ้าผ่านไปเกิน 10 นาที
+document.addEventListener('visibilitychange', () => {
+  if (document.visibilityState === 'visible' && state.cfg.sheetAuto && state.cfg.sheetUrl && Date.now() - (state.cfg.sheetAt || 0) > 10 * 60 * 1000) syncSheet(true);
+});
+</script>
+</body>
+</html>
