@@ -77,6 +77,11 @@
   .note { font-size:12px; color:var(--mut); background:var(--card2); border-radius:10px; padding:8px 10px; margin-top:10px; }
   .note.warn { background:#422006; color:#fde68a; }
   .sfxbtns { display:grid; grid-template-columns:repeat(3,1fr); gap:8px; }
+  .vcard { border:2px solid var(--line); border-radius:16px; padding:12px; margin-bottom:12px; background:var(--card); }
+  .vcard.on { border-color:var(--acc); box-shadow:0 0 0 3px rgba(251,146,60,.2); }
+  .strip { display:flex; gap:4px; overflow-x:auto; } .strip img { width:36px; height:64px; object-fit:cover; border-radius:5px; flex:none; background:#000; }
+  .stage.sm { width:min(56%,calc(40vh*9/16)); }
+  #errBox { white-space:pre-wrap; word-break:break-word; }
   .hidden { display:none !important; }
   video.result { width:100%; border-radius:14px; background:#000; max-height:70vh; }
   #toast { position:fixed; left:50%; bottom:150px; transform:translateX(-50%); background:#fff; color:#000; padding:8px 14px; border-radius:999px; font-size:13px; z-index:50; opacity:0; transition:opacity .2s; pointer-events:none; }
@@ -175,7 +180,7 @@ const HOOKS_PLACE = {
 const KEY = 'affEditor.v1';
 const S = {
   step: 1, plat: 'tiktok', kind: 'product', placeType: 'food', area: '', rating: '', name: '', price: '', promo: '',
-  clips: [], timeline: [], pool: [], analyzed: false,
+  clips: [], timeline: [], pool: [], variants: [], vi: 0, err: '', analyzed: false,
   target: 30, strict: 2,
   hookStyle: 'problem', hook: '', hookIdx: 0, points: '', cta: '',
   priceSticker: true, disclose: true, fit: 'cover',
@@ -214,9 +219,9 @@ async function copy(text) {
 // ====================================================================
 //  Hook
 // ====================================================================
-function hookOptions() {
-  const isPlace = S.kind === 'place', grp = HOOKS[S.hookStyle];
-  const list = isPlace ? HOOKS_PLACE[S.placeType][S.hookStyle] : (S.plat === 'trip' ? grp.trip : grp.retail);
+function hookOptions(style = S.hookStyle) {
+  const isPlace = S.kind === 'place', grp = HOOKS[style];
+  const list = isPlace ? HOOKS_PLACE[S.placeType][style] : (S.plat === 'trip' ? grp.trip : grp.retail);
   const price = S.price ? money(S.price) : '', area = (S.area || '').trim(), unit = isPlace ? PLACE[S.placeType].unit : '';
   return list.filter(t => (price || !t.includes('{price}')) && (area || !t.includes('{area}')))
     .map(t => t.replace(/\{name\}/g, S.name || (isPlace ? 'ที่นี่' : 'ตัวนี้')).replace(/\{price\}/g, price).replace(/\{area\}/g, area).replace(/\{unit\}/g, unit));
@@ -230,25 +235,33 @@ function pickHook(next) {
 // ====================================================================
 //  วิเคราะห์คลิป — ตัดช่วงมืด / เบลอ / นิ่ง / เงียบ ออกอัตโนมัติ
 // ====================================================================
-function once(el, ev, ms = 20000) {
+function mediaErr(el) {
+  const c = el.error && el.error.code;
+  if (c === 4) return 'เบราว์เซอร์เล่นไฟล์นี้ไม่ได้ (รูปแบบ/โค้ดเดคไม่รองรับ เช่น HEVC หรือ .mov บางแบบ) ลองถ่ายด้วยโหมด “ความเข้ากันได้สูงสุด/H.264” แล้วลองใหม่';
+  if (c === 3) return 'ถอดรหัสวิดีโอไม่ได้ ไฟล์อาจเสียหรือใช้โค้ดเดคที่เครื่องไม่รองรับ';
+  if (c === 2) return 'อ่านไฟล์ไม่สำเร็จ (ปัญหาการโหลดไฟล์)';
+  return 'โหลดวิดีโอไม่ทัน (ไฟล์ใหญ่เกินไปหรือเบราว์เซอร์บล็อกการเล่นไฟล์) ลองใช้คลิปที่สั้น/เล็กลง';
+}
+function once(el, ev, ms = 45000) {
   return new Promise((res, rej) => {
     const cl = () => { el.removeEventListener(ev, ok); el.removeEventListener('error', er); clearTimeout(h); };
-    const ok = () => { cl(); res(); }, er = () => { cl(); rej(new Error('โหลดวิดีโอไม่ได้')); };
+    const ok = () => { cl(); res(); }, er = () => { cl(); rej(new Error(mediaErr(el))); };
     const h = setTimeout(er, ms);
     el.addEventListener(ev, ok); el.addEventListener('error', er);
   });
 }
 function seek(v, t) {
   return new Promise(res => {
+    if (!v.seeking && v.readyState >= 2 && Math.abs(v.currentTime - t) < 0.04) return res();
     let done = false;
     const f = () => { if (done) return; done = true; v.removeEventListener('seeked', f); clearTimeout(h); res(); };
-    const h = setTimeout(f, 2500);
+    const h = setTimeout(f, 1500);
     v.addEventListener('seeked', f);
     v.currentTime = t;
   });
 }
 async function audioEnergy(file, N) {
-  if (file.size > 250e6) return null;
+  if (file.size > 80e6) return null;
   const Ctx = window.OfflineAudioContext || window.webkitOfflineAudioContext; if (!Ctx) return null;
   const ab = await new Ctx(1, 1, 44100).decodeAudioData(await file.arrayBuffer());
   const d = ab.getChannelData(0), per = Math.floor(d.length / N), out = [];
@@ -260,12 +273,13 @@ async function audioEnergy(file, N) {
 }
 const pct = (arr, p) => { const a = [...arr].sort((x, y) => x - y); return a[Math.min(a.length - 1, Math.floor(a.length * p))] || 0; };
 
+const BLANK = 'data:image/gif;base64,R0lGODlhAQABAIAAAC4oJgAAACH5BAAAAAAALAAAAAABAAEAAAICRAEAOw==';
 async function analyzeClip(clip, onProg) {
   const v = document.createElement('video');
   v.muted = true; v.playsInline = true; v.preload = 'auto'; v.src = clip.url;
   await once(v, 'loadedmetadata');
   const dur = v.duration; clip.dur = dur; clip.w = v.videoWidth; clip.h = v.videoHeight;
-  const N = clamp(Math.round(dur / 0.6), 3, 60), step = dur / N;
+  const N = clamp(Math.round(dur / 0.8), 3, 40), step = dur / N;
   let audio = null; try { audio = await audioEnergy(clip.file, N); } catch (e) { audio = null; }
   const g = document.createElement('canvas'); g.width = g.height = 64;
   const gx = g.getContext('2d', { willReadFrequently: true });
@@ -275,30 +289,35 @@ async function analyzeClip(clip, onProg) {
     for (let i = 0; i < 4096; i++) o[i] = 0.299 * d[i*4] + 0.587 * d[i*4+1] + 0.114 * d[i*4+2];
     return o;
   };
-  const raw = [];
+  const raw = []; let prev = null, errs = 0;
   for (let i = 0; i < N; i++) {
     const t = Math.min(dur - 0.05, i * step + step / 2);
-    await seek(v, t);
-    const A = gray();
-    // thumbnail (crop กลางเป็น 9:16)
-    const s = Math.max(72 / v.videoWidth, 128 / v.videoHeight);
-    tx.drawImage(v, (72 - v.videoWidth * s) / 2, (128 - v.videoHeight * s) / 2, v.videoWidth * s, v.videoHeight * s);
-    const thumb = th.toDataURL('image/jpeg', 0.6);
-    let b = 0; for (let k = 0; k < 4096; k++) b += A[k]; b /= 4096;
-    let ls = 0, ls2 = 0, c = 0;
-    for (let y = 1; y < 63; y++) for (let x = 1; x < 63; x++) {
-      const k = y * 64 + x, l = 4 * A[k] - A[k-1] - A[k+1] - A[k-64] - A[k+64]; ls += l; ls2 += l * l; c++;
-    }
-    const sharp = ls2 / c - (ls / c) ** 2;
-    await seek(v, Math.min(dur - 0.02, t + 0.25));
-    const B = gray(); let m = 0; for (let k = 0; k < 4096; k++) m += Math.abs(A[k] - B[k]); m /= 4096;
-    raw.push({ t0: i * step, t1: (i + 1) * step, bright: b, sharp, motion: m, audio: audio ? audio[i] : 0, thumb });
+    try {
+      await seek(v, t);
+      if (v.readyState < 2) await once(v, 'loadeddata', 800).catch(() => {});
+      const A = gray();
+      const s = Math.max(72 / v.videoWidth, 128 / v.videoHeight);
+      tx.drawImage(v, (72 - v.videoWidth * s) / 2, (128 - v.videoHeight * s) / 2, v.videoWidth * s, v.videoHeight * s);
+      const thumb = th.toDataURL('image/jpeg', 0.6);
+      let b = 0; for (let k = 0; k < 4096; k++) b += A[k]; b /= 4096;
+      let ls = 0, ls2 = 0, c = 0;
+      for (let y = 1; y < 63; y++) for (let x = 1; x < 63; x++) {
+        const k = y * 64 + x, l = 4 * A[k] - A[k-1] - A[k+1] - A[k-64] - A[k+64]; ls += l; ls2 += l * l; c++;
+      }
+      const sharp = ls2 / c - (ls / c) ** 2;
+      let m = 0; if (prev) { for (let k = 0; k < 4096; k++) m += Math.abs(A[k] - prev[k]); m /= 4096; }
+      raw.push({ t0: i * step, t1: (i + 1) * step, bright: b, sharp, motion: m, audio: audio ? audio[i] : 0, thumb });
+      prev = A;
+    } catch (e) { errs++; raw.push({ t0: i * step, t1: (i + 1) * step, neutral: true, bright: 120, sharp: 0, motion: 0, audio: 0, thumb: BLANK }); }
     onProg && onProg((i + 1) / N);
   }
+  if (errs > N / 2) throw new Error('อ่านภาพจากคลิปไม่ได้ (ถอดรหัสเฟรมไม่สำเร็จ)');
+  if (raw.length > 1 && !raw[0].neutral && !raw[1].neutral) raw[0].motion = raw[1].motion;
   v.removeAttribute('src'); v.load();
-  const pS = pct(raw.map(r => r.sharp), 0.9) || 1, pM = pct(raw.map(r => r.motion), 0.9) || 1, pA = pct(raw.map(r => r.audio), 0.9) || 1;
+  const okr = raw.filter(r => !r.neutral), pS = pct(okr.map(r => r.sharp), 0.9) || 1, pM = pct(okr.map(r => r.motion), 0.9) || 1, pA = pct(okr.map(r => r.audio), 0.9) || 1;
   const hasAudio = !!audio && pA > 0.004;
   raw.forEach(r => {
+    if (r.neutral) { r.sn = r.mn = 0.5; r.an = 0; r.bs = 1; r.score = 0.5; r.dark = r.blur = r.still = false; return; }
     r.sn = clamp(r.sharp / pS, 0, 1); r.mn = clamp(r.motion / pM, 0, 1); r.an = hasAudio ? clamp(r.audio / pA, 0, 1) : 0;
     const b = r.bright;
     r.bs = b < 35 ? 0 : b < 70 ? (b - 35) / 35 * 0.6 : b <= 200 ? 1 : Math.max(0.3, 1 - (b - 200) / 55 * 0.7);
@@ -317,8 +336,8 @@ function reasonOf(r, strict) {
   if (r.score < THR[strict - 1]) return 'ไม่น่าสนใจพอ';
   return '';
 }
-function buildSegments(clip, ci, strict) {
-  const MAX = 3.2, MIN = 0.9, sm = clip.samples, good = [], bad = [];
+function buildSegments(clip, ci, strict, MAX = 3.2) {
+  const MIN = 0.7, sm = clip.samples, good = [], bad = [];
   const isGood = sm.map(r => !reasonOf(r, strict));
   const groups = []; // [{good, from, to}]
   sm.forEach((r, i) => { const g = isGood[i]; const L = groups[groups.length - 1]; if (L && L.good === g) L.to = i; else groups.push({ good: g, from: i, to: i }); });
@@ -344,20 +363,54 @@ function buildSegments(clip, ci, strict) {
   });
   return { good, bad };
 }
-function autoAssemble() {
+// 3 เวอร์ชันตัดต่อที่ต่างกัน ให้ผู้ใช้เลือกเอง
+const VCFG = [
+  { id: 'fast',  name: '⚡ จังหวะเร็ว',  desc: 'ตัดถี่ ช็อตสั้น สลับคลิป ดึงสายตาตลอด เหมาะกับ TikTok', max: 1.6, order: 'mix',   hook: 'motion', style: ['price', 'urgent'],  tgt: 1,   cut: 'whoosh', zoom: 1.5, music: 1 },
+  { id: 'story', name: '📖 เล่าเรื่อง',   desc: 'ช็อตปานกลาง เรียงตามที่ถ่าย ดูเป็นธรรมชาติ เข้าใจง่าย',     max: 3.2, order: 'time',  hook: 'mix',    style: ['problem', 'proof'], tgt: 1,   cut: 'whoosh', zoom: 1,   music: 0.8 },
+  { id: 'calm',  name: '🎞️ ภาพสวยเน้นๆ', desc: 'ช็อตยาว เลือกเฉพาะภาพคมชัดสวยที่สุด ตัดน้อย ดูพรีเมียม',   max: 4.6, order: 'score', hook: 'pretty', style: ['curious', 'proof'], tgt: 0.9, cut: 'tick',   zoom: 0.5, music: 0.6 },
+];
+function hookFor(v) {
+  for (const st of v.style) { const o = hookOptions(st); if (o.length) return { text: o[v.i % o.length], style: st }; }
+  const o = hookOptions('problem'); return { text: o[0] || '', style: 'problem' };
+}
+function buildVariant(c, i) {
   const cand = [], dropped = [];
-  S.clips.forEach((c, ci) => { if (!c.samples) return; const r = buildSegments(c, ci, S.strict); cand.push(...r.good); dropped.push(...r.bad); });
-  const byScore = [...cand].sort((a, b) => b.score - a.score), picked = []; let total = 0;
-  for (const s of byScore) { if (total >= S.target) break; picked.push(s); total += s.t1 - s.t0; }
+  S.clips.forEach((cl, ci) => { if (!cl.samples) return; const r = buildSegments(cl, ci, S.strict, c.max); cand.push(...r.good); dropped.push(...r.bad); });
+  const target = S.target * c.tgt, byScore = [...cand].sort((a, b) => b.score - a.score), picked = []; let total = 0;
+  for (const s of byScore) { if (total >= target) break; picked.push(s); total += s.t1 - s.t0; }
   // เนื้อหาน้อยเกินไป → กู้ช่วงที่ดีที่สุดจากที่ตัดทิ้ง
   const rest = [...dropped].sort((a, b) => b.score - a.score);
-  while (total < Math.min(6, S.target) && rest.length) { const s = rest.shift(); s.reason = ''; s.restored = true; picked.push(s); total += s.t1 - s.t0; dropped.splice(dropped.indexOf(s), 1); }
-  if (!picked.length) { S.timeline = []; S.pool = dropped; return; }
-  const hs = (s) => s.score * 0.55 + s.motion * 0.35 + Math.min(1, (s.t1 - s.t0) / 2.6) * 0.3; // ชอบช่วงที่ยาวพอให้คลุม Hook 3 วิ
-  const hookSeg = picked.reduce((x, y) => hs(y) > hs(x) ? y : x);
-  const others = picked.filter(s => s !== hookSeg).sort((a, b) => a.ci - b.ci || a.t0 - b.t0);
-  S.timeline = [hookSeg, ...others];
-  S.pool = [...cand.filter(s => !picked.includes(s)), ...dropped];
+  while (total < Math.min(6, target) && rest.length) { const s = rest.shift(); s.reason = ''; s.restored = true; picked.push(s); total += s.t1 - s.t0; dropped.splice(dropped.indexOf(s), 1); }
+  const v = { ...c, i, timeline: [], pool: dropped, hook: '', hookStyle: 'problem' };
+  if (!picked.length) return v;
+  const hs = (s) => s.score * 0.55 + s.motion * 0.35 + Math.min(1, (s.t1 - s.t0) / 2.6) * 0.3; // ชอบช่วงที่ยาวพอคลุม Hook 3 วิ
+  const sel = c.hook === 'motion' ? (s) => s.motion * 0.7 + s.score * 0.3 : c.hook === 'pretty' ? (s) => s.score + Math.min(1, (s.t1 - s.t0) / 2.6) * 0.2 : hs;
+  const hookSeg = picked.reduce((x, y) => sel(y) > sel(x) ? y : x);
+  let others = picked.filter(s => s !== hookSeg);
+  if (c.order === 'time') others.sort((a, b) => a.ci - b.ci || a.t0 - b.t0);
+  else if (c.order === 'score') others.sort((a, b) => b.score - a.score);
+  else { // สลับคลิปไปมาให้จังหวะไม่ซ้ำ
+    const by = {}; others.sort((a, b) => a.t0 - b.t0).forEach(s => (by[s.ci] = by[s.ci] || []).push(s));
+    const q = Object.values(by); others = []; while (q.some(a => a.length)) q.forEach(a => a.length && others.push(a.shift()));
+  }
+  v.timeline = [hookSeg, ...others];
+  v.pool = [...cand.filter(s => !picked.includes(s)), ...dropped];
+  return v;
+}
+function syncVariant() { const V = S.variants[S.vi]; if (V) { V.hook = S.hook; V.hookStyle = S.hookStyle; V.timeline = S.timeline; V.pool = S.pool; } }
+function selectVariant(i) {
+  syncVariant(); S.vi = i; const V = S.variants[i]; S.timeline = V.timeline; S.pool = V.pool; S.hook = V.hook; S.hookStyle = V.hookStyle;
+}
+function refreshHooks() {
+  if (!S.variants.length) return;
+  S.variants.forEach(v => { const h = hookFor(v); v.hook = h.text; v.hookStyle = h.style; });
+  const V = S.variants[S.vi]; S.hook = V.hook; S.hookStyle = V.hookStyle;
+}
+function autoAssemble() {
+  S.variants = VCFG.map(buildVariant);
+  S.variants.forEach(v => { const h = hookFor(v); v.hook = h.text; v.hookStyle = h.style; });
+  S.vi = clamp(S.vi, 0, VCFG.length - 1); const V = S.variants[S.vi];
+  S.timeline = V.timeline; S.pool = V.pool; S.hook = V.hook; S.hookStyle = V.hookStyle;
 }
 const totalLen = () => S.timeline.reduce((s, x) => s + (x.t1 - x.t0), 0);
 
@@ -485,10 +538,11 @@ async function runVideo({ record, onProg }) {
   if (!S.timeline.length) throw new Error('ยังไม่มีช่วงวิดีโอในไทม์ไลน์');
   const Q = S.quality === '1080' ? { w: 1080, h: 1920, br: 9e6 } : { w: 720, h: 1280, br: 5e6 };
   const W = cv.width = Q.w, H = cv.height = Q.h;
-  const brand = PLAT[S.plat].color, tl = S.timeline;
+  const brand = PLAT[S.plat].color, tl = S.timeline, V = S.variants[S.vi] || { cut: 'whoosh', zoom: 1, music: 1 };
   abortFlag = false;
 
   // --- ต้องเริ่มในจังหวะที่ผู้ใช้กดปุ่ม (ปลดล็อกเสียง/วิดีโอบนมือถือ) ---
+  if (record && !(window.MediaRecorder && cv.captureStream)) throw new Error('เบราว์เซอร์นี้ไม่รองรับการอัดวิดีโอ ลองใช้ Chrome หรือ Safari รุ่นใหม่');
   const AC = window.AudioContext || window.webkitAudioContext, ac = new AC(); ac.resume();
   const decks = new Map();
   tl.forEach(s => { if (decks.has(s.clip.id)) return;
@@ -499,7 +553,7 @@ async function runVideo({ record, onProg }) {
   const master = ac.createGain(), dest = ac.createMediaStreamDestination();
   master.connect(dest); if (!record) master.connect(ac.destination);
   const sfxBus = ac.createGain(); sfxBus.gain.value = S.sfxOn ? S.volSfx : 0; sfxBus.connect(master);
-  const musBus = ac.createGain(); musBus.gain.value = S.musicOn ? S.volMusic : 0; musBus.connect(master);
+  const musBus = ac.createGain(); musBus.gain.value = S.musicOn ? S.volMusic * V.music : 0; musBus.connect(master);
   decks.forEach(v => { const src = ac.createMediaElementSource(v), g = ac.createGain(); g.gain.value = S.volOrig; src.connect(g).connect(master); });
 
   try { await document.fonts.load(`700 48px ${FONT}`); await document.fonts.load(`700 48px "IBM Plex Sans Thai"`, 'ก'); } catch (e) {}
@@ -547,6 +601,7 @@ async function runVideo({ record, onProg }) {
     const ts = cur ? t - cur.startW : 0;
     let z = 1;
     if (cur) z = cur.i === 0 ? 1 + 0.14 * (1 - easeOut(ts / 0.5)) + 0.03 * clamp(ts / 3, 0, 1) : (cur.i % 2 ? 1.0 + 0.07 * clamp(ts / 2.5, 0, 1) : 1.07 - 0.07 * clamp(ts / 2.5, 0, 1)) + 0.05 * (1 - easeOut(ts / 0.25));
+    z = 1 + (z - 1) * V.zoom;
     cx.setTransform(1, 0, 0, 1, 0, 0);
     cx.fillStyle = '#000'; cx.fillRect(0, 0, W, H);
     cx.save(); cx.translate(W / 2, H / 2); cx.scale(z, z); cx.translate(-W / 2, -H / 2); cx.drawImage(base, 0, 0); cx.restore();
@@ -635,14 +690,21 @@ async function runVideo({ record, onProg }) {
   if (S.sfxOn) SFX.boom(ac, sfxBus, T0);
   await sleep(150); t0w = performance.now(); requestAnimationFrame(frame);
 
+  let prevV = null;
   for (let i = 0; i < tl.length && !abortFlag; i++) {
     const s = tl[i], v = decks.get(s.clip.id), len = s.t1 - s.t0;
     cur = { i, v, ready: false, startW: now(), ctaAt: Math.max(0, len - 1.2) };
-    if (i > 0) sfx('whoosh');
-    await seek(v, s.t0); cur.ready = true; cur.startW = now(); v.play().catch(() => {});
+    if (i > 0 && V.cut !== 'none') sfx(V.cut);
+    // ช็อตต่อเนื่องจากคลิปเดิม ไม่ต้อง seek (ไม่มีหน่วง)
+    const contiguous = prevV === v && !v.paused && Math.abs(v.currentTime - s.t0) < 0.3;
+    if (!contiguous) { await seek(v, s.t0); v.play().catch(() => {}); }
+    cur.ready = true; cur.startW = now();
+    const nx = tl[i + 1], nv = nx && decks.get(nx.clip.id);
+    if (nx && nv !== v) { try { nv.currentTime = nx.t0; } catch (e) {} } // เตรียมช็อตถัดไปล่วงหน้า
     const pw = performance.now();
     await new Promise(r => { const id = setInterval(() => { if (abortFlag || v.currentTime >= s.t1 - 0.02 || v.ended || performance.now() - pw > (len + 1) * 1000) { clearInterval(id); r(); } }, 8); });
-    v.pause();
+    prevV = v;
+    if (!(nx && nv === v && Math.abs(nx.t0 - v.currentTime) < 0.3)) v.pause();
   }
   if (!abortFlag) { tailStart = now(); await sleep(1300); }
   finished = true;
@@ -666,16 +728,18 @@ function renderNav() {
     return `<button data-step="${i}" class="${S.step === i ? 'on' : done ? 'done' : ''}"><b>${done && S.step !== i ? '✓' : i}</b>${n}</button>`;
   }).join('');
 }
-function setStep(n) { if (S.busy) return; S.step = n; render(); window.scrollTo(0, 0); }
+function setStep(n) { if (S.busy) return; syncVariant(); S.step = n; render(); window.scrollTo(0, 0); }
 
 function render() {
   renderNav(); persist();
   const m = $('main'); const stage = cv.parentNode && cv.parentNode.classList?.contains('stage') ? cv : null;
   if (stage) { document.body.appendChild(cv); cv.hidden = true; }
-  const fn = [null, viewClips, viewEdit, viewHook, viewExport][S.step]; m.innerHTML = fn();
+  const fn = [null, viewClips, viewEdit, viewHook, viewExport][S.step]; m.innerHTML = errBox() + fn();
   const st = $('stage'); if (st) { st.appendChild(cv); cv.hidden = false; }
   afterRender();
 }
+function errBox() { return `<div id="errBox" class="note warn ${S.err ? '' : 'hidden'}" style="margin:0 0 12px">${esc(S.err)}</div>`; }
+function showErr(prefix, err) { S.err = prefix + ': ' + ((err && err.message) || err); const b = $('errBox'); if (b) { b.textContent = S.err; b.classList.remove('hidden'); } }
 function ctaBtn(html, id, dis) { $('cta').innerHTML = html ? `<button class="btn pri block" id="${id}" ${dis ? 'disabled' : ''}>${html}</button>` : ''; }
 
 function viewClips() {
@@ -714,7 +778,7 @@ function viewEdit() {
   if (!S.analyzed) { ctaBtn('', ''); return `<h2>2) ตัดต่ออัตโนมัติ</h2><p class="sub">ยังไม่ได้วิเคราะห์คลิป กลับไปขั้นตอนที่ 1 ก่อนนะ</p><button class="btn block" data-step="1">‹ กลับไปเลือกคลิป</button>`; }
   ctaBtn('ต่อไป: Hook & เสียง ›', 'goHook');
   const used = totalLen(), orig = S.clips.reduce((s, c) => s + (c.dur || 0), 0);
-  const segRow = (s, i, inTl) => `<div class="seg"><img src="${s.thumb}" alt="" />
+  const segRow = (s, i, inTl) => `<div class="seg"><img src="${s.thumb || BLANK}" alt="" />
     <div class="meta">
       <div class="row" style="flex-wrap:wrap;gap:6px">${inTl && i === 0 ? '<span class="tag hook">🪝 HOOK</span>' : inTl ? `<span class="tag">#${i + 1}</span>` : ''}
         <span class="tag">${fmtT(s.t1 - s.t0)}</span><span class="tag">คลิป ${s.ci + 1} · ${s.t0.toFixed(1)}–${s.t1.toFixed(1)}</span>
@@ -726,8 +790,18 @@ function viewEdit() {
            : `<div class="ctl"><button data-add="${i}" style="width:auto;padding:0 10px">+ ใช้</button></div>`}</div>`;
   const cutSec = S.pool.filter(s => s.reason).reduce((a, s) => a + (s.t1 - s.t0), 0);
   return `
-  <h2>2) ตัดต่ออัตโนมัติ</h2>
-  <p class="sub">เลือกเฉพาะช่วงที่คมชัด มีความเคลื่อนไหว สว่างพอ แล้วเรียงให้ช่วงที่ดึงดูดที่สุดขึ้นก่อนเป็น Hook</p>
+  <h2>2) เลือกเวอร์ชันที่ชอบ</h2>
+  <p class="sub">ระบบตัดให้ 3 แบบจากคลิปเดียวกัน แตะ ▶ เพื่อดูตัวอย่างแล้วเลือกอันที่ใช่ (ดูตัวอย่างไม่ต้องรอสร้างไฟล์)</p>
+  <div class="stage sm" id="stage"></div>
+  <div class="prog" id="prog" style="margin-bottom:10px"><i></i></div>
+  <button class="btn block hidden" id="btnStop" style="margin-bottom:12px">⏹ หยุดดูตัวอย่าง</button>
+  ${S.variants.map((v, i) => { const on = S.vi === i, len = v.timeline.reduce((a, x) => a + x.t1 - x.t0, 0); return `<div class="vcard ${on ? 'on' : ''}" data-vsel="${i}">
+    <div class="row" style="justify-content:space-between;gap:8px"><b>${v.name}</b><span class="tag">${v.timeline.length} ช็อต · ${fmtT(len)}</span></div>
+    <p class="sub" style="margin:4px 0 8px">${v.desc}</p>
+    <div class="strip">${v.timeline.slice(0, 10).map(x => `<img src="${x.thumb}" alt="" />`).join('')}</div>
+    <div class="note" style="margin-top:8px">🪝 ${esc((v.hook || '').replace(/\*/g, ''))}</div>
+    <div class="row" style="margin-top:10px"><button class="btn sm grow ${on ? 'pri' : ''}" data-vsel="${i}">${on ? '✓ เลือกอยู่' : 'เลือกเวอร์ชันนี้'}</button><button class="btn sm grow" data-vprev="${i}">▶ ดูตัวอย่าง</button></div></div>`; }).join('')}
+  <h3 style="margin:18px 0 8px;font-size:15px">✂️ ปรับแต่งเวอร์ชันที่เลือก: ${esc((S.variants[S.vi] || {}).name || '')}</h3>
   <div class="card">
     <div class="row" style="justify-content:space-between"><b>ความยาวคลิปสุดท้าย</b><span class="tag ok">ตอนนี้ ${fmtT(used)}</span></div>
     <div class="chips" style="margin-top:10px">${[15, 20, 30, 45].map(n => `<button class="chip ${S.target === n ? 'on' : ''}" data-target="${n}">${n} วิ</button>`).join('')}</div>
@@ -787,7 +861,7 @@ function viewExport() {
   S.genCaption = S.genCaption || buildCaption();
   return `
   <h2>4) ตัวอย่าง & ส่งออก</h2>
-  <p class="sub">เล่นแบบเรียลไทม์เพื่ออัดเป็นไฟล์ ใช้เวลาเท่าความยาวคลิป (~${Math.round(totalLen() + 2)} วิ) กรุณาเปิดหน้านี้ค้างไว้</p>
+  <p class="sub">เวอร์ชันที่เลือก: <b>${esc((S.variants[S.vi] || {}).name || '')}</b> · สร้างไฟล์ใช้เวลาเท่าความยาวคลิป (~${Math.round(totalLen() + 2)} วิ) เพราะเบราว์เซอร์อัดแบบเรียลไทม์ อยากให้เสร็จไวขึ้นให้เลือกความยาว 15–20 วิ และคุณภาพ 720p เปิดหน้านี้ค้างไว้ระหว่างสร้าง</p>
   <div class="stage" id="stage"></div>
   <div class="prog" id="prog"><i></i></div>
   <div class="row" style="margin:12px 0"><button class="btn grow" id="btnPrev">▶ ดูตัวอย่าง</button><button class="btn pri grow" id="btnRender">🎬 สร้างวิดีโอ</button></div>
@@ -815,6 +889,8 @@ function afterRender() {
   const e = $('goExport'); if (e) e.onclick = () => { S.genCaption = ''; setStep(4); };
   const hp = $('hubPick'); if (hp) hp.onchange = () => { const it = hubItems.find(x => String(x.id) === hp.value); if (!it) return;
     S.name = it.name; S.price = it.price; if (PLAT[it.source]) S.plat = it.source; applyHubKind(it); S.hook = ''; render(); };
+  if ($('stage')) { cx.fillStyle = '#111'; cx.fillRect(0, 0, cv.width, cv.height); }
+  const stp = $('btnStop'); if (stp) stp.onclick = () => { abortFlag = true; };
   if (S.step === 4) bindExport();
   document.querySelectorAll('.clip video').forEach(v => v.addEventListener('loadedmetadata', () => {
     const c = S.clips.find(x => x.url === v.currentSrc.split('#')[0]); if (c && !c.dur && isFinite(v.duration)) c.dur = v.duration; }, { once: true }));
@@ -825,34 +901,40 @@ function addClip(file) {
 }
 async function doAnalyze() {
   if (S.busy || !S.clips.length) return;
-  S.busy = true; $('cta').innerHTML = `<div class="card" style="margin:0 auto;max-width:528px"><div id="aTxt" style="font-size:13px;margin-bottom:6px">กำลังวิเคราะห์…</div><div class="prog"><i id="aBar"></i></div></div>`;
-  try {
-    for (let i = 0; i < S.clips.length; i++) {
-      const c = S.clips[i]; $('aTxt').textContent = `กำลังวิเคราะห์คลิป ${i + 1}/${S.clips.length} · หาช่วงที่มืด/เบลอ/นิ่ง`;
-      await analyzeClip(c, p => { $('aBar').style.width = ((i + p) / S.clips.length * 100) + '%'; });
-    }
-    autoAssemble(); S.analyzed = true; S.busy = false; S.hook = S.hook || ''; setStep(2);
-    toast(S.timeline.length ? `ตัดอัตโนมัติแล้ว ${S.timeline.length} ช่วง` : 'ไม่พบช่วงที่ใช้ได้');
-  } catch (err) { S.busy = false; render(); toast('วิเคราะห์ไม่สำเร็จ: ' + err.message); }
+  S.busy = true; S.err = ''; S.clips.forEach(c => { c.samples = null; });
+  $('cta').innerHTML = `<div class="card" style="margin:0 auto;max-width:528px"><div id="aTxt" style="font-size:13px;margin-bottom:6px">กำลังวิเคราะห์…</div><div class="prog"><i id="aBar"></i></div></div>`;
+  const failed = [], t0 = performance.now();
+  for (let i = 0; i < S.clips.length; i++) {
+    const c = S.clips[i];
+    try { await analyzeClip(c, p => { $('aBar').style.width = ((i + p) / S.clips.length * 100) + '%'; $('aTxt').textContent = `กำลังวิเคราะห์คลิป ${i + 1}/${S.clips.length} · ${Math.round((performance.now() - t0) / 1000)} วิ`; }); }
+    catch (err) { console.error(err); c.samples = null; failed.push(`• ${c.file.name} (${c.file.type || 'ไม่ทราบชนิด'}, ${(c.file.size / 1048576).toFixed(0)} MB)\n  ${err.message}`); }
+  }
+  S.busy = false;
+  if (!S.clips.some(c => c.samples)) { S.err = 'วิเคราะห์ไม่สำเร็จ\n' + failed.join('\n'); render(); return; }
+  if (failed.length) S.err = 'ข้ามบางคลิปที่อ่านไม่ได้:\n' + failed.join('\n');
+  autoAssemble(); S.analyzed = true; setStep(2);
+  toast(S.timeline.length ? 'ตัดอัตโนมัติ 3 เวอร์ชันแล้ว เลือกอันที่ชอบได้เลย' : 'ไม่พบช่วงที่ใช้ได้');
 }
 
+function setBusy(b) {
+  S.busy = b; ['btnPrev', 'btnRender'].forEach(id => { const e = $(id); if (e) e.disabled = b; });
+  const st = $('btnStop'); if (st) st.classList.toggle('hidden', !b);
+}
+async function startPlay(record) {
+  if (S.busy) return; if (!S.timeline.length) return toast('ยังไม่มีช่วงวิดีโอ');
+  S.err = ''; const eb = $('errBox'); if (eb) eb.classList.add('hidden');
+  setBusy(true); const rc = $('resultCard'); if (rc) rc.classList.add('hidden');
+  const bar = $('prog') && $('prog').firstElementChild, prog = (p) => { if (bar) bar.style.width = (p * 100) + '%'; };
+  try {
+    const blob = await runVideo({ record, onProg: prog });
+    if (blob && blob.size) showResult(blob);
+    else if (record && !abortFlag) throw new Error('ได้ไฟล์ว่างเปล่า เบราว์เซอร์ไม่ส่งข้อมูลจากตัวอัดวิดีโอ');
+  } catch (err) { console.error(err); showErr(record ? 'สร้างวิดีโอไม่สำเร็จ' : 'ดูตัวอย่างไม่สำเร็จ', err); }
+  setBusy(false); prog(0);
+}
 function bindExport() {
-  const bar = $('prog').firstElementChild, setBusy = (b) => { S.busy = b; $('btnPrev').disabled = $('btnRender').disabled = b; $('btnStop').classList.toggle('hidden', !b); };
-  const prog = (p) => { bar.style.width = (p * 100) + '%'; };
-  cx.fillStyle = '#111'; cx.fillRect(0, 0, cv.width, cv.height);
-  const go = async (record) => {
-    if (S.busy) return; if (!S.timeline.length) return toast('ยังไม่มีช่วงวิดีโอ');
-    setBusy(true); $('resultCard').classList.add('hidden');
-    try {
-      const blob = await runVideo({ record, onProg: prog });
-      if (blob && blob.size) showResult(blob);
-      else if (record && !abortFlag) toast('อัดวิดีโอไม่สำเร็จ');
-    } catch (err) { toast('ผิดพลาด: ' + err.message); console.error(err); }
-    setBusy(false); prog(0);
-  };
-  $('btnPrev').onclick = () => go(false);
-  $('btnRender').onclick = () => go(true);
-  $('btnStop').onclick = () => { abortFlag = true; };
+  $('btnPrev').onclick = () => startPlay(false);
+  $('btnRender').onclick = () => startPlay(true);
   $('guide').onchange = (e) => { showGuide = e.target.checked; };
 }
 function showResult(blob) {
@@ -869,10 +951,12 @@ function showResult(blob) {
 document.addEventListener('click', (e) => {
   const q = (s) => e.target.closest(s);
   let b;
+  if ((b = q('[data-vprev]'))) { if (S.busy) return; selectVariant(+b.dataset.vprev); render(); window.scrollTo(0, 0); return startPlay(false); }
+  if ((b = q('[data-vsel]'))) { if (S.busy) return; selectVariant(+b.dataset.vsel); return render(); }
   if ((b = q('[data-step]'))) return setStep(+b.dataset.step);
-  if ((b = q('[data-kind]'))) { S.kind = b.dataset.kind; S.hook = ''; S.cta = ''; S.points = S.points; return render(); }
-  if ((b = q('[data-ptype]'))) { S.placeType = b.dataset.ptype; S.hook = ''; S.cta = ''; return render(); }
-  if ((b = q('[data-plat]'))) { S.plat = b.dataset.plat; S.hook = ''; S.cta = ''; return render(); }
+  if ((b = q('[data-kind]'))) { S.kind = b.dataset.kind; S.hook = ''; S.cta = ''; refreshHooks(); return render(); }
+  if ((b = q('[data-ptype]'))) { S.placeType = b.dataset.ptype; S.hook = ''; S.cta = ''; refreshHooks(); return render(); }
+  if ((b = q('[data-plat]'))) { S.plat = b.dataset.plat; S.hook = ''; S.cta = ''; refreshHooks(); return render(); }
   if ((b = q('[data-rmclip]'))) { const i = S.clips.findIndex(c => c.id === b.dataset.rmclip); URL.revokeObjectURL(S.clips[i].url); S.clips.splice(i, 1); S.analyzed = false; return render(); }
   if ((b = q('[data-target]'))) { S.target = +b.dataset.target; autoAssemble(); return render(); }
   if ((b = q('[data-strict]'))) { S.strict = +b.dataset.strict; autoAssemble(); return render(); }
