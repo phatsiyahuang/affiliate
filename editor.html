@@ -181,7 +181,7 @@ const KEY = 'affEditor.v1';
 const S = {
   step: 1, plat: 'tiktok', kind: 'product', placeType: 'food', area: '', rating: '', name: '', price: '', promo: '',
   clips: [], timeline: [], pool: [], variants: [], vi: 0, err: '', analyzed: false,
-  target: 30, strict: 2,
+  target: 20, strict: 2,
   hookStyle: 'problem', hook: '', hookIdx: 0, points: '', cta: '',
   priceSticker: true, disclose: true, fit: 'cover',
   sfxOn: true, musicOn: true, volOrig: 1, volSfx: 0.8, volMusic: 0.2,
@@ -250,14 +250,14 @@ function once(el, ev, ms = 45000) {
     el.addEventListener(ev, ok); el.addEventListener('error', er);
   });
 }
-function seek(v, t) {
+function seek(v, t, fast) {
   return new Promise(res => {
     if (!v.seeking && v.readyState >= 2 && Math.abs(v.currentTime - t) < 0.04) return res();
     let done = false;
     const f = () => { if (done) return; done = true; v.removeEventListener('seeked', f); clearTimeout(h); res(); };
     const h = setTimeout(f, 1500);
     v.addEventListener('seeked', f);
-    v.currentTime = t;
+    if (fast && v.fastSeek) v.fastSeek(t); else v.currentTime = t;
   });
 }
 async function audioEnergy(file, N) {
@@ -274,13 +274,27 @@ async function audioEnergy(file, N) {
 const pct = (arr, p) => { const a = [...arr].sort((x, y) => x - y); return a[Math.min(a.length - 1, Math.floor(a.length * p))] || 0; };
 
 const BLANK = 'data:image/gif;base64,R0lGODlhAQABAIAAAC4oJgAAACH5BAAAAAAALAAAAAABAAEAAAICRAEAOw==';
+async function analyzeImage(clip) {
+  const img = new Image(); img.src = clip.url;
+  try { await img.decode(); } catch (e) { throw new Error('เปิดไฟล์รูปนี้ไม่ได้ (ถ้าเป็น HEIC ลองส่งเป็น JPG/PNG)'); }
+  clip.img = img; clip.w = img.naturalWidth; clip.h = img.naturalHeight; clip.dur = 3;
+  const g = document.createElement('canvas'); g.width = g.height = 64; const gx = g.getContext('2d', { willReadFrequently: true });
+  gx.drawImage(img, 0, 0, 64, 64); const d = gx.getImageData(0, 0, 64, 64).data; let b = 0;
+  for (let i = 0; i < 4096; i++) b += 0.299 * d[i*4] + 0.587 * d[i*4+1] + 0.114 * d[i*4+2]; b /= 4096;
+  const th = document.createElement('canvas'); th.width = 72; th.height = 128; const tx = th.getContext('2d'), s = Math.max(72 / img.naturalWidth, 128 / img.naturalHeight);
+  tx.drawImage(img, (72 - img.naturalWidth * s) / 2, (128 - img.naturalHeight * s) / 2, img.naturalWidth * s, img.naturalHeight * s);
+  const bs = b < 35 ? 0 : b < 70 ? (b - 35) / 35 * 0.6 : b <= 200 ? 1 : Math.max(0.3, 1 - (b - 200) / 55 * 0.7);
+  clip.samples = [{ t0: 0, t1: 3, bright: b, sharp: 1, motion: 0, audio: 0, thumb: th.toDataURL('image/jpeg', 0.6), sn: 1, mn: 0.5, an: 0, bs, score: 0.4 + 0.15 + 0.3 * bs, dark: b < 45, blur: false, still: false }];
+  clip.hasAudio = false;
+}
 async function analyzeClip(clip, onProg) {
+  if (clip.kind === 'image') { await analyzeImage(clip); onProg && onProg(1); return; }
   const v = document.createElement('video');
   v.muted = true; v.playsInline = true; v.preload = 'auto'; v.src = clip.url;
   await once(v, 'loadedmetadata');
   const dur = v.duration; clip.dur = dur; clip.w = v.videoWidth; clip.h = v.videoHeight;
-  const N = clamp(Math.round(dur / 0.8), 3, 40), step = dur / N;
-  let audio = null; try { audio = await audioEnergy(clip.file, N); } catch (e) { audio = null; }
+  const N = clamp(Math.round(dur / 1.0), 3, 30), step = dur / N, deadline = performance.now() + 10000; // เกิน 10 วิ/คลิป ข้ามส่วนที่เหลือ
+  const audio = null; // ไม่ถอดรหัสเสียง เพื่อความเร็ว
   const g = document.createElement('canvas'); g.width = g.height = 64;
   const gx = g.getContext('2d', { willReadFrequently: true });
   const th = document.createElement('canvas'); th.width = 72; th.height = 128; const tx = th.getContext('2d');
@@ -292,8 +306,9 @@ async function analyzeClip(clip, onProg) {
   const raw = []; let prev = null, errs = 0;
   for (let i = 0; i < N; i++) {
     const t = Math.min(dur - 0.05, i * step + step / 2);
+    if (performance.now() > deadline) { raw.push({ t0: i * step, t1: (i + 1) * step, neutral: true, bright: 120, sharp: 0, motion: 0, audio: 0, thumb: BLANK }); onProg && onProg((i + 1) / N); continue; }
     try {
-      await seek(v, t);
+      await seek(v, t, true);
       if (v.readyState < 2) await once(v, 'loadeddata', 800).catch(() => {});
       const A = gray();
       const s = Math.max(72 / v.videoWidth, 128 / v.videoHeight);
@@ -337,13 +352,18 @@ function reasonOf(r, strict) {
   return '';
 }
 function buildSegments(clip, ci, strict, MAX = 3.2) {
+  if (clip.kind === 'image') {
+    const r = clip.samples[0], len = clamp(MAX * 0.75, 1.2, 3), why = reasonOf(r, strict);
+    const seg = { id: clip.id + ':0', clip, ci, t0: 0, t1: len, score: r.score, motion: r.mn, thumb: r.thumb, reason: why, caption: '' };
+    return why ? { good: [], bad: [seg] } : { good: [seg], bad: [] };
+  }
   const MIN = 0.7, sm = clip.samples, good = [], bad = [];
   const isGood = sm.map(r => !reasonOf(r, strict));
   const groups = []; // [{good, from, to}]
   sm.forEach((r, i) => { const g = isGood[i]; const L = groups[groups.length - 1]; if (L && L.good === g) L.to = i; else groups.push({ good: g, from: i, to: i }); });
   const mk = (a, b, goodFlag, reason) => {
     const part = sm.slice(a, b + 1), best = part.reduce((x, y) => y.score > x.score ? y : x);
-    return { id: clip.id + ':' + sm[a].t0.toFixed(2), clip, ci, t0: sm[a].t0, t1: Math.min(clip.dur, sm[b].t1),
+    return { id: clip.id + ':' + sm[a].t0.toFixed(2), clip, ci, t0: sm[a].t0, t1: Math.min(clip.dur, sm[b].t1, sm[a].t0 + MAX),
       score: part.reduce((s, r) => s + r.score, 0) / part.length, motion: part.reduce((s, r) => s + r.mn, 0) / part.length,
       thumb: best.thumb, reason, caption: '' };
   };
@@ -365,9 +385,12 @@ function buildSegments(clip, ci, strict, MAX = 3.2) {
 }
 // 3 เวอร์ชันตัดต่อที่ต่างกัน ให้ผู้ใช้เลือกเอง
 const VCFG = [
-  { id: 'fast',  name: '⚡ จังหวะเร็ว',  desc: 'ตัดถี่ ช็อตสั้น สลับคลิป ดึงสายตาตลอด เหมาะกับ TikTok', max: 1.6, order: 'mix',   hook: 'motion', style: ['price', 'urgent'],  tgt: 1,   cut: 'whoosh', zoom: 1.5, music: 1 },
-  { id: 'story', name: '📖 เล่าเรื่อง',   desc: 'ช็อตปานกลาง เรียงตามที่ถ่าย ดูเป็นธรรมชาติ เข้าใจง่าย',     max: 3.2, order: 'time',  hook: 'mix',    style: ['problem', 'proof'], tgt: 1,   cut: 'whoosh', zoom: 1,   music: 0.8 },
-  { id: 'calm',  name: '🎞️ ภาพสวยเน้นๆ', desc: 'ช็อตยาว เลือกเฉพาะภาพคมชัดสวยที่สุด ตัดน้อย ดูพรีเมียม',   max: 4.6, order: 'score', hook: 'pretty', style: ['curious', 'proof'], tgt: 0.9, cut: 'tick',   zoom: 0.5, music: 0.6 },
+  { id: 'fast',  name: '⚡ จังหวะเร็ว',  desc: 'โทนพลังงานสูง ตัดถี่ ช็อตสั้น สีสด ซับตัวใหญ่เด้ง บีทเร็ว เหมาะกับ TikTok', max: 1.6, order: 'mix',   hook: 'motion', style: ['price', 'urgent'],  tgt: 1,   cut: 'whoosh', zoom: 1.5, music: 1,
+    tone: 'พลังงานสูง', tint: 'rgba(255,90,40,0.10)', tintOp: 'overlay', vignette: false, subStyle: 'pop', bpm: 132, soft: false, trans: 'flash', flashA: 0.45, hookAnim: 'slam' },
+  { id: 'story', name: '📖 เล่าเรื่อง',   desc: 'โทนเป็นกันเอง เรียงตามที่ถ่าย สีธรรมชาติ ซับในกล่องดำอ่านง่าย บีทสบายๆ',     max: 3.2, order: 'time',  hook: 'mix',    style: ['problem', 'proof'], tgt: 1,   cut: 'pop',    zoom: 1,   music: 0.8,
+    tone: 'เป็นกันเอง', tint: null, tintOp: '', vignette: false, subStyle: 'box', bpm: 108, soft: false, trans: 'flash', flashA: 0.18, hookAnim: 'slide' },
+  { id: 'calm',  name: '🎞️ ภาพสวยเน้นๆ', desc: 'โทนซีนีมาติก ช็อตยาว สีอุ่นนุ่ม มีขอบมืด ซับบางสะอาด เปลี่ยนฉากแบบเฟด ดนตรีช้า',   max: 4.6, order: 'score', hook: 'pretty', style: ['curious', 'proof'], tgt: 0.9, cut: 'tick',   zoom: 0.5, music: 0.6,
+    tone: 'ซีนีมาติก', tint: 'rgba(255,200,140,0.22)', tintOp: 'soft-light', vignette: true, subStyle: 'clean', bpm: 84, soft: true, trans: 'dip', flashA: 0, hookAnim: 'fade' },
 ];
 function hookFor(v) {
   for (const st of v.style) { const o = hookOptions(st); if (o.length) return { text: o[v.i % o.length], style: st }; }
@@ -453,16 +476,18 @@ const SFX = {
 const SFX_LIST = [['boom','💥 เปิดฮุก'],['whoosh','💨 ตัดคลิป'],['pop','🫧 ข้อความเด้ง'],['ding','🔔 ราคา'],['cash','💰 ปุ่มซื้อ'],['tick','⚡ แฟลช']];
 
 // เพลงพื้นหลังสังเคราะห์เบาๆ (บีทสนุก 120 BPM)
-function scheduleMusic(ac, out, t0, dur) {
-  const beat = 0.5, bass = [55, 55, 65.41, 49], n = Math.ceil(dur / beat) + 2;
+function scheduleMusic(ac, out, t0, dur, bpm = 120, soft = false) {
+  const beat = 60 / bpm, bass = [55, 55, 65.41, 49], n = Math.ceil(dur / beat) + 2;
   for (let b = 0; b < n; b++) {
     const t = t0 + b * beat;
     const k = ac.createOscillator(); k.frequency.setValueAtTime(140, t); k.frequency.exponentialRampToValueAtTime(42, t + 0.12);
     k.connect(SFX._env(ac, out, t, 0.9, 0.003, 0.18)); k.start(t); k.stop(t + 0.25);
+    if (!soft) {
     const h = SFX._noise(ac, 0.05), hf = ac.createBiquadFilter(); hf.type = 'highpass'; hf.frequency.value = 7000;
     h.connect(hf).connect(SFX._env(ac, out, t + beat / 2, 0.22, 0.002, 0.04)); h.start(t + beat / 2); h.stop(t + beat / 2 + 0.05);
     if (b % 2 === 1) { const s = SFX._noise(ac, 0.15), sf = ac.createBiquadFilter(); sf.type = 'bandpass'; sf.frequency.value = 1800;
       s.connect(sf).connect(SFX._env(ac, out, t, 0.4, 0.002, 0.12)); s.start(t); s.stop(t + 0.15); }
+    }
     const o = ac.createOscillator(); o.type = 'triangle'; o.frequency.value = bass[Math.floor(b / 4) % 4] * 2;
     o.connect(SFX._env(ac, out, t, 0.55, 0.01, beat * 0.9)); o.start(t); o.stop(t + beat);
   }
@@ -499,17 +524,29 @@ function layoutText(ctx, text, maxW) {
   });
   return lines;
 }
-function drawRich(ctx, text, cx, y, fs, maxW, hlColor, align = 'center') {
-  ctx.font = `700 ${fs}px ${FONT}`; ctx.textBaseline = 'top'; ctx.textAlign = 'left'; ctx.lineJoin = 'round';
+function drawRich(ctx, text, cx, y, fs, maxW, hlColor, align = 'center', opt = {}) {
+  ctx.font = `${opt.weight || 700} ${fs}px ${FONT}`; ctx.textBaseline = 'top'; ctx.textAlign = 'left'; ctx.lineJoin = 'round';
   const lines = layoutText(ctx, text, maxW), lh = fs * 1.3;
   lines.forEach((ln, i) => {
     let x = align === 'center' ? cx - ln.w / 2 : cx;
     ln.tk.forEach(tk => {
-      ctx.lineWidth = fs * 0.18; ctx.strokeStyle = '#000'; ctx.strokeText(tk.t, x, y + i * lh);
-      ctx.fillStyle = tk.hl ? hlColor : '#fff'; ctx.fillText(tk.t, x, y + i * lh); x += tk.m;
+      if (opt.stroke !== false) { ctx.lineWidth = fs * 0.18; ctx.strokeStyle = '#000'; ctx.strokeText(tk.t, x, y + i * lh); }
+      if (opt.shadow) { ctx.shadowColor = 'rgba(0,0,0,.8)'; ctx.shadowBlur = fs * 0.3; }
+      ctx.fillStyle = tk.hl ? hlColor : '#fff'; ctx.fillText(tk.t, x, y + i * lh); ctx.shadowBlur = 0; x += tk.m;
     });
   });
   return lines.length * lh;
+}
+function measureRich(ctx, text, fs, maxW, weight = 700) {
+  ctx.font = `${weight} ${fs}px ${FONT}`; const ln = layoutText(ctx, text, maxW);
+  return { w: ln.reduce((m, l) => Math.max(m, l.w), 0), h: ln.length * fs * 1.3 };
+}
+function buildSubs(total, hasHook) {
+  const lines = pointLines(); if (!lines.length) return [];
+  const start = hasHook ? 3.0 : 0.6, end = Math.max(start + 2, total - 1.5), avail = end - start;
+  const sum = lines.reduce((a, l) => a + Math.max(8, l.length), 0), out = []; let c = start;
+  for (const l of lines) { let d = clamp(avail * Math.max(8, l.length) / sum, 1.2, 3.8); d = Math.min(d, end - c); if (d < 0.8) break; out.push({ text: l, a: c, b: c + d }); c += d; }
+  return out;
 }
 function rrect(ctx, x, y, w, h, r) { ctx.beginPath(); ctx.moveTo(x + r, y); ctx.arcTo(x + w, y, x + w, y + h, r); ctx.arcTo(x + w, y + h, x, y + h, r); ctx.arcTo(x, y + h, x, y, r); ctx.arcTo(x, y, x + w, y, r); ctx.closePath(); }
 const easeOutBack = (x) => { x = clamp(x, 0, 1); const c1 = 1.70158, c3 = c1 + 1; return 1 + c3 * (x - 1) ** 3 + c1 * (x - 1) ** 2; };
@@ -527,7 +564,7 @@ function pickMime() {
 }
 function hookText() { return (S.hook || '').trim(); }
 function pointLines() { return S.points.split('\n').map(s => s.trim()).filter(Boolean); }
-function capFor(i) { const s = S.timeline[i]; if (s.caption && s.caption.trim()) return s.caption.trim(); return i >= 1 ? (pointLines()[i - 1] || '') : ''; }
+function capFor(i) { const s = S.timeline[i]; return s.caption && s.caption.trim() ? s.caption.trim() : ''; }
 function ctaDefault() {
   if (S.kind !== 'place') return PLAT[S.plat].cta;
   const pl = PLACE[S.placeType]; return S.plat === 'trip' || S.placeType !== 'food' ? (S.plat === 'trip' ? PLAT.trip.cta : pl.cta) : pl.cta;
@@ -545,7 +582,7 @@ async function runVideo({ record, onProg }) {
   if (record && !(window.MediaRecorder && cv.captureStream)) throw new Error('เบราว์เซอร์นี้ไม่รองรับการอัดวิดีโอ ลองใช้ Chrome หรือ Safari รุ่นใหม่');
   const AC = window.AudioContext || window.webkitAudioContext, ac = new AC(); ac.resume();
   const decks = new Map();
-  tl.forEach(s => { if (decks.has(s.clip.id)) return;
+  tl.forEach(s => { if (s.clip.kind === 'image' || decks.has(s.clip.id)) return;
     const v = document.createElement('video'); v.playsInline = true; v.preload = 'auto'; v.src = s.clip.url; v.setAttribute('playsinline', '');
     decks.set(s.clip.id, v); });
   const unlock = [...decks.values()].map(v => v.play().then(() => v.pause()).catch(() => {}));
@@ -582,23 +619,26 @@ async function runVideo({ record, onProg }) {
   const now = () => (performance.now() - t0w) / 1000;
   const MARG_X = W * 0.07, TXT_CX = W * 0.46, TXT_W = W * 0.76;
 
-  function paintBase(v) {
-    const vw = v.videoWidth, vh = v.videoHeight; if (!vw) return;
+  function paintBase(v, k = 0) { // k = ความคืบหน้า 0–1 ใช้กับรูปภาพ (Ken Burns)
+    const vw = v.videoWidth || v.naturalWidth, vh = v.videoHeight || v.naturalHeight; if (!vw) return;
+    const kz = 1 + 0.12 * k, px = (k - 0.5) * W * 0.04;
     if (S.fit === 'blur') {
       sx.drawImage(v, 0, 0, 36, 64); bx.imageSmoothingEnabled = true; bx.drawImage(small, 0, 0, W, H);
       bx.fillStyle = 'rgba(0,0,0,.4)'; bx.fillRect(0, 0, W, H);
-      const s = Math.min(W / vw, H / vh); bx.drawImage(v, (W - vw * s) / 2, (H - vh * s) / 2, vw * s, vh * s);
+      const s = Math.min(W / vw, H / vh) * kz; bx.drawImage(v, (W - vw * s) / 2 + px, (H - vh * s) / 2, vw * s, vh * s);
     } else {
-      const s = Math.max(W / vw, H / vh); bx.drawImage(v, (W - vw * s) / 2, (H - vh * s) / 2, vw * s, vh * s);
+      const s = Math.max(W / vw, H / vh) * kz; bx.drawImage(v, (W - vw * s) / 2 + px, (H - vh * s) / 2, vw * s, vh * s);
     }
   }
+  const subs = buildSubs(estTotal, !!hookText());
 
   function frame() {
     if (finished) return;
     const t = now();
-    if (cur && cur.ready && cur.v.readyState >= 2 && cur.v.currentTime !== lastFrame) { paintBase(cur.v); lastFrame = cur.v.currentTime; }
-    // ซูมเน้นจังหวะ (punch zoom)
     const ts = cur ? t - cur.startW : 0;
+    if (cur && cur.img) paintBase(cur.img, clamp(ts / cur.len, 0, 1));
+    else if (cur && cur.ready && cur.v.readyState >= 2 && cur.v.currentTime !== lastFrame) { paintBase(cur.v); lastFrame = cur.v.currentTime; }
+    // ซูมเน้นจังหวะ (punch zoom)
     let z = 1;
     if (cur) z = cur.i === 0 ? 1 + 0.14 * (1 - easeOut(ts / 0.5)) + 0.03 * clamp(ts / 3, 0, 1) : (cur.i % 2 ? 1.0 + 0.07 * clamp(ts / 2.5, 0, 1) : 1.07 - 0.07 * clamp(ts / 2.5, 0, 1)) + 0.05 * (1 - easeOut(ts / 0.25));
     z = 1 + (z - 1) * V.zoom;
@@ -607,12 +647,16 @@ async function runVideo({ record, onProg }) {
     cx.save(); cx.translate(W / 2, H / 2); cx.scale(z, z); cx.translate(-W / 2, -H / 2); cx.drawImage(base, 0, 0); cx.restore();
     // เงาไล่สีด้านล่าง ให้อ่านตัวอักษรง่าย
     const gr = cx.createLinearGradient(0, H * 0.45, 0, H); gr.addColorStop(0, 'rgba(0,0,0,0)'); gr.addColorStop(1, 'rgba(0,0,0,.45)'); cx.fillStyle = gr; cx.fillRect(0, H * 0.45, W, H * 0.55);
+    if (V.tint) { cx.save(); cx.globalCompositeOperation = V.tintOp; cx.fillStyle = V.tint; cx.fillRect(0, 0, W, H); cx.restore(); }
+    if (V.vignette) { const vg = cx.createRadialGradient(W / 2, H / 2, H * 0.25, W / 2, H / 2, H * 0.75); vg.addColorStop(0, 'rgba(0,0,0,0)'); vg.addColorStop(1, 'rgba(0,0,0,.5)'); cx.fillStyle = vg; cx.fillRect(0, 0, W, H); }
 
     // ---------- HOOK 0–3 วินาที ----------
     const ht = hookText();
     if (ht && t < 3.4) {
-      const k = easeOutBack(t / 0.32), out = 1 - clamp((t - 3.0) / 0.4, 0, 1);
-      cx.save(); cx.globalAlpha = out; cx.translate(TXT_CX, H * 0.205); const sc = 0.5 + 0.5 * k; cx.scale(sc, sc);
+      const ha = V.hookAnim || 'slam', out = 1 - clamp((t - 3.0) / 0.4, 0, 1);
+      let sc = 1, dy = 0, al = 1;
+      if (ha === 'slam') sc = 0.5 + 0.5 * easeOutBack(t / 0.32); else if (ha === 'slide') { dy = (1 - easeOut(t / 0.4)) * H * 0.04; al = easeOut(t / 0.3); } else al = easeOut(t / 0.7);
+      cx.save(); cx.globalAlpha = out * al; cx.translate(TXT_CX, H * 0.205 + dy); cx.scale(sc, sc);
       cx.fillStyle = 'rgba(0,0,0,.35)'; // แผ่นหลังข้อความ
       cx.font = `700 ${W * 0.085}px ${FONT}`; const ln = layoutText(cx, ht, TXT_W); const bh = ln.length * W * 0.085 * 1.3;
       rrect(cx, -TXT_W / 2 - 18, -14, TXT_W + 36, bh + 28, 26); cx.fill();
@@ -621,7 +665,10 @@ async function runVideo({ record, onProg }) {
     if (t < 0.14) { cx.fillStyle = `rgba(255,255,255,${0.85 * (1 - t / 0.14)})`; cx.fillRect(0, 0, W, H); }
 
     // แฟลชตอนตัดคลิป
-    if (cur && cur.i > 0 && ts < 0.12) { cx.fillStyle = `rgba(255,255,255,${0.4 * (1 - ts / 0.12)})`; cx.fillRect(0, 0, W, H); }
+    if (cur && cur.i > 0) {
+      if (V.trans === 'dip') { if (ts < 0.3) { cx.fillStyle = `rgba(0,0,0,${0.9 * (ts < 0.1 ? 1 : 1 - (ts - 0.1) / 0.2)})`; cx.fillRect(0, 0, W, H); } }
+      else if (ts < 0.12) { cx.fillStyle = `rgba(255,255,255,${(V.flashA ?? 0.4) * (1 - ts / 0.12)})`; cx.fillRect(0, 0, W, H); }
+    }
 
     // ---------- ข้อความจุดเด่นของแต่ละช่วง ----------
     if (cur) {
@@ -629,9 +676,26 @@ async function runVideo({ record, onProg }) {
       if (cap && cts > 0 && !(cur.i === 0 && t < 3.4)) {
         if (!cur.capPop) { cur.capPop = true; sfx('pop'); }
         const k = easeOutBack(cts / 0.28);
-        cx.save(); cx.translate(TXT_CX, H * 0.6); cx.scale(0.6 + 0.4 * k, 0.6 + 0.4 * k); cx.globalAlpha = clamp(cts / 0.12, 0, 1);
+        cx.save(); cx.translate(TXT_CX, H * 0.545); cx.scale(0.6 + 0.4 * k, 0.6 + 0.4 * k); cx.globalAlpha = clamp(cts / 0.12, 0, 1);
         drawRich(cx, cap, 0, 0, W * 0.062, TXT_W, '#ffe23b'); cx.restore();
       }
+    }
+
+    // ---------- ซับไตเติล (ตามสคริปต์ที่ผู้ใช้ใส่) ----------
+    const sb = subs.find(x => t >= x.a && t < x.b);
+    if (sb) {
+      const tt = t - sb.a, out = 1 - clamp((t - (sb.b - 0.15)) / 0.15, 0, 1), st = V.subStyle || 'box';
+      cx.save(); cx.globalAlpha = out;
+      if (st === 'pop') {
+        const k = easeOutBack(tt / 0.25), fs = W * 0.07; cx.translate(TXT_CX, H * 0.6); cx.scale(0.7 + 0.3 * k, 0.7 + 0.3 * k); drawRich(cx, sb.text, 0, 0, fs, TXT_W, '#ffe23b');
+      } else if (st === 'box') {
+        const fs = W * 0.052, m = measureRich(cx, sb.text, fs, TXT_W * 0.92); cx.globalAlpha = out * easeOut(tt / 0.2); cx.translate(TXT_CX, H * 0.615);
+        cx.fillStyle = 'rgba(0,0,0,.62)'; rrect(cx, -m.w / 2 - 22, -12, m.w + 44, m.h + 24, 22); cx.fill();
+        drawRich(cx, sb.text, 0, 0, fs, TXT_W * 0.92, '#ffd84a', 'center', { stroke: false, weight: 600 });
+      } else {
+        cx.globalAlpha = out * easeOut(tt / 0.4); drawRich(cx, sb.text, TXT_CX, H * 0.63 - (1 - easeOut(tt / 0.5)) * -10, W * 0.05, TXT_W, '#ffe9b0', 'center', { stroke: false, weight: 600, shadow: true });
+      }
+      cx.restore();
     }
 
     // ---------- ป้ายราคา ----------
@@ -686,21 +750,26 @@ async function runVideo({ record, onProg }) {
 
   // ---------- เริ่มเล่น ----------
   const T0 = ac.currentTime + 0.15;
-  if (S.musicOn) scheduleMusic(ac, musBus, T0, estTotal + 2);
+  if (S.musicOn) scheduleMusic(ac, musBus, T0, estTotal + 2, V.bpm || 120, !!V.soft);
   if (S.sfxOn) SFX.boom(ac, sfxBus, T0);
   await sleep(150); t0w = performance.now(); requestAnimationFrame(frame);
 
   let prevV = null;
   for (let i = 0; i < tl.length && !abortFlag; i++) {
     const s = tl[i], v = decks.get(s.clip.id), len = s.t1 - s.t0;
-    cur = { i, v, ready: false, startW: now(), ctaAt: Math.max(0, len - 1.2) };
     if (i > 0 && V.cut !== 'none') sfx(V.cut);
+    if (s.clip.kind === 'image') { // รูปภาพ: แสดงพร้อมซูมช้าๆ
+      cur = { i, img: s.clip.img, ready: true, len, startW: now(), ctaAt: Math.max(0, len - 1.2) }; prevV = null;
+      await new Promise(r => { const id = setInterval(() => { if (abortFlag || now() - cur.startW >= len) { clearInterval(id); r(); } }, 8); });
+      continue;
+    }
+    cur = { i, v, ready: false, startW: now(), ctaAt: Math.max(0, len - 1.2) };
     // ช็อตต่อเนื่องจากคลิปเดิม ไม่ต้อง seek (ไม่มีหน่วง)
     const contiguous = prevV === v && !v.paused && Math.abs(v.currentTime - s.t0) < 0.3;
     if (!contiguous) { await seek(v, s.t0); v.play().catch(() => {}); }
     cur.ready = true; cur.startW = now();
     const nx = tl[i + 1], nv = nx && decks.get(nx.clip.id);
-    if (nx && nv !== v) { try { nv.currentTime = nx.t0; } catch (e) {} } // เตรียมช็อตถัดไปล่วงหน้า
+    if (nx && nv && nv !== v) { try { nv.currentTime = nx.t0; } catch (e) {} } // เตรียมช็อตถัดไปล่วงหน้า
     const pw = performance.now();
     await new Promise(r => { const id = setInterval(() => { if (abortFlag || v.currentTime >= s.t1 - 0.02 || v.ended || performance.now() - pw > (len + 1) * 1000) { clearInterval(id); r(); } }, 8); });
     prevV = v;
@@ -763,13 +832,18 @@ function viewClips() {
     <div class="row"><div class="grow"><label class="lbl">${S.kind === 'place' ? 'ราคา (บาท ' + PLACE[S.placeType].unit + ')' : 'ราคา (บาท)'}</label><input class="inp" data-bind="price" inputmode="numeric" value="${esc(S.price)}" placeholder="590" /></div>
     <div class="grow"><label class="lbl">โปร (ไม่บังคับ)</label><input class="inp" data-bind="promo" value="${esc(S.promo)}" placeholder="${S.kind === 'place' ? 'เช่น เริ่มต้น / ลด 20%' : 'ลด 30% วันนี้'}" /></div></div>
   </div>
-  <label class="drop" for="file"><b>📹 แตะเพื่อเลือกคลิป</b><span>จากแกลเลอรี่ / กล้อง · รองรับ MP4, MOV</span></label>
-  <input type="file" id="file" accept="video/*" multiple hidden />
+  <div class="card">
+    <h3>📝 ซับไตเติล / สคริปต์ <span class="tag">ไม่บังคับ</span></h3>
+    <textarea class="inp" rows="4" data-bind="points" placeholder="พิมพ์ทีละบรรทัด 1 ข้อความ จะขึ้นเป็นซับบนวิดีโอทีละบรรทัดอัตโนมัติ&#10;ครอบคำเด่นด้วย *ดาว* เช่น ราคา *฿199* เอง">${esc(S.points)}</textarea>
+    <div class="row" style="margin-top:8px"><button class="btn sm grow" data-draft="1">✨ ร่างให้ (แก้ได้)</button><button class="btn sm grow" data-clearpts="1">ล้าง</button></div>
+  </div>
+  <label class="drop" for="file"><b>📹🖼️ แตะเพื่อเลือกวิดีโอ / รูปภาพ</b><span>เลือกได้หลายไฟล์ ผสมวิดีโอกับรูปได้ · MP4, MOV, JPG, PNG</span></label>
+  <input type="file" id="file" accept="video/*,image/*" multiple hidden />
   <div class="card" style="margin-top:14px;${S.clips.length ? '' : 'display:none'}">
-    <h3>คลิปของคุณ (${S.clips.length})</h3>
-    ${S.clips.map(c => `<div class="clip"><video src="${c.url}#t=0.2" muted playsinline preload="metadata"></video>
+    <h3>ไฟล์ของคุณ (${S.clips.length})</h3>
+    ${S.clips.map(c => `<div class="clip">${c.kind === 'image' ? `<img src="${c.url}" alt="" style="width:44px;height:64px;object-fit:cover;border-radius:8px" />` : `<video src="${c.url}#t=0.2" muted playsinline preload="metadata"></video>`}
       <div class="grow"><div style="font-size:14px;word-break:break-all">${esc(c.file.name)}</div>
-      <div class="sub" style="margin:0">${c.dur ? fmtT(c.dur) + ' · ' : ''}${(c.file.size / 1048576).toFixed(1)} MB</div></div>
+      <div class="sub" style="margin:0">${c.kind === 'image' ? '🖼️ รูปภาพ · ' : c.dur ? fmtT(c.dur) + ' · ' : ''}${(c.file.size / 1048576).toFixed(1)} MB</div></div>
       <button class="x" data-rmclip="${c.id}">✕</button></div>`).join('')}
   </div>`;
 }
@@ -781,10 +855,10 @@ function viewEdit() {
   const segRow = (s, i, inTl) => `<div class="seg"><img src="${s.thumb || BLANK}" alt="" />
     <div class="meta">
       <div class="row" style="flex-wrap:wrap;gap:6px">${inTl && i === 0 ? '<span class="tag hook">🪝 HOOK</span>' : inTl ? `<span class="tag">#${i + 1}</span>` : ''}
-        <span class="tag">${fmtT(s.t1 - s.t0)}</span><span class="tag">คลิป ${s.ci + 1} · ${s.t0.toFixed(1)}–${s.t1.toFixed(1)}</span>
+        <span class="tag">${fmtT(s.t1 - s.t0)}</span><span class="tag">${s.clip.kind === 'image' ? '🖼️ รูป ' + (s.ci + 1) : 'คลิป ' + (s.ci + 1) + ' · ' + s.t0.toFixed(1) + '–' + s.t1.toFixed(1)}</span>
         ${!inTl && s.reason ? `<span class="tag bad">ตัด: ${esc(s.reason)}</span>` : ''}${!inTl && !s.reason ? '<span class="tag ok">ดี · สำรอง</span>' : ''}${s.restored ? '<span class="tag ok">กู้คืน</span>' : ''}</div>
       <div class="bar"><i style="width:${Math.round(s.score * 100)}%"></i></div>
-      ${inTl ? `<input class="inp" data-segcap="${i}" value="${esc(s.caption)}" placeholder="${esc(i === 0 ? 'ข้อความ Hook ตั้งค่าในขั้นตอนถัดไป' : (pointLines()[i - 1] || 'ข้อความบนภาพ (ไม่บังคับ)'))}" ${i === 0 ? 'disabled' : ''} />` : ''}
+      ${inTl ? `<input class="inp" data-segcap="${i}" value="${esc(s.caption)}" placeholder="${esc(i === 0 ? 'ข้อความ Hook ตั้งค่าในขั้นตอนถัดไป' : 'ข้อความเพิ่มเฉพาะช็อตนี้ (ไม่บังคับ)')}" ${i === 0 ? 'disabled' : ''} />` : ''}
     </div>
     ${inTl ? `<div class="ctl"><button data-up="${i}" ${i <= 1 ? 'disabled' : ''}>↑</button><button data-down="${i}" ${i === 0 || i === S.timeline.length - 1 ? 'disabled' : ''}>↓</button><button data-del="${i}">✕</button></div>`
            : `<div class="ctl"><button data-add="${i}" style="width:auto;padding:0 10px">+ ใช้</button></div>`}</div>`;
@@ -797,6 +871,7 @@ function viewEdit() {
   <button class="btn block hidden" id="btnStop" style="margin-bottom:12px">⏹ หยุดดูตัวอย่าง</button>
   ${S.variants.map((v, i) => { const on = S.vi === i, len = v.timeline.reduce((a, x) => a + x.t1 - x.t0, 0); return `<div class="vcard ${on ? 'on' : ''}" data-vsel="${i}">
     <div class="row" style="justify-content:space-between;gap:8px"><b>${v.name}</b><span class="tag">${v.timeline.length} ช็อต · ${fmtT(len)}</span></div>
+    <div style="margin-top:4px"><span class="tag hook">โทน: ${v.tone}</span> <span class="tag">ซับ: ${{ pop: 'ตัวใหญ่เด้ง', box: 'กล่องดำ', clean: 'บางสะอาด' }[v.subStyle]}</span></div>
     <p class="sub" style="margin:4px 0 8px">${v.desc}</p>
     <div class="strip">${v.timeline.slice(0, 10).map(x => `<img src="${x.thumb}" alt="" />`).join('')}</div>
     <div class="note" style="margin-top:8px">🪝 ${esc((v.hook || '').replace(/\*/g, ''))}</div>
@@ -826,7 +901,7 @@ function viewHook() {
     <label class="lbl">ข้อความ Hook (ครอบด้วย *ดาว* = ตัวเหลืองเด่น)</label>
     <textarea class="inp" rows="2" data-bind="hook">${esc(S.hook)}</textarea>
     <div class="row" style="margin-top:8px"><button class="btn sm" data-rehook="1">🔀 สุ่มประโยคใหม่ (${opts.length})</button></div>
-    <label class="lbl">${S.kind === 'place' ? 'ไฮไลต์ของสถานที่' : 'จุดเด่นสินค้า'} — บรรทัดละ 1 ข้อ (จะขึ้นบนภาพทีละช่วง)</label>
+    <label class="lbl">ซับไตเติล / สคริปต์ — บรรทัดละ 1 ข้อความ (ขึ้นต่อจาก Hook ทีละบรรทัด)</label>
     <textarea class="inp" rows="4" data-bind="points" placeholder="${S.kind === 'place' ? 'วิวทะเลจากห้อง&#10;อาหารเช้าจัดเต็ม&#10;เดินไปตลาดได้' : 'ทนทาน ใช้ได้นาน&#10;พกพาสะดวก&#10;ส่งฟรีทั่วไทย'}">${esc(S.points)}</textarea>
     <label class="lbl">ข้อความปุ่มปิดท้าย (เว้นว่าง = ใช้ค่าเริ่มต้น)</label>
     <input class="inp" data-bind="cta" value="${esc(S.cta)}" placeholder="${esc(ctaDefault())}" />
@@ -846,6 +921,14 @@ function viewHook() {
   </div>`;
 }
 
+function draftScript() {
+  const n = (S.name || '').trim(), pr = S.price ? money(S.price) : '', ar = (S.area || '').trim(), pl = S.kind === 'place';
+  if (!pl) return [n ? `*${n}* ตัวนี้ดีจริง` : '*ตัวนี้* ดีจริง', 'ใช้งานง่าย ใช้ได้ทุกวัน', 'ดูรายละเอียดจริงในคลิป', pr ? `ตอนนี้ *${pr}* เอง` : 'ราคาน่ารัก', 'กดลิงก์ดูรายละเอียดได้เลย'].join('\n');
+  const t = S.placeType;
+  if (t === 'food') return [n ? `*${n}* ร้านนี้ต้องมา` : '*ร้านนี้* ต้องมา', 'เมนูเด่นคือจานนี้', 'บรรยากาศในร้านแบบนี้', pr ? `งบแค่ *${pr}* ต่อคน` : 'ราคาโอเคเลย', ar ? `พิกัด ${ar} ตามไปกินกัน` : 'เซฟพิกัดไว้ตามไปกินกัน'].join('\n');
+  if (t === 'hotel') return [n ? `*${n}* ที่พักนี้น่าสนใจ` : '*ที่พักนี้* น่าสนใจ', 'เปิดห้องมาเจอแบบนี้', 'ส่วนกลางและวิวรอบๆ', pr ? `ราคา *${pr}* ต่อคืน` : 'เช็กราคาล่าสุดในลิงก์', 'ดูโปรจองได้ที่ลิงก์'].join('\n');
+  return [n ? `*${n}* ที่เที่ยวนี้ห้ามพลาด` : '*ที่นี่* ห้ามพลาด', 'มุมนี้คือไฮไลต์', 'กิจกรรมที่ทำได้จริง', pr ? `ตั๋วเริ่มต้น *${pr}* ต่อคน` : 'เช็กราคาตั๋วในลิงก์', ar ? `ไป${ar}แวะที่นี่` : 'เซฟไว้ไปเที่ยวกัน'].join('\n');
+}
 function buildCaption() {
   const hook = hookText().replace(/\*/g, ''), p = PLAT[S.plat], pl = S.kind === 'place';
   const unit = pl ? PLACE[S.placeType].unit : '';
@@ -896,19 +979,26 @@ function afterRender() {
     const c = S.clips.find(x => x.url === v.currentSrc.split('#')[0]); if (c && !c.dur && isFinite(v.duration)) c.dur = v.duration; }, { once: true }));
 }
 function addClip(file) {
-  if (!file.type.startsWith('video/') && !/\.(mp4|mov|m4v|webm)$/i.test(file.name)) return;
-  S.clips.push({ id: 'c' + (++clipSeq), file, url: URL.createObjectURL(file) });
+  const isImg = file.type.startsWith('image/') || /\.(jpe?g|png|webp|heic|heif|gif)$/i.test(file.name);
+  const isVid = file.type.startsWith('video/') || /\.(mp4|mov|m4v|webm)$/i.test(file.name);
+  if (!isImg && !isVid) return;
+  S.clips.push({ id: 'c' + (++clipSeq), file, url: URL.createObjectURL(file), kind: isImg ? 'image' : 'video' });
 }
 async function doAnalyze() {
   if (S.busy || !S.clips.length) return;
   S.busy = true; S.err = ''; S.clips.forEach(c => { c.samples = null; });
   $('cta').innerHTML = `<div class="card" style="margin:0 auto;max-width:528px"><div id="aTxt" style="font-size:13px;margin-bottom:6px">กำลังวิเคราะห์…</div><div class="prog"><i id="aBar"></i></div></div>`;
-  const failed = [], t0 = performance.now();
-  for (let i = 0; i < S.clips.length; i++) {
-    const c = S.clips[i];
-    try { await analyzeClip(c, p => { $('aBar').style.width = ((i + p) / S.clips.length * 100) + '%'; $('aTxt').textContent = `กำลังวิเคราะห์คลิป ${i + 1}/${S.clips.length} · ${Math.round((performance.now() - t0) / 1000)} วิ`; }); }
-    catch (err) { console.error(err); c.samples = null; failed.push(`• ${c.file.name} (${c.file.type || 'ไม่ทราบชนิด'}, ${(c.file.size / 1048576).toFixed(0)} MB)\n  ${err.message}`); }
-  }
+  const failed = [], t0 = performance.now(), prog = S.clips.map(() => 0); let nextI = 0;
+  const upd = () => { const a = prog.reduce((x, y) => x + y, 0) / prog.length; $('aBar').style.width = (a * 100) + '%'; $('aTxt').textContent = `กำลังอ่านไฟล์ ${Math.round(a * 100)}% · ${Math.round((performance.now() - t0) / 1000)} วิ`; };
+  const worker = async () => {
+    while (nextI < S.clips.length) {
+      const i = nextI++, c = S.clips[i];
+      try { await analyzeClip(c, p => { prog[i] = p; upd(); }); }
+      catch (err) { console.error(err); c.samples = null; failed.push(`• ${c.file.name} (${c.file.type || 'ไม่ทราบชนิด'}, ${(c.file.size / 1048576).toFixed(0)} MB)\n  ${err.message}`); }
+      prog[i] = 1; upd();
+    }
+  };
+  await Promise.all([worker(), worker(), worker()]); // อ่านพร้อมกันสูงสุด 3 ไฟล์
   S.busy = false;
   if (!S.clips.some(c => c.samples)) { S.err = 'วิเคราะห์ไม่สำเร็จ\n' + failed.join('\n'); render(); return; }
   if (failed.length) S.err = 'ข้ามบางคลิปที่อ่านไม่ได้:\n' + failed.join('\n');
@@ -954,6 +1044,8 @@ document.addEventListener('click', (e) => {
   if ((b = q('[data-vprev]'))) { if (S.busy) return; selectVariant(+b.dataset.vprev); render(); window.scrollTo(0, 0); return startPlay(false); }
   if ((b = q('[data-vsel]'))) { if (S.busy) return; selectVariant(+b.dataset.vsel); return render(); }
   if ((b = q('[data-step]'))) return setStep(+b.dataset.step);
+  if (q('[data-draft]')) { S.points = draftScript(); toast('ร่างให้แล้ว แก้ให้ตรงกับของจริงได้เลย'); return render(); }
+  if (q('[data-clearpts]')) { S.points = ''; return render(); }
   if ((b = q('[data-kind]'))) { S.kind = b.dataset.kind; S.hook = ''; S.cta = ''; refreshHooks(); return render(); }
   if ((b = q('[data-ptype]'))) { S.placeType = b.dataset.ptype; S.hook = ''; S.cta = ''; refreshHooks(); return render(); }
   if ((b = q('[data-plat]'))) { S.plat = b.dataset.plat; S.hook = ''; S.cta = ''; refreshHooks(); return render(); }
