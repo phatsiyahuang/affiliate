@@ -88,7 +88,7 @@
   <a href="index.html" aria-label="กลับ">‹</a>
   <div>
     <h1>🎬 ตัดต่อคลิปพร้อมโพสต์</h1>
-    <p>ตัดส่วนน่าเบื่อ · Hook 3 วิ · ใส่ซาวด์เอฟเฟกต์ · 9:16</p>
+    <p>สินค้า & สถานที่ · Hook 3 วิ · ซาวด์เอฟเฟกต์ · 9:16</p>
   </div>
 </header>
 
@@ -140,12 +140,41 @@ const HOOKS = {
     trip:[ '*จองก่อน* ราคาอาจเปลี่ยน!', 'โปรนี้ใครอยากเที่ยว*รีบดู*', 'ที่พักนี้ *{price}* ดูให้จบ!' ] },
 };
 
+const PLACE = {
+  food:  { label:'🍜 ร้านอาหาร', unit:'ต่อคน', shots:['ป้ายร้าน/หน้าร้าน','เมนูเด่นแบบโคลสอัพ (ควัน/ซอส/ชีสยืด)','บรรยากาศในร้าน','ป้ายราคา/เมนู','คำชิมคำแรก'],
+    tags:['#ร้านอร่อย','#รีวิวร้านอาหาร','#กินอะไรดี'], cta:'📍 พิกัดอยู่ในโปรไฟล์ ไปตามกัน!' },
+  hotel: { label:'🏨 โรงแรม/ที่พัก', unit:'ต่อคืน', shots:['วิวหรือหน้าโรงแรม','เปิดประตูเข้าห้อง (room tour)','เตียง/ห้องน้ำ','สระ/อาหารเช้า/ส่วนกลาง','วิวจากระเบียง'],
+    tags:['#รีวิวโรงแรม','#รีวิวที่พัก','#โรงแรมสวย'], cta:'จองเลย ลิงก์ในโปรไฟล์ 🏨' },
+  spot:  { label:'🏝️ ที่เที่ยว/กิจกรรม', unit:'ต่อคน', shots:['มุมวิวที่ว้าวที่สุด','ทางเข้า/ป้ายสถานที่','กิจกรรมที่ทำจริง','ผู้คน/บรรยากาศ','ค่าเข้า/ตั๋ว'],
+    tags:['#เที่ยวไทย','#ที่เที่ยว','#ที่เที่ยวสวย'], cta:'จองตั๋วเลย ลิงก์ในโปรไฟล์ 🎟️' },
+};
+const HOOKS_PLACE = {
+  food: {
+    problem:['ไม่รู้จะกินอะไร? ลอง*ร้านนี้*','ร้านนี้ใน{area} *ต้องมา*','เบื่อร้านเดิมๆ? {name} ตอบโจทย์'],
+    price:['กินอิ่มแค่ *{price}* {unit}!','{name} *{price}* คุ้มเกินคาด','อย่าเพิ่งเลื่อน! *{price}* ได้ขนาดนี้'],
+    curious:['ร้านลับใน{area} *ใครรู้บ้าง?*','เมนูนี้ *ต้องสั่ง* ที่{name}','ทำไมคน*ต่อคิว*ร้านนี้'],
+    proof:['ไปกินมาแล้ว บอกเลย*อร่อย*','รีวิว {name} จาก*การไปจริง*','ชิมแล้ว สรุปให้*ครบ*'],
+    urgent:['ไป{area} ต้อง*แวะร้านนี้*!','เซฟไว้เลย *พิกัดร้านเด็ด*','ดูให้จบ แล้ว*ไปกินกัน*'] },
+  hotel: {
+    problem:['อยากพักสบาย แต่กลัวแพง? ดู*ที่นี่*','หาที่พักใน{area}อยู่? *จบที่นี่*','ห้องพักแบบนี้ *ต้องดู*'],
+    price:['ที่พักแบบนี้ แค่ *{price}* {unit}!','{name} *{price}* {unit} คุ้มเว่อร์','อย่าเพิ่งเลื่อน! *{price}* พักได้เลย'],
+    curious:['เปิดประตูเข้าห้อง แล้ว*ว้าว*','ที่พักใน{area} *วิวแบบนี้*เลยเหรอ','ห้องนี้มี*อะไร*ที่คุณคาดไม่ถึง'],
+    proof:['พักมาแล้ว บอกเลย*คุ้ม*','รีวิว {name} จาก*การพักจริง*','Room tour ครบ *จบในคลิปเดียว*'],
+    urgent:['*จองก่อน* ราคาอาจเปลี่ยน!','ที่พัก{area} *เซฟไว้เลย*','ดูให้จบ แล้ว*รีบจอง*'] },
+  spot: {
+    problem:['ไม่รู้จะเที่ยวไหน? *ที่นี่เลย*','เที่ยว{area} ห้าม*พลาด*ที่นี่','เบื่อที่เดิมๆ? ลอง*ที่นี่*'],
+    price:['เที่ยวสนุกแค่ *{price}* {unit}!','{name} *{price}* คุ้มเว่อร์','อย่าเพิ่งเลื่อน! *{price}* เที่ยวได้เลย'],
+    curious:['ที่เที่ยวลับใน{area} *ใครรู้บ้าง?*','มุมนี้ใน{name} *ต้องมา*','เที่ยวที่นี่ ต้องรู้*ข้อนี้*'],
+    proof:['ไปมาแล้ว บอกเลย*คุ้ม*','รีวิว {name} จาก*ประสบการณ์จริง*','ไปเที่ยวมา สรุปให้*ครบ*'],
+    urgent:['ไป{area} *เซฟไว้เลย*!','*จองตั๋ว*ก่อนไป ถูกกว่า!','ดูให้จบ แล้ว*รีบไป*'] },
+};
+
 // ====================================================================
 //  state
 // ====================================================================
 const KEY = 'affEditor.v1';
 const S = {
-  step: 1, plat: 'tiktok', name: '', price: '', promo: '',
+  step: 1, plat: 'tiktok', kind: 'product', placeType: 'food', area: '', rating: '', name: '', price: '', promo: '',
   clips: [], timeline: [], pool: [], analyzed: false,
   target: 30, strict: 2,
   hookStyle: 'problem', hook: '', hookIdx: 0, points: '', cta: '',
@@ -153,7 +182,7 @@ const S = {
   sfxOn: true, musicOn: true, volOrig: 1, volSfx: 0.8, volMusic: 0.2,
   quality: '720', busy: false, result: null, genCaption: '',
 };
-const PERSIST = ['plat','name','price','promo','target','strict','hookStyle','points','priceSticker','disclose','fit','sfxOn','musicOn','volOrig','volSfx','volMusic','quality'];
+const PERSIST = ['plat','kind','placeType','area','rating','name','price','promo','target','strict','hookStyle','points','priceSticker','disclose','fit','sfxOn','musicOn','volOrig','volSfx','volMusic','quality'];
 try { Object.assign(S, JSON.parse(localStorage.getItem(KEY) || '{}')); } catch (e) {}
 const persist = () => { try { localStorage.setItem(KEY, JSON.stringify(Object.fromEntries(PERSIST.map(k => [k, S[k]])))); } catch (e) {} };
 let clipSeq = 0;
@@ -166,8 +195,14 @@ try { const d = JSON.parse(localStorage.getItem('affHub.v1')); if (d && Array.is
   const it = hubItems.find(x => String(x.id) === id); if (!it) return;
   S.name = it.name || S.name; S.price = it.price || S.price;
   if (PLAT[it.source]) S.plat = it.source;
+  applyHubKind(it);
 })();
 
+function applyHubKind(it) {
+  if (it.cat === 'hotel') { S.kind = 'place'; S.placeType = 'hotel'; }
+  else if (it.cat === 'ticket') { S.kind = 'place'; S.placeType = 'spot'; }
+  else S.kind = 'product';
+}
 function toast(m) { const t = $('toast'); t.textContent = m; t.style.opacity = 1; clearTimeout(t._h); t._h = setTimeout(() => t.style.opacity = 0, 1800); }
 async function copy(text) {
   try { await navigator.clipboard.writeText(text); } catch (e) {
@@ -180,10 +215,11 @@ async function copy(text) {
 //  Hook
 // ====================================================================
 function hookOptions() {
-  const grp = HOOKS[S.hookStyle]; const list = S.plat === 'trip' ? grp.trip : grp.retail;
-  const price = S.price ? money(S.price) : '';
-  return list.filter(t => price || !t.includes('{price}'))
-    .map(t => t.replace(/\{name\}/g, S.name || 'ตัวนี้').replace(/\{price\}/g, price));
+  const isPlace = S.kind === 'place', grp = HOOKS[S.hookStyle];
+  const list = isPlace ? HOOKS_PLACE[S.placeType][S.hookStyle] : (S.plat === 'trip' ? grp.trip : grp.retail);
+  const price = S.price ? money(S.price) : '', area = (S.area || '').trim(), unit = isPlace ? PLACE[S.placeType].unit : '';
+  return list.filter(t => (price || !t.includes('{price}')) && (area || !t.includes('{area}')))
+    .map(t => t.replace(/\{name\}/g, S.name || (isPlace ? 'ที่นี่' : 'ตัวนี้')).replace(/\{price\}/g, price).replace(/\{area\}/g, area).replace(/\{unit\}/g, unit));
 }
 function pickHook(next) {
   const o = hookOptions(); if (!o.length) return;
@@ -393,6 +429,7 @@ function tokens(text) {
   const out = [];
   text.split('*').forEach((p, i) => { if (!p) return; const hl = i % 2 === 1;
     if (segmenter) for (const s of segmenter.segment(p)) out.push({ t: s.segment, hl }); else for (const ch of p) out.push({ t: ch, hl }); });
+  for (let i = out.length - 2; i >= 0; i--) if (out[i].t === '฿' && out[i].hl === out[i + 1].hl) { out[i].t += out[i + 1].t; out.splice(i + 1, 1); } // ไม่ให้ ฿ แยกจากตัวเลข
   return out;
 }
 function layoutText(ctx, text, maxW) {
@@ -438,7 +475,11 @@ function pickMime() {
 function hookText() { return (S.hook || '').trim(); }
 function pointLines() { return S.points.split('\n').map(s => s.trim()).filter(Boolean); }
 function capFor(i) { const s = S.timeline[i]; if (s.caption && s.caption.trim()) return s.caption.trim(); return i >= 1 ? (pointLines()[i - 1] || '') : ''; }
-function ctaText() { return (S.cta || '').trim() || PLAT[S.plat].cta; }
+function ctaDefault() {
+  if (S.kind !== 'place') return PLAT[S.plat].cta;
+  const pl = PLACE[S.placeType]; return S.plat === 'trip' || S.placeType !== 'food' ? (S.plat === 'trip' ? PLAT.trip.cta : pl.cta) : pl.cta;
+}
+function ctaText() { return (S.cta || '').trim() || ctaDefault(); }
 
 async function runVideo({ record, onProg }) {
   if (!S.timeline.length) throw new Error('ยังไม่มีช่วงวิดีโอในไทม์ไลน์');
@@ -516,7 +557,7 @@ async function runVideo({ record, onProg }) {
     const ht = hookText();
     if (ht && t < 3.4) {
       const k = easeOutBack(t / 0.32), out = 1 - clamp((t - 3.0) / 0.4, 0, 1);
-      cx.save(); cx.globalAlpha = out; cx.translate(TXT_CX, H * 0.17); const sc = 0.5 + 0.5 * k; cx.scale(sc, sc);
+      cx.save(); cx.globalAlpha = out; cx.translate(TXT_CX, H * 0.205); const sc = 0.5 + 0.5 * k; cx.scale(sc, sc);
       cx.fillStyle = 'rgba(0,0,0,.35)'; // แผ่นหลังข้อความ
       cx.font = `700 ${W * 0.085}px ${FONT}`; const ln = layoutText(cx, ht, TXT_W); const bh = ln.length * W * 0.085 * 1.3;
       rrect(cx, -TXT_W / 2 - 18, -14, TXT_W + 36, bh + 28, 26); cx.fill();
@@ -543,11 +584,11 @@ async function runVideo({ record, onProg }) {
       if (!flags.price) { flags.price = true; sfx('ding'); }
       const k = easeOutBack((t - 1.5) / 0.4), wob = Math.sin(t * 5) * 0.015;
       cx.save(); cx.translate(MARG_X + W * 0.2, H * 0.475); cx.rotate(-0.07 + wob); cx.scale(k, k);
-      const w = W * 0.4, h = H * (S.promo ? 0.082 : 0.062);
+      const sub = S.promo || (S.kind === 'place' ? PLACE[S.placeType].unit : ''), w = W * 0.4, h = H * (sub ? 0.082 : 0.062);
       cx.fillStyle = brand; rrect(cx, -w / 2, -h / 2, w, h, 20); cx.fill(); cx.lineWidth = 5; cx.strokeStyle = '#fff'; cx.stroke();
       cx.fillStyle = '#fff'; cx.textAlign = 'center'; cx.textBaseline = 'middle'; cx.font = `700 ${W * 0.075}px ${FONT}`;
-      cx.fillText(money(S.price), 0, S.promo ? -h * 0.14 : 0);
-      if (S.promo) { cx.font = `600 ${W * 0.035}px ${FONT}`; cx.fillText(S.promo, 0, h * 0.28, w - 20); }
+      cx.fillText(money(S.price), 0, sub ? -h * 0.14 : 0);
+      if (sub) { cx.font = `600 ${W * 0.035}px ${FONT}`; cx.fillText(S.promo ? sub : '/' + sub.replace('ต่อ', ''), 0, h * 0.28, w - 20); }
       cx.restore();
     }
 
@@ -569,6 +610,13 @@ async function runVideo({ record, onProg }) {
       const label = '#โฆษณา · ลิงก์พันธมิตร', tw = cx.measureText(label).width;
       cx.fillStyle = 'rgba(0,0,0,.5)'; rrect(cx, MARG_X, H * 0.085, tw + 28, W * 0.06, W * 0.03); cx.fill();
       cx.fillStyle = '#fff'; cx.fillText(label, MARG_X + 14, H * 0.085 + W * 0.03);
+    }
+    if (S.kind === 'place' && (S.area || S.rating) && t > 0.4) {
+      const k = easeOutBack((t - 0.4) / 0.35), parts = [S.area && '📍 ' + S.area.trim(), S.rating && '⭐ ' + S.rating].filter(Boolean).join('  ');
+      cx.save(); cx.globalAlpha = clamp(k, 0, 1); cx.font = `700 ${W * 0.042}px ${FONT}`; cx.textAlign = 'left'; cx.textBaseline = 'middle';
+      const tw = cx.measureText(parts).width, y0 = H * (S.disclose ? 0.085 + 0.045 : 0.085);
+      cx.fillStyle = brand; rrect(cx, MARG_X, y0, tw + 36, W * 0.08, W * 0.04); cx.fill();
+      cx.fillStyle = '#fff'; cx.fillText(parts, MARG_X + 18, y0 + W * 0.041); cx.restore();
     }
     cx.fillStyle = brand; cx.fillRect(0, 0, W * clamp(t / estTotal, 0, 1), Math.max(6, H * 0.005));
     if (!record && showGuide) drawGuide();
@@ -638,12 +686,18 @@ function viewClips() {
   <h2>1) เลือกคลิปที่ถ่ายไว้</h2>
   <p class="sub">ส่งคลิปดิบมาได้เลย (หลายคลิปได้) ระบบจะตัดส่วนมืด เบลอ ภาพนิ่ง ที่ไม่น่าสนใจออกให้เอง วิดีโอไม่ถูกอัปโหลดไปไหน ประมวลผลบนเครื่องนี้ทั้งหมด</p>
   <div class="card">
-    <h3>แพลตฟอร์มที่จะโพสต์</h3>
+    <h3>ประเภทคลิป</h3>
+    <div class="chips"><button class="chip ${S.kind === 'product' ? 'on' : ''}" data-kind="product">🛍️ รีวิวสินค้า</button><button class="chip ${S.kind === 'place' ? 'on' : ''}" data-kind="place">📍 รีวิวสถานที่</button></div>
+    ${S.kind === 'place' ? `<div class="chips" style="margin-top:10px">${Object.entries(PLACE).map(([k, v]) => `<button class="chip ${S.placeType === k ? 'on' : ''}" data-ptype="${k}">${v.label}</button>`).join('')}</div>
+    <div class="note">🎥 ภาพที่ควรถ่าย: ${PLACE[S.placeType].shots.map(esc).join(' → ')}</div>` : ''}
+    <h3 style="margin-top:16px">แพลตฟอร์มที่จะโพสต์</h3>
     <div class="chips">${Object.entries(PLAT).map(([k, v]) => `<button class="chip ${S.plat === k ? 'on' : ''}" data-plat="${k}">${v.name}</button>`).join('')}</div>
     ${hubOpts}
-    <label class="lbl">ชื่อสินค้า / ที่พัก</label><input class="inp" data-bind="name" value="${esc(S.name)}" placeholder="เช่น หูฟังบลูทูธตัดเสียงรบกวน" />
-    <div class="row"><div class="grow"><label class="lbl">ราคา (บาท)</label><input class="inp" data-bind="price" inputmode="numeric" value="${esc(S.price)}" placeholder="590" /></div>
-    <div class="grow"><label class="lbl">โปร (ไม่บังคับ)</label><input class="inp" data-bind="promo" value="${esc(S.promo)}" placeholder="ลด 30% วันนี้" /></div></div>
+    <label class="lbl">${S.kind === 'place' ? 'ชื่อ' + PLACE[S.placeType].label.split(' ').slice(1).join(' ') : 'ชื่อสินค้า'}</label><input class="inp" data-bind="name" value="${esc(S.name)}" placeholder="เช่น หูฟังบลูทูธตัดเสียงรบกวน" />
+    ${S.kind === 'place' ? `<div class="row"><div class="grow"><label class="lbl">ทำเล / จังหวัด</label><input class="inp" data-bind="area" value="${esc(S.area)}" placeholder="เช่น หัวหิน" /></div>
+    <div class="grow"><label class="lbl">คะแนน (ไม่บังคับ)</label><input class="inp" data-bind="rating" value="${esc(S.rating)}" placeholder="4.8" /></div></div>` : ''}
+    <div class="row"><div class="grow"><label class="lbl">${S.kind === 'place' ? 'ราคา (บาท ' + PLACE[S.placeType].unit + ')' : 'ราคา (บาท)'}</label><input class="inp" data-bind="price" inputmode="numeric" value="${esc(S.price)}" placeholder="590" /></div>
+    <div class="grow"><label class="lbl">โปร (ไม่บังคับ)</label><input class="inp" data-bind="promo" value="${esc(S.promo)}" placeholder="${S.kind === 'place' ? 'เช่น เริ่มต้น / ลด 20%' : 'ลด 30% วันนี้'}" /></div></div>
   </div>
   <label class="drop" for="file"><b>📹 แตะเพื่อเลือกคลิป</b><span>จากแกลเลอรี่ / กล้อง · รองรับ MP4, MOV</span></label>
   <input type="file" id="file" accept="video/*" multiple hidden />
@@ -698,14 +752,14 @@ function viewHook() {
     <label class="lbl">ข้อความ Hook (ครอบด้วย *ดาว* = ตัวเหลืองเด่น)</label>
     <textarea class="inp" rows="2" data-bind="hook">${esc(S.hook)}</textarea>
     <div class="row" style="margin-top:8px"><button class="btn sm" data-rehook="1">🔀 สุ่มประโยคใหม่ (${opts.length})</button></div>
-    <label class="lbl">จุดเด่นสินค้า — บรรทัดละ 1 ข้อ (จะขึ้นบนภาพทีละช่วง)</label>
-    <textarea class="inp" rows="4" data-bind="points" placeholder="ทนทาน ใช้ได้นาน&#10;พกพาสะดวก&#10;ส่งฟรีทั่วไทย">${esc(S.points)}</textarea>
-    <label class="lbl">ข้อความปุ่มปิดท้าย (เว้นว่าง = ใช้ค่าเริ่มต้นของ ${PLAT[S.plat].name})</label>
-    <input class="inp" data-bind="cta" value="${esc(S.cta)}" placeholder="${esc(PLAT[S.plat].cta)}" />
+    <label class="lbl">${S.kind === 'place' ? 'ไฮไลต์ของสถานที่' : 'จุดเด่นสินค้า'} — บรรทัดละ 1 ข้อ (จะขึ้นบนภาพทีละช่วง)</label>
+    <textarea class="inp" rows="4" data-bind="points" placeholder="${S.kind === 'place' ? 'วิวทะเลจากห้อง&#10;อาหารเช้าจัดเต็ม&#10;เดินไปตลาดได้' : 'ทนทาน ใช้ได้นาน&#10;พกพาสะดวก&#10;ส่งฟรีทั่วไทย'}">${esc(S.points)}</textarea>
+    <label class="lbl">ข้อความปุ่มปิดท้าย (เว้นว่าง = ใช้ค่าเริ่มต้น)</label>
+    <input class="inp" data-bind="cta" value="${esc(S.cta)}" placeholder="${esc(ctaDefault())}" />
   </div>
   <div class="card"><h3>🎨 รูปแบบภาพ</h3>
     <div class="chips"><button class="chip ${S.fit === 'cover' ? 'on' : ''}" data-fit="cover">เต็มจอ (ครอปกลาง)</button><button class="chip ${S.fit === 'blur' ? 'on' : ''}" data-fit="blur">พอดีภาพ + พื้นเบลอ</button></div>
-    <label class="sw"><span>ป้ายราคาเด้ง${S.price ? '' : ' <span class="tag">ใส่ราคาในขั้นตอนที่ 1</span>'}</span><input type="checkbox" data-chk="priceSticker" ${S.priceSticker ? 'checked' : ''} /></label>
+    <label class="sw"><span>ป้ายราคาเด้ง${S.price ? '' : ' <span class="tag">ใส่ราคาในขั้นตอนที่ 1</span>'}${S.kind === 'place' ? '<br><span class="sub" style="margin:0;font-size:11px">ป้ายทำเล 📍 และคะแนน ⭐ ขึ้นมุมบนซ้ายอัตโนมัติ</span>' : ''}</span><input type="checkbox" data-chk="priceSticker" ${S.priceSticker ? 'checked' : ''} /></label>
     <label class="sw"><span>ป้าย “#โฆษณา · ลิงก์พันธมิตร”<br><span class="sub" style="margin:0;font-size:11px">แนะนำให้เปิด เพื่อเปิดเผยว่าเป็นลิงก์ Affiliate</span></span><input type="checkbox" data-chk="disclose" ${S.disclose ? 'checked' : ''} /></label>
   </div>
   <div class="card"><h3>🔊 เสียง</h3>
@@ -719,8 +773,12 @@ function viewHook() {
 }
 
 function buildCaption() {
-  const hook = hookText().replace(/\*/g, ''), p = PLAT[S.plat];
-  const lines = [hook, '', S.name ? `${S.name}${S.price ? ' ' + money(S.price) : ''}${S.promo ? ' · ' + S.promo : ''}` : '', pointLines().map(x => '✅ ' + x).join('\n'), '', ctaText(), S.disclose ? '#โฆษณา #ลิงก์พันธมิตร' : '', p.tags.join(' ')];
+  const hook = hookText().replace(/\*/g, ''), p = PLAT[S.plat], pl = S.kind === 'place';
+  const unit = pl ? PLACE[S.placeType].unit : '';
+  const head = S.name ? `${S.name}${S.price ? ' ' + money(S.price) + (pl ? ' ' + unit : '') : ''}${S.promo ? ' · ' + S.promo : ''}` : '';
+  const loc = pl ? [S.area && '📍 ' + S.area.trim(), S.rating && '⭐ ' + S.rating].filter(Boolean).join('  ') : '';
+  const tags = pl ? [...PLACE[S.placeType].tags, ...p.tags.slice(0, 2), S.area && '#' + S.area.replace(/\s+/g, '')].filter(Boolean) : p.tags;
+  const lines = [hook, '', head, loc, pointLines().map(x => '✅ ' + x).join('\n'), '', ctaText(), S.disclose ? '#โฆษณา #ลิงก์พันธมิตร' : '', tags.join(' ')];
   return lines.filter((l, i) => l || (i > 0 && lines[i - 1])).join('\n').replace(/\n{3,}/g, '\n\n').trim();
 }
 function viewExport() {
@@ -755,7 +813,7 @@ function afterRender() {
   const h = $('goHook'); if (h) h.onclick = () => setStep(3);
   const e = $('goExport'); if (e) e.onclick = () => { S.genCaption = ''; setStep(4); };
   const hp = $('hubPick'); if (hp) hp.onchange = () => { const it = hubItems.find(x => String(x.id) === hp.value); if (!it) return;
-    S.name = it.name; S.price = it.price; if (PLAT[it.source]) S.plat = it.source; S.hook = ''; render(); };
+    S.name = it.name; S.price = it.price; if (PLAT[it.source]) S.plat = it.source; applyHubKind(it); S.hook = ''; render(); };
   if (S.step === 4) bindExport();
   document.querySelectorAll('.clip video').forEach(v => v.addEventListener('loadedmetadata', () => {
     const c = S.clips.find(x => x.url === v.currentSrc.split('#')[0]); if (c && !c.dur && isFinite(v.duration)) c.dur = v.duration; }, { once: true }));
@@ -810,6 +868,8 @@ document.addEventListener('click', (e) => {
   const q = (s) => e.target.closest(s);
   let b;
   if ((b = q('[data-step]'))) return setStep(+b.dataset.step);
+  if ((b = q('[data-kind]'))) { S.kind = b.dataset.kind; S.hook = ''; S.cta = ''; S.points = S.points; return render(); }
+  if ((b = q('[data-ptype]'))) { S.placeType = b.dataset.ptype; S.hook = ''; S.cta = ''; return render(); }
   if ((b = q('[data-plat]'))) { S.plat = b.dataset.plat; S.hook = ''; S.cta = ''; return render(); }
   if ((b = q('[data-rmclip]'))) { const i = S.clips.findIndex(c => c.id === b.dataset.rmclip); URL.revokeObjectURL(S.clips[i].url); S.clips.splice(i, 1); S.analyzed = false; return render(); }
   if ((b = q('[data-target]'))) { S.target = +b.dataset.target; autoAssemble(); return render(); }
