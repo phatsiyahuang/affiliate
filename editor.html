@@ -799,7 +799,8 @@ function viewExport() {
     ${mime ? '' : '<div class="note warn">เบราว์เซอร์นี้ไม่รองรับการอัดวิดีโอ ลองใช้ Chrome หรือ Safari รุ่นใหม่</div>'}
   </div>
   <div class="card hidden" id="resultCard"><h3>✅ วิดีโอพร้อมโพสต์</h3><video class="result" id="resVid" controls playsinline></video>
-    <div class="row" style="margin-top:10px"><a class="btn pri grow" id="dl" style="text-align:center;line-height:50px;text-decoration:none;color:#1c0a00">⬇ บันทึกไฟล์</a><button class="btn grow hidden" id="share">📤 แชร์</button></div></div>
+    <div class="row" style="margin-top:10px"><a class="btn pri grow" id="dl" style="text-align:center;line-height:50px;text-decoration:none;color:#1c0a00">⬇ บันทึกไฟล์</a><button class="btn grow hidden" id="share">📤 แชร์</button></div>
+    <div class="note">ถ้าปุ่มบันทึกไม่ทำงาน ให้กดค้างที่วิดีโอแล้วเลือก “บันทึกวิดีโอ/Download”</div></div>
   <div class="card"><h3>📝 แคปชั่น + แฮชแท็ก</h3><textarea class="inp" rows="9" id="capTxt">${esc(S.genCaption)}</textarea>
     <div class="row" style="margin-top:8px"><button class="btn sm grow" id="capCopy">📋 คัดลอก</button><button class="btn sm grow" id="capGen">🔄 สร้างใหม่จากข้อมูลล่าสุด</button></div></div>`;
 }
@@ -860,7 +861,8 @@ function showResult(blob) {
   S.result = { url, blob, name };
   $('resVid').src = url; $('dl').href = url; $('dl').download = name; $('resultCard').classList.remove('hidden');
   const file = new File([blob], name, { type: blob.type });
-  if (navigator.canShare && navigator.canShare({ files: [file] })) { const b = $('share'); b.classList.remove('hidden'); b.onclick = () => navigator.share({ files: [file], text: $('capTxt').value }).catch(() => {}); }
+  let canShareFile = false; try { canShareFile = !!(navigator.canShare && navigator.canShare({ files: [file] })); } catch (e) {}
+  if (canShareFile) { const b = $('share'); b.classList.remove('hidden'); b.onclick = () => navigator.share({ files: [file], text: $('capTxt').value }).catch(() => {}); }
   $('resultCard').scrollIntoView({ behavior: 'smooth', block: 'center' });
 }
 
