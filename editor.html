@@ -185,7 +185,7 @@ const S = {
   hookStyle: 'problem', hook: '', hookIdx: 0, points: '', cta: '',
   priceSticker: true, disclose: true, fit: 'cover',
   sfxOn: true, musicOn: true, volOrig: 1, volSfx: 0.8, volMusic: 0.2,
-  quality: '720', busy: false, result: null, genCaption: '',
+  quality: '720', busy: false, result: null, genCaption: '', audioFile: null,
 };
 const PERSIST = ['plat','kind','placeType','area','rating','name','price','promo','target','strict','hookStyle','points','priceSticker','disclose','fit','sfxOn','musicOn','volOrig','volSfx','volMusic','quality'];
 try { Object.assign(S, JSON.parse(localStorage.getItem(KEY) || '{}')); } catch (e) {}
@@ -287,13 +287,12 @@ async function analyzeImage(clip) {
   clip.samples = [{ t0: 0, t1: 3, bright: b, sharp: 1, motion: 0, audio: 0, thumb: th.toDataURL('image/jpeg', 0.6), sn: 1, mn: 0.5, an: 0, bs, score: 0.4 + 0.15 + 0.3 * bs, dark: b < 45, blur: false, still: false }];
   clip.hasAudio = false;
 }
-async function analyzeClip(clip, onProg) {
+async function analyzeClip(clip, onProg, deadline) {
   if (clip.kind === 'image') { await analyzeImage(clip); onProg && onProg(1); return; }
   const v = document.createElement('video');
   v.muted = true; v.playsInline = true; v.preload = 'auto'; v.src = clip.url;
   await once(v, 'loadedmetadata');
   const dur = v.duration; clip.dur = dur; clip.w = v.videoWidth; clip.h = v.videoHeight;
-  const N = clamp(Math.round(dur / 1.0), 3, 30), step = dur / N, deadline = performance.now() + 10000; // เกิน 10 วิ/คลิป ข้ามส่วนที่เหลือ
   const audio = null; // ไม่ถอดรหัสเสียง เพื่อความเร็ว
   const g = document.createElement('canvas'); g.width = g.height = 64;
   const gx = g.getContext('2d', { willReadFrequently: true });
@@ -303,31 +302,50 @@ async function analyzeClip(clip, onProg) {
     for (let i = 0; i < 4096; i++) o[i] = 0.299 * d[i*4] + 0.587 * d[i*4+1] + 0.114 * d[i*4+2];
     return o;
   };
-  const raw = []; let prev = null, errs = 0;
+  const neutral = (t) => ({ tm: t, neutral: true, bright: 120, sharp: 0, motion: 0, audio: 0, thumb: BLANK, g: null });
+  const grab = async (t) => {
+    await seek(v, t, true);
+    if (v.readyState < 2) await once(v, 'loadeddata', 800).catch(() => {});
+    const A = gray(), s = Math.max(72 / v.videoWidth, 128 / v.videoHeight);
+    tx.drawImage(v, (72 - v.videoWidth * s) / 2, (128 - v.videoHeight * s) / 2, v.videoWidth * s, v.videoHeight * s);
+    let b = 0; for (let k = 0; k < 4096; k++) b += A[k]; b /= 4096;
+    let ls = 0, ls2 = 0, c = 0;
+    for (let y = 1; y < 63; y++) for (let x = 1; x < 63; x++) {
+      const k = y * 64 + x, l = 4 * A[k] - A[k-1] - A[k+1] - A[k-64] - A[k+64]; ls += l; ls2 += l * l; c++;
+    }
+    return { tm: t, bright: b, sharp: ls2 / c - (ls / c) ** 2, audio: 0, thumb: th.toDataURL('image/jpeg', 0.6), g: A };
+  };
+  // รอบที่ 1: ครอบคลุมทั้งคลิป (ไม่ว่าจะยาวแค่ไหน)
+  const N = clamp(Math.ceil(dur / 1.0), 4, 60), step = dur / N, refineN = step > 1.5 ? 36 : 0, total = N + refineN;
+  const pts = []; let errs = 0, done = 0;
   for (let i = 0; i < N; i++) {
     const t = Math.min(dur - 0.05, i * step + step / 2);
-    if (performance.now() > deadline) { raw.push({ t0: i * step, t1: (i + 1) * step, neutral: true, bright: 120, sharp: 0, motion: 0, audio: 0, thumb: BLANK }); onProg && onProg((i + 1) / N); continue; }
-    try {
-      await seek(v, t, true);
-      if (v.readyState < 2) await once(v, 'loadeddata', 800).catch(() => {});
-      const A = gray();
-      const s = Math.max(72 / v.videoWidth, 128 / v.videoHeight);
-      tx.drawImage(v, (72 - v.videoWidth * s) / 2, (128 - v.videoHeight * s) / 2, v.videoWidth * s, v.videoHeight * s);
-      const thumb = th.toDataURL('image/jpeg', 0.6);
-      let b = 0; for (let k = 0; k < 4096; k++) b += A[k]; b /= 4096;
-      let ls = 0, ls2 = 0, c = 0;
-      for (let y = 1; y < 63; y++) for (let x = 1; x < 63; x++) {
-        const k = y * 64 + x, l = 4 * A[k] - A[k-1] - A[k+1] - A[k-64] - A[k+64]; ls += l; ls2 += l * l; c++;
-      }
-      const sharp = ls2 / c - (ls / c) ** 2;
-      let m = 0; if (prev) { for (let k = 0; k < 4096; k++) m += Math.abs(A[k] - prev[k]); m /= 4096; }
-      raw.push({ t0: i * step, t1: (i + 1) * step, bright: b, sharp, motion: m, audio: audio ? audio[i] : 0, thumb });
-      prev = A;
-    } catch (e) { errs++; raw.push({ t0: i * step, t1: (i + 1) * step, neutral: true, bright: 120, sharp: 0, motion: 0, audio: 0, thumb: BLANK }); }
-    onProg && onProg((i + 1) / N);
+    if (performance.now() > deadline) pts.push(neutral(t));
+    else try { pts.push(await grab(t)); } catch (e) { errs++; pts.push(neutral(t)); }
+    onProg && onProg(++done / total);
   }
   if (errs > N / 2) throw new Error('อ่านภาพจากคลิปไม่ได้ (ถอดรหัสเฟรมไม่สำเร็จ)');
-  if (raw.length > 1 && !raw[0].neutral && !raw[1].neutral) raw[0].motion = raw[1].motion;
+  // รอบที่ 2: คลิปยาว → ซูมอ่านละเอียดรอบจุดที่น่าสนใจที่สุด
+  if (refineN && performance.now() < deadline - 3000) {
+    const rough = (p) => p.neutral ? -1 : p.sharp * (p.bright < 45 ? 0 : p.bright > 215 ? 0.4 : 1);
+    const top = [...pts].sort((a, b) => rough(b) - rough(a)).slice(0, 6);
+    for (const c of top) {
+      for (const k of [-3, -2, -1, 1, 2, 3]) {
+        const t = c.tm + k * 0.8; if (t < 0.05 || t > dur - 0.05) { onProg && onProg(++done / total); continue; }
+        if (performance.now() < deadline) { try { pts.push(await grab(t)); } catch (e) {} }
+        onProg && onProg(++done / total);
+      }
+    }
+  }
+  pts.sort((a, b) => a.tm - b.tm);
+  const raw = pts;
+  raw.forEach((r, i) => {
+    r.t0 = i ? (raw[i - 1].tm + r.tm) / 2 : 0; r.t1 = i < raw.length - 1 ? (r.tm + raw[i + 1].tm) / 2 : dur;
+    const q = raw[i - 1] || raw[i + 1]; let m = 0;
+    if (r.g && q && q.g) { for (let k = 0; k < 4096; k++) m += Math.abs(r.g[k] - q.g[k]); m /= 4096; }
+    r.motion = m;
+  });
+  raw.forEach(r => { r.g = null; });
   v.removeAttribute('src'); v.load();
   const okr = raw.filter(r => !r.neutral), pS = pct(okr.map(r => r.sharp), 0.9) || 1, pM = pct(okr.map(r => r.motion), 0.9) || 1, pA = pct(okr.map(r => r.audio), 0.9) || 1;
   const hasAudio = !!audio && pA > 0.004;
@@ -363,7 +381,9 @@ function buildSegments(clip, ci, strict, MAX = 3.2) {
   sm.forEach((r, i) => { const g = isGood[i]; const L = groups[groups.length - 1]; if (L && L.good === g) L.to = i; else groups.push({ good: g, from: i, to: i }); });
   const mk = (a, b, goodFlag, reason) => {
     const part = sm.slice(a, b + 1), best = part.reduce((x, y) => y.score > x.score ? y : x);
-    return { id: clip.id + ':' + sm[a].t0.toFixed(2), clip, ci, t0: sm[a].t0, t1: Math.min(clip.dur, sm[b].t1, sm[a].t0 + MAX),
+    const t0s = sm[a].t0, t1s = Math.min(clip.dur, sm[b].t1); let t0 = t0s, t1 = t1s;
+    if (t1 - t0 > MAX) { t0 = clamp(best.tm - MAX / 2, t0s, t1s - MAX); t1 = t0 + MAX; } // ตัดให้สั้นรอบเฟรมที่ดีที่สุด
+    return { id: clip.id + ':' + t0.toFixed(2), clip, ci, t0, t1,
       score: part.reduce((s, r) => s + r.score, 0) / part.length, motion: part.reduce((s, r) => s + r.mn, 0) / part.length,
       thumb: best.thumb, reason, caption: '' };
   };
@@ -371,10 +391,11 @@ function buildSegments(clip, ci, strict, MAX = 3.2) {
     const len = sm[gr.to].t1 - sm[gr.from].t0;
     if (gr.good) {
       if (len < MIN && clip.dur > MIN * 1.5) return;
-      const per = Math.max(1, Math.round(MAX / (sm[0].t1 - sm[0].t0))); // sample ต่อช่วง
       let a = gr.from; while (a <= gr.to) {
-        let b = Math.min(gr.to, a + per - 1); if (gr.to - b < Math.ceil(per / 3)) b = gr.to;
-        good.push(mk(a, b, true, '')); a = b + 1;
+        let b = a, acc = sm[a].t1 - sm[a].t0;
+        while (b < gr.to && acc < MAX) { b++; acc += sm[b].t1 - sm[b].t0; }
+        const seg = mk(a, b, true, ''); a = b + 1;
+        if (seg.t1 - seg.t0 >= MIN || clip.dur <= MIN * 1.5) good.push(seg);
       }
     } else if (len >= 0.5) {
       const rs = {}; for (let i = gr.from; i <= gr.to; i++) { const r = reasonOf(sm[i], strict) || 'ไม่น่าสนใจพอ'; rs[r] = (rs[r] || 0) + 1; }
@@ -749,8 +770,11 @@ async function runVideo({ record, onProg }) {
   function sfx(n) { if (S.sfxOn) SFX[n](ac, sfxBus); }
 
   // ---------- เริ่มเล่น ----------
+  let userBuf = null;
+  if (S.audioFile && S.musicOn) { try { userBuf = await ac.decodeAudioData(await S.audioFile.arrayBuffer()); } catch (e) { showErr('เปิดไฟล์เสียงไม่ได้ จึงใช้เพลงสังเคราะห์แทน', new Error(S.audioFile.name)); } }
   const T0 = ac.currentTime + 0.15;
-  if (S.musicOn) scheduleMusic(ac, musBus, T0, estTotal + 2, V.bpm || 120, !!V.soft);
+  if (userBuf) { const src = ac.createBufferSource(); src.buffer = userBuf; src.loop = true; src.connect(musBus); src.start(T0); }
+  else if (S.musicOn) scheduleMusic(ac, musBus, T0, estTotal + 2, V.bpm || 120, !!V.soft);
   if (S.sfxOn) SFX.boom(ac, sfxBus, T0);
   await sleep(150); t0w = performance.now(); requestAnimationFrame(frame);
 
@@ -843,7 +867,7 @@ function viewClips() {
     <h3>ไฟล์ของคุณ (${S.clips.length})</h3>
     ${S.clips.map(c => `<div class="clip">${c.kind === 'image' ? `<img src="${c.url}" alt="" style="width:44px;height:64px;object-fit:cover;border-radius:8px" />` : `<video src="${c.url}#t=0.2" muted playsinline preload="metadata"></video>`}
       <div class="grow"><div style="font-size:14px;word-break:break-all">${esc(c.file.name)}</div>
-      <div class="sub" style="margin:0">${c.kind === 'image' ? '🖼️ รูปภาพ · ' : c.dur ? fmtT(c.dur) + ' · ' : ''}${(c.file.size / 1048576).toFixed(1)} MB</div></div>
+      <div class="sub" style="margin:0">${c.kind === 'image' ? '🖼️ รูปภาพ · ' : c.dur ? fmtT(c.dur) + ' · ' : ''}${c.samples && c.kind !== 'image' ? 'อ่านแล้ว ' + c.samples.length + ' จุด · ' : ''}${(c.file.size / 1048576).toFixed(1)} MB</div></div>
       <button class="x" data-rmclip="${c.id}">✕</button></div>`).join('')}
   </div>`;
 }
@@ -879,7 +903,7 @@ function viewEdit() {
   <h3 style="margin:18px 0 8px;font-size:15px">✂️ ปรับแต่งเวอร์ชันที่เลือก: ${esc((S.variants[S.vi] || {}).name || '')}</h3>
   <div class="card">
     <div class="row" style="justify-content:space-between"><b>ความยาวคลิปสุดท้าย</b><span class="tag ok">ตอนนี้ ${fmtT(used)}</span></div>
-    <div class="chips" style="margin-top:10px">${[15, 20, 30, 45].map(n => `<button class="chip ${S.target === n ? 'on' : ''}" data-target="${n}">${n} วิ</button>`).join('')}</div>
+    <div class="chips" style="margin-top:10px">${[15, 20, 30, 45, 60].map(n => `<button class="chip ${S.target === n ? 'on' : ''}" data-target="${n}">${n} วิ</button>`).join('')}</div>
     <label class="lbl">ความเข้มงวดในการตัดส่วนที่ไม่น่าสนใจ</label>
     <div class="chips">${[[1, 'เบา'], [2, 'ปานกลาง'], [3, 'เข้ม']].map(([n, l]) => `<button class="chip ${S.strict === n ? 'on' : ''}" data-strict="${n}">${l}</button>`).join('')}</div>
     <div class="note">ต้นฉบับ ${fmtT(orig)} → ใช้ ${S.timeline.length} ช่วง ${fmtT(used)} · ตัดทิ้งอัตโนมัติ ${fmtT(cutSec)}</div>
@@ -916,6 +940,10 @@ function viewHook() {
     <div class="sfxbtns">${SFX_LIST.map(([k, l]) => `<button class="btn sm" data-sfx="${k}">${l}</button>`).join('')}</div>
     <label class="lbl">ความดังซาวด์เอฟเฟกต์</label><input type="range" min="0" max="1" step="0.05" data-rng="volSfx" value="${S.volSfx}" />
     <label class="sw"><span>เพลงพื้นหลังจังหวะสนุก (สังเคราะห์เอง ไม่มีลิขสิทธิ์)</span><input type="checkbox" data-chk="musicOn" ${S.musicOn ? 'checked' : ''} /></label>
+    <label class="lbl">เพลง/เสียงพากย์ของคุณ (ไม่บังคับ — ใช้แทนเพลงสังเคราะห์)</label>
+    <div class="row"><label class="btn sm grow" for="audioFile" style="display:grid;place-items:center">${S.audioFile ? '🎵 ' + esc(S.audioFile.name) : '🎵 เลือกไฟล์เสียง (MP3, M4A, WAV)'}</label>${S.audioFile ? '<button class="btn sm" data-rmaudio="1">ลบ</button>' : ''}</div>
+    <input type="file" id="audioFile" accept="audio/*" hidden />
+    <div class="note">ใช้เพลงที่มีสิทธิ์ใช้งานเท่านั้น เสียงพากย์ให้เพิ่มความดังเพลงขึ้นและลดเสียงต้นฉบับ</div>
     <label class="lbl">ความดังเพลง</label><input type="range" min="0" max="0.6" step="0.02" data-rng="volMusic" value="${S.volMusic}" />
     <label class="lbl">ความดังเสียงต้นฉบับในคลิป</label><input type="range" min="0" max="1.5" step="0.05" data-rng="volOrig" value="${S.volOrig}" />
   </div>`;
@@ -966,6 +994,7 @@ function viewExport() {
 //  อีเวนต์
 // ====================================================================
 function afterRender() {
+  const af = $('audioFile'); if (af) af.onchange = () => { if (af.files[0]) { S.audioFile = af.files[0]; render(); } };
   const f = $('file'); if (f) f.onchange = async () => { for (const file of f.files) addClip(file); f.value = ''; S.analyzed = false; render(); };
   const g = $('goAnalyze'); if (g) g.onclick = doAnalyze;
   const h = $('goHook'); if (h) h.onclick = () => setStep(3);
@@ -993,7 +1022,7 @@ async function doAnalyze() {
   const worker = async () => {
     while (nextI < S.clips.length) {
       const i = nextI++, c = S.clips[i];
-      try { await analyzeClip(c, p => { prog[i] = p; upd(); }); }
+      try { await analyzeClip(c, p => { prog[i] = p; upd(); }, t0 + 30000); }
       catch (err) { console.error(err); c.samples = null; failed.push(`• ${c.file.name} (${c.file.type || 'ไม่ทราบชนิด'}, ${(c.file.size / 1048576).toFixed(0)} MB)\n  ${err.message}`); }
       prog[i] = 1; upd();
     }
@@ -1045,6 +1074,7 @@ document.addEventListener('click', (e) => {
   if ((b = q('[data-vsel]'))) { if (S.busy) return; selectVariant(+b.dataset.vsel); return render(); }
   if ((b = q('[data-step]'))) return setStep(+b.dataset.step);
   if (q('[data-draft]')) { S.points = draftScript(); toast('ร่างให้แล้ว แก้ให้ตรงกับของจริงได้เลย'); return render(); }
+  if (q('[data-rmaudio]')) { S.audioFile = null; return render(); }
   if (q('[data-clearpts]')) { S.points = ''; return render(); }
   if ((b = q('[data-kind]'))) { S.kind = b.dataset.kind; S.hook = ''; S.cta = ''; refreshHooks(); return render(); }
   if ((b = q('[data-ptype]'))) { S.placeType = b.dataset.ptype; S.hook = ''; S.cta = ''; refreshHooks(); return render(); }
