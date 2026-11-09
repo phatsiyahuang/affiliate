@@ -177,11 +177,11 @@ const HOOKS_PLACE = {
 // ====================================================================
 //  state
 // ====================================================================
-const KEY = 'affEditor.v1';
+const KEY = 'affEditor.v2';
 const S = {
   step: 1, plat: 'tiktok', kind: 'product', placeType: 'food', area: '', rating: '', name: '', price: '', promo: '',
   clips: [], timeline: [], pool: [], variants: [], vi: 0, err: '', analyzed: false,
-  target: 20, strict: 2,
+  target: 20, strict: 3,
   hookStyle: 'problem', hook: '', hookIdx: 0, points: '', cta: '',
   priceSticker: true, disclose: true, fit: 'cover',
   sfxOn: true, musicOn: true, volOrig: 1, volSfx: 0.8, volMusic: 0.2,
@@ -361,7 +361,7 @@ async function analyzeClip(clip, onProg, deadline) {
   clip.samples = raw; clip.hasAudio = hasAudio;
 }
 
-const THR = [0.28, 0.38, 0.48];
+const THR = [0.30, 0.42, 0.52];
 function reasonOf(r, strict) {
   if (r.dark) return 'มืดเกินไป';
   if (r.blur && strict >= 2) return 'ภาพเบลอ/ไม่ชัด';
@@ -406,11 +406,11 @@ function buildSegments(clip, ci, strict, MAX = 3.2) {
 }
 // 3 เวอร์ชันตัดต่อที่ต่างกัน ให้ผู้ใช้เลือกเอง
 const VCFG = [
-  { id: 'fast',  name: '⚡ จังหวะเร็ว',  desc: 'โทนพลังงานสูง ตัดถี่ ช็อตสั้น สีสด ซับตัวใหญ่เด้ง บีทเร็ว เหมาะกับ TikTok', max: 1.6, order: 'mix',   hook: 'motion', style: ['price', 'urgent'],  tgt: 1,   cut: 'whoosh', zoom: 1.5, music: 1,
+  { id: 'fast',  name: '⚡ จังหวะเร็ว',  desc: 'โทนพลังงานสูง เปิดด้วยช็อตเด็ดที่สุด แล้วเล่าต่อเนื่อง ตัดถี่ ช็อตสั้น สีสด ซับตัวใหญ่เด้ง บีทเร็ว', max: 1.6, order: 'time',  hook: 'motion', style: ['price', 'urgent'],  tgt: 1,   cut: 'whoosh', zoom: 1.5, music: 1,
     tone: 'พลังงานสูง', tint: 'rgba(255,90,40,0.10)', tintOp: 'overlay', vignette: false, subStyle: 'pop', bpm: 132, soft: false, trans: 'flash', flashA: 0.45, hookAnim: 'slam' },
-  { id: 'story', name: '📖 เล่าเรื่อง',   desc: 'โทนเป็นกันเอง เรียงตามที่ถ่าย สีธรรมชาติ ซับในกล่องดำอ่านง่าย บีทสบายๆ',     max: 3.2, order: 'time',  hook: 'mix',    style: ['problem', 'proof'], tgt: 1,   cut: 'pop',    zoom: 1,   music: 0.8,
+  { id: 'story', name: '📖 เล่าเรื่อง',   desc: 'โทนเป็นกันเอง ภาพไหลต่อเนื่องตามลำดับที่ถ่าย สีธรรมชาติ ซับในกล่องดำอ่านง่าย บีทสบายๆ',     max: 3.2, order: 'time',  hook: 'first', style: ['problem', 'proof'], tgt: 1,   cut: 'pop',    zoom: 1,   music: 0.8,
     tone: 'เป็นกันเอง', tint: null, tintOp: '', vignette: false, subStyle: 'box', bpm: 108, soft: false, trans: 'flash', flashA: 0.18, hookAnim: 'slide' },
-  { id: 'calm',  name: '🎞️ ภาพสวยเน้นๆ', desc: 'โทนซีนีมาติก ช็อตยาว สีอุ่นนุ่ม มีขอบมืด ซับบางสะอาด เปลี่ยนฉากแบบเฟด ดนตรีช้า',   max: 4.6, order: 'score', hook: 'pretty', style: ['curious', 'proof'], tgt: 0.9, cut: 'tick',   zoom: 0.5, music: 0.6,
+  { id: 'calm',  name: '🎞️ ภาพสวยเน้นๆ', desc: 'โทนซีนีมาติก ช็อตยาวต่อเนื่อง สีอุ่นนุ่ม มีขอบมืด ซับบางสะอาด เปลี่ยนฉากแบบเฟด ดนตรีช้า',   max: 4.6, order: 'time',  hook: 'first', style: ['curious', 'proof'], tgt: 0.9, cut: 'tick',   zoom: 0.5, music: 0.6,
     tone: 'ซีนีมาติก', tint: 'rgba(255,200,140,0.22)', tintOp: 'soft-light', vignette: true, subStyle: 'clean', bpm: 84, soft: true, trans: 'dip', flashA: 0, hookAnim: 'fade' },
 ];
 function hookFor(v) {
@@ -425,10 +425,21 @@ function buildVariant(c, i) {
   // เนื้อหาน้อยเกินไป → กู้ช่วงที่ดีที่สุดจากที่ตัดทิ้ง
   const rest = [...dropped].sort((a, b) => b.score - a.score);
   while (total < Math.min(6, target) && rest.length) { const s = rest.shift(); s.reason = ''; s.restored = true; picked.push(s); total += s.t1 - s.t0; dropped.splice(dropped.indexOf(s), 1); }
+  // ทำให้ภาพต่อเนื่อง: เติมช่องว่างสั้นๆ ระหว่างช็อตของคลิปเดียวกัน (ถ้าช่องนั้นไม่ใช่ช่วงที่ตัดทิ้ง)
+  const byClip = {}; picked.forEach(x => (byClip[x.ci] = byClip[x.ci] || []).push(x));
+  Object.values(byClip).forEach(arr => {
+    arr.sort((a, b) => a.t0 - b.t0);
+    for (let k = 1; k < arr.length; k++) {
+      const a = arr[k - 1], b = arr[k], gap = b.t0 - a.t1;
+      if (a.clip.kind === 'image' || gap <= 0 || gap > 1.2) continue;
+      if (dropped.some(d => d.ci === a.ci && d.t0 < b.t0 && d.t1 > a.t1)) continue;
+      a.t1 = b.t0;
+    }
+  });
   const v = { ...c, i, timeline: [], pool: dropped, hook: '', hookStyle: 'problem' };
   if (!picked.length) return v;
   const hs = (s) => s.score * 0.55 + s.motion * 0.35 + Math.min(1, (s.t1 - s.t0) / 2.6) * 0.3; // ชอบช่วงที่ยาวพอคลุม Hook 3 วิ
-  const sel = c.hook === 'motion' ? (s) => s.motion * 0.7 + s.score * 0.3 : c.hook === 'pretty' ? (s) => s.score + Math.min(1, (s.t1 - s.t0) / 2.6) * 0.2 : hs;
+  const sel = c.hook === 'first' ? (s) => -s.ci * 1e6 - s.t0 : c.hook === 'motion' ? (s) => s.motion * 0.7 + s.score * 0.3 : c.hook === 'pretty' ? (s) => s.score + Math.min(1, (s.t1 - s.t0) / 2.6) * 0.2 : hs;
   const hookSeg = picked.reduce((x, y) => sel(y) > sel(x) ? y : x);
   let others = picked.filter(s => s !== hookSeg);
   if (c.order === 'time') others.sort((a, b) => a.ci - b.ci || a.t0 - b.t0);
@@ -809,7 +820,7 @@ async function runVideo({ record, onProg }) {
   try { ac.close(); } catch (e) {} try { wake && wake.release(); } catch (e) {}
   return blob;
 }
-let showGuide = true;
+let showGuide = false; // เส้นกรอบเขียวแนะนำพื้นที่ปลอดภัย ปิดไว้เป็นค่าเริ่มต้น
 
 // ====================================================================
 //  UI
