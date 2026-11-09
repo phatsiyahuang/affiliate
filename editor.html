@@ -180,7 +180,7 @@ const HOOKS_PLACE = {
 const KEY = 'affEditor.v2';
 const S = {
   step: 1, plat: 'tiktok', kind: 'product', placeType: 'food', area: '', rating: '', name: '', price: '', promo: '',
-  clips: [], timeline: [], pool: [], variants: [], vi: 0, err: '', analyzed: false,
+  clips: [], timeline: [], pool: [], variants: [], vi: 0, beat: 0, err: '', analyzed: false,
   target: 20, strict: 3,
   hookStyle: 'problem', hook: '', hookIdx: 0, points: '', cta: '',
   priceSticker: true, disclose: true, fit: 'cover',
@@ -406,12 +406,12 @@ function buildSegments(clip, ci, strict, MAX = 3.2) {
 }
 // 3 เวอร์ชันตัดต่อที่ต่างกัน ให้ผู้ใช้เลือกเอง
 const VCFG = [
-  { id: 'fast',  name: '⚡ จังหวะเร็ว',  desc: 'โทนพลังงานสูง เปิดด้วยช็อตเด็ดที่สุด แล้วเล่าต่อเนื่อง ตัดถี่ ช็อตสั้น สีสด ซับตัวใหญ่เด้ง บีทเร็ว', max: 1.6, order: 'time',  hook: 'motion', style: ['price', 'urgent'],  tgt: 1,   cut: 'whoosh', zoom: 1.5, music: 1,
-    tone: 'พลังงานสูง', tint: 'rgba(255,90,40,0.10)', tintOp: 'overlay', vignette: false, subStyle: 'pop', bpm: 132, soft: false, trans: 'flash', flashA: 0.45, hookAnim: 'slam' },
-  { id: 'story', name: '📖 เล่าเรื่อง',   desc: 'โทนเป็นกันเอง ภาพไหลต่อเนื่องตามลำดับที่ถ่าย สีธรรมชาติ ซับในกล่องดำอ่านง่าย บีทสบายๆ',     max: 3.2, order: 'time',  hook: 'first', style: ['problem', 'proof'], tgt: 1,   cut: 'pop',    zoom: 1,   music: 0.8,
-    tone: 'เป็นกันเอง', tint: null, tintOp: '', vignette: false, subStyle: 'box', bpm: 108, soft: false, trans: 'flash', flashA: 0.18, hookAnim: 'slide' },
-  { id: 'calm',  name: '🎞️ ภาพสวยเน้นๆ', desc: 'โทนซีนีมาติก ช็อตยาวต่อเนื่อง สีอุ่นนุ่ม มีขอบมืด ซับบางสะอาด เปลี่ยนฉากแบบเฟด ดนตรีช้า',   max: 4.6, order: 'time',  hook: 'first', style: ['curious', 'proof'], tgt: 0.9, cut: 'tick',   zoom: 0.5, music: 0.6,
-    tone: 'ซีนีมาติก', tint: 'rgba(255,200,140,0.22)', tintOp: 'soft-light', vignette: true, subStyle: 'clean', bpm: 84, soft: true, trans: 'dip', flashA: 0, hookAnim: 'fade' },
+  { id: 'fast',  name: '⚡ จังหวะเร็ว',  desc: 'โทนพลังงานสูง เปิดด้วยช็อตเด็ดที่สุด แล้วเล่าต่อเนื่อง ตัดถี่ ช็อตสั้น สีสด ซับตัวใหญ่เด้ง บีทเร็ว', max: 1.3, order: 'time',  hook: 'motion', style: ['price', 'urgent'],  tgt: 1,   cut: 'whoosh', zoom: 1.5, music: 1,
+    beat: 1.0, beatSfx: true, speedDull: 1.4, tone: 'พลังงานสูง', tint: 'rgba(255,90,40,0.10)', tintOp: 'overlay', vignette: false, subStyle: 'pop', bpm: 132, soft: false, trans: 'flash', flashA: 0.45, hookAnim: 'slam' },
+  { id: 'story', name: '📖 เล่าเรื่อง',   desc: 'โทนเป็นกันเอง ภาพไหลต่อเนื่องตามลำดับที่ถ่าย สีธรรมชาติ ซับในกล่องดำอ่านง่าย บีทสบายๆ',     max: 2.4, order: 'time',  hook: 'first', style: ['problem', 'proof'], tgt: 1,   cut: 'pop',    zoom: 1,   music: 0.8,
+    beat: 1.6, beatSfx: false, speedDull: 1.2, tone: 'เป็นกันเอง', tint: null, tintOp: '', vignette: false, subStyle: 'box', bpm: 108, soft: false, trans: 'flash', flashA: 0.18, hookAnim: 'slide' },
+  { id: 'calm',  name: '🎞️ ภาพสวยเน้นๆ', desc: 'โทนซีนีมาติก ช็อตยาวต่อเนื่อง สีอุ่นนุ่ม มีขอบมืด ซับบางสะอาด เปลี่ยนฉากแบบเฟด ดนตรีช้า',   max: 3.4, order: 'time',  hook: 'first', style: ['curious', 'proof'], tgt: 0.9, cut: 'tick',   zoom: 0.5, music: 0.6,
+    beat: 2.4, beatSfx: false, speedDull: 0, tone: 'ซีนีมาติก', tint: 'rgba(255,200,140,0.22)', tintOp: 'soft-light', vignette: true, subStyle: 'clean', bpm: 84, soft: true, trans: 'dip', flashA: 0, hookAnim: 'fade' },
 ];
 function hookFor(v) {
   for (const st of v.style) { const o = hookOptions(st); if (o.length) return { text: o[v.i % o.length], style: st }; }
@@ -649,7 +649,7 @@ async function runVideo({ record, onProg }) {
   let cur = null, t0w = 0, finished = false, tailStart = null, lastFrame = -1;
   const flags = { price: false, cta: false };
   const now = () => (performance.now() - t0w) / 1000;
-  const MARG_X = W * 0.07, TXT_CX = W * 0.46, TXT_W = W * 0.76;
+  const B = S.beat || V.beat || 1.6, MARG_X = W * 0.07, TXT_CX = W * 0.46, TXT_W = W * 0.76;
 
   function paintBase(v, k = 0) { // k = ความคืบหน้า 0–1 ใช้กับรูปภาพ (Ken Burns)
     const vw = v.videoWidth || v.naturalWidth, vh = v.videoHeight || v.naturalHeight; if (!vw) return;
@@ -672,7 +672,12 @@ async function runVideo({ record, onProg }) {
     else if (cur && cur.ready && cur.v.readyState >= 2 && cur.v.currentTime !== lastFrame) { paintBase(cur.v); lastFrame = cur.v.currentTime; }
     // ซูมเน้นจังหวะ (punch zoom)
     let z = 1;
-    if (cur) z = cur.i === 0 ? 1 + 0.14 * (1 - easeOut(ts / 0.5)) + 0.03 * clamp(ts / 3, 0, 1) : (cur.i % 2 ? 1.0 + 0.07 * clamp(ts / 2.5, 0, 1) : 1.07 - 0.07 * clamp(ts / 2.5, 0, 1)) + 0.05 * (1 - easeOut(ts / 0.25));
+    if (cur) { // ทุกจังหวะ (beat) ภาพจะเปลี่ยนระยะซูม เหมือนตัดสลับมุมกล้อง ไม่ให้ค้างภาพเดิมนาน
+      const bi = Math.floor(ts / B), bt = ts - bi * B;
+      if (bi !== cur.lastBeat) { cur.lastBeat = bi; cur.beatT = t; if (bi > 0 && V.beatSfx) sfx('tick'); }
+      z = [1.0, 1.17, 1.04, 1.27, 1.1][(bi + cur.i) % 5] + 0.04 * clamp(bt / B, 0, 1) + (bt < 0.18 ? 0.04 * (1 - bt / 0.18) : 0);
+      if (cur.i === 0 && ts < 0.5) z += 0.14 * (1 - easeOut(ts / 0.5));
+    }
     z = 1 + (z - 1) * V.zoom;
     cx.setTransform(1, 0, 0, 1, 0, 0);
     cx.fillStyle = '#000'; cx.fillRect(0, 0, W, H);
@@ -696,6 +701,7 @@ async function runVideo({ record, onProg }) {
     }
     if (t < 0.14) { cx.fillStyle = `rgba(255,255,255,${0.85 * (1 - t / 0.14)})`; cx.fillRect(0, 0, W, H); }
 
+    if (cur && cur.beatT && t - cur.beatT < 0.09 && cur.lastBeat > 0 && V.trans !== 'dip') { cx.fillStyle = `rgba(255,255,255,${0.16 * (1 - (t - cur.beatT) / 0.09)})`; cx.fillRect(0, 0, W, H); }
     // แฟลชตอนตัดคลิป
     if (cur && cur.i > 0) {
       if (V.trans === 'dip') { if (ts < 0.3) { cx.fillStyle = `rgba(0,0,0,${0.9 * (ts < 0.1 ? 1 : 1 - (ts - 0.1) / 0.2)})`; cx.fillRect(0, 0, W, H); } }
@@ -801,12 +807,14 @@ async function runVideo({ record, onProg }) {
     cur = { i, v, ready: false, startW: now(), ctaAt: Math.max(0, len - 1.2) };
     // ช็อตต่อเนื่องจากคลิปเดิม ไม่ต้อง seek (ไม่มีหน่วง)
     const contiguous = prevV === v && !v.paused && Math.abs(v.currentTime - s.t0) < 0.3;
+    const rate = V.speedDull && s.motion < 0.45 ? V.speedDull : 1; // ช็อตที่เคลื่อนไหวน้อย เร่งความเร็วให้ไม่เนือย
+    v.playbackRate = rate;
     if (!contiguous) { await seek(v, s.t0); v.play().catch(() => {}); }
     cur.ready = true; cur.startW = now();
     const nx = tl[i + 1], nv = nx && decks.get(nx.clip.id);
     if (nx && nv && nv !== v) { try { nv.currentTime = nx.t0; } catch (e) {} } // เตรียมช็อตถัดไปล่วงหน้า
     const pw = performance.now();
-    await new Promise(r => { const id = setInterval(() => { if (abortFlag || v.currentTime >= s.t1 - 0.02 || v.ended || performance.now() - pw > (len + 1) * 1000) { clearInterval(id); r(); } }, 8); });
+    await new Promise(r => { const id = setInterval(() => { if (abortFlag || v.currentTime >= s.t1 - 0.02 || v.ended || performance.now() - pw > (len / rate + 1) * 1000) { clearInterval(id); r(); } }, 8); });
     prevV = v;
     if (!(nx && nv === v && Math.abs(nx.t0 - v.currentTime) < 0.3)) v.pause();
   }
@@ -917,6 +925,8 @@ function viewEdit() {
     <div class="chips" style="margin-top:10px">${[15, 20, 30, 45, 60].map(n => `<button class="chip ${S.target === n ? 'on' : ''}" data-target="${n}">${n} วิ</button>`).join('')}</div>
     <label class="lbl">ความเข้มงวดในการตัดส่วนที่ไม่น่าสนใจ</label>
     <div class="chips">${[[1, 'เบา'], [2, 'ปานกลาง'], [3, 'เข้ม']].map(([n, l]) => `<button class="chip ${S.strict === n ? 'on' : ''}" data-strict="${n}">${l}</button>`).join('')}</div>
+    <label class="lbl">จังหวะเปลี่ยนมุมภาพ (ซูมสลับทุกกี่วินาที — ยิ่งถี่ยิ่งไม่เนือย)</label>
+    <div class="chips">${[[0, 'ตามเวอร์ชัน'], [0.8, 'ถี่มาก 0.8'], [1.2, 'ถี่ 1.2'], [1.8, 'ปกติ 1.8'], [2.6, 'ช้า 2.6']].map(([n, l]) => `<button class="chip ${(S.beat || 0) === n ? 'on' : ''}" data-beat="${n}">${l}</button>`).join('')}</div>
     <div class="note">ต้นฉบับ ${fmtT(orig)} → ใช้ ${S.timeline.length} ช่วง ${fmtT(used)} · ตัดทิ้งอัตโนมัติ ${fmtT(cutSec)}</div>
     ${used < Math.min(10, S.target) ? '<div class="note warn">คลิปที่ใช้ได้มีน้อย ลองลดความเข้มงวด หรือถ่ายเพิ่มให้ภาพสว่างและนิ่งขึ้น</div>' : ''}
   </div>
@@ -1092,6 +1102,7 @@ document.addEventListener('click', (e) => {
   if ((b = q('[data-plat]'))) { S.plat = b.dataset.plat; S.hook = ''; S.cta = ''; refreshHooks(); return render(); }
   if ((b = q('[data-rmclip]'))) { const i = S.clips.findIndex(c => c.id === b.dataset.rmclip); URL.revokeObjectURL(S.clips[i].url); S.clips.splice(i, 1); S.analyzed = false; return render(); }
   if ((b = q('[data-target]'))) { S.target = +b.dataset.target; autoAssemble(); return render(); }
+  if ((b = q('[data-beat]'))) { S.beat = +b.dataset.beat || 0; return render(); }
   if ((b = q('[data-strict]'))) { S.strict = +b.dataset.strict; autoAssemble(); return render(); }
   if ((b = q('[data-up]'))) { const i = +b.dataset.up, t = S.timeline; [t[i - 1], t[i]] = [t[i], t[i - 1]]; return render(); }
   if ((b = q('[data-down]'))) { const i = +b.dataset.down, t = S.timeline; [t[i + 1], t[i]] = [t[i], t[i + 1]]; return render(); }
