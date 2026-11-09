@@ -1,0 +1,1130 @@
+<!DOCTYPE html>
+<html lang="th">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover" />
+<meta name="theme-color" content="#0c0a09" />
+<meta name="apple-mobile-web-app-capable" content="yes" />
+<meta name="mobile-web-app-capable" content="yes" />
+<title>ตัดต่อคลิปสั้น พร้อมโพสต์ · Affiliate</title>
+<link href="https://fonts.googleapis.com/css2?family=IBM+Plex+Sans+Thai:wght@400;500;600;700&display=swap" rel="stylesheet" />
+<style>
+  :root {
+    --bg:#0c0a09; --card:#1c1917; --card2:#292524; --line:#3a3532; --txt:#fafaf9; --mut:#a8a29e;
+    --acc:#fb923c; --acc2:#f97316; --ok:#4ade80; --bad:#f87171; --brand:#fe2c55;
+  }
+  * { box-sizing:border-box; -webkit-tap-highlight-color:transparent; }
+  html { -webkit-text-size-adjust:100%; }
+  body { margin:0; background:var(--bg); color:var(--txt); font:15px/1.5 'IBM Plex Sans Thai',system-ui,-apple-system,'Noto Sans Thai',sans-serif; }
+  button,input,select,textarea,label { touch-action:manipulation; font:inherit; color:inherit; }
+  header { position:sticky; top:0; z-index:20; background:rgba(12,10,9,.92); backdrop-filter:blur(8px); border-bottom:1px solid var(--line);
+           padding:calc(env(safe-area-inset-top) + 10px) 16px 10px; display:flex; align-items:center; gap:10px; }
+  header a { color:var(--mut); text-decoration:none; font-size:22px; width:36px; height:36px; display:grid; place-items:center; }
+  header h1 { font-size:16px; margin:0; font-weight:600; line-height:1.2; }
+  header p { margin:0; font-size:11px; color:var(--mut); }
+  main { max-width:560px; margin:0 auto; padding:14px 16px calc(150px + env(safe-area-inset-bottom)); }
+  h2 { font-size:17px; margin:2px 0 4px; }
+  .sub { color:var(--mut); font-size:13px; margin:0 0 14px; }
+  .card { background:var(--card); border:1px solid var(--line); border-radius:16px; padding:14px; margin-bottom:14px; }
+  .card h3 { font-size:14px; margin:0 0 10px; font-weight:600; }
+  .lbl { display:block; font-size:12px; color:var(--mut); margin:10px 0 4px; }
+  .inp { width:100%; background:var(--card2); border:1px solid var(--line); border-radius:12px; padding:11px 12px; min-height:46px; font-size:16px; }
+  .inp:focus { outline:none; border-color:var(--acc); box-shadow:0 0 0 3px rgba(251,146,60,.25); }
+  textarea.inp { resize:vertical; }
+  .row { display:flex; gap:8px; align-items:center; }
+  .grow { flex:1; min-width:0; }
+  .chips { display:flex; flex-wrap:wrap; gap:8px; }
+  .chip { border:1px solid var(--line); background:var(--card2); border-radius:999px; padding:9px 14px; min-height:42px; cursor:pointer; font-size:14px; }
+  .chip.on { background:var(--txt); color:#0c0a09; border-color:var(--txt); font-weight:600; }
+  .btn { border:0; border-radius:14px; min-height:50px; padding:0 18px; font-weight:600; font-size:16px; cursor:pointer; background:var(--card2); border:1px solid var(--line); }
+  .btn.pri { background:linear-gradient(135deg,var(--acc),var(--acc2)); color:#1c0a00; border:0; }
+  .btn.sm { min-height:40px; font-size:13px; padding:0 12px; border-radius:10px; }
+  .btn:disabled { opacity:.45; }
+  .btn.block { width:100%; }
+  .tag { font-size:11px; padding:2px 8px; border-radius:999px; background:var(--card2); color:var(--mut); }
+  .tag.hook { background:#7c2d12; color:#fed7aa; }
+  .tag.bad { background:#450a0a; color:#fecaca; }
+  .tag.ok { background:#052e16; color:#bbf7d0; }
+  .drop { display:grid; place-items:center; text-align:center; gap:4px; border:2px dashed var(--line); border-radius:16px; padding:26px 12px; cursor:pointer; }
+  .drop b { font-size:16px; } .drop span { color:var(--mut); font-size:13px; }
+  .clip { display:flex; gap:10px; align-items:center; padding:8px 0; border-top:1px solid var(--line); }
+  .clip:first-child { border-top:0; }
+  .clip video { width:44px; height:64px; object-fit:cover; border-radius:8px; background:#000; }
+  .x { background:none; border:0; color:var(--mut); font-size:20px; width:40px; height:40px; cursor:pointer; }
+  .seg { display:flex; gap:10px; padding:10px 0; border-top:1px solid var(--line); }
+  .seg:first-child { border-top:0; }
+  .seg img { width:54px; height:96px; object-fit:cover; border-radius:8px; background:#000; flex:none; }
+  .seg .meta { flex:1; min-width:0; }
+  .seg .meta .inp { min-height:38px; padding:6px 10px; font-size:14px; margin-top:6px; }
+  .bar { height:5px; border-radius:3px; background:var(--card2); overflow:hidden; margin-top:6px; }
+  .bar i { display:block; height:100%; background:linear-gradient(90deg,#f87171,#fbbf24,#4ade80); }
+  .ctl { display:flex; flex-direction:column; gap:4px; }
+  .ctl button { width:38px; height:38px; border-radius:10px; border:1px solid var(--line); background:var(--card2); cursor:pointer; }
+  input[type=range] { width:100%; accent-color:var(--acc); height:34px; }
+  .sw { display:flex; justify-content:space-between; align-items:center; gap:12px; padding:9px 0; }
+  .sw input { width:46px; height:26px; accent-color:var(--acc); flex:none; }
+  nav.steps { position:fixed; bottom:0; left:0; right:0; z-index:25; background:rgba(12,10,9,.96); backdrop-filter:blur(8px);
+              border-top:1px solid var(--line); display:grid; grid-template-columns:repeat(4,1fr); padding-bottom:env(safe-area-inset-bottom); }
+  nav.steps button { background:none; border:0; color:var(--mut); padding:8px 0 9px; font-size:11px; min-height:56px; cursor:pointer; display:flex; flex-direction:column; align-items:center; gap:2px; }
+  nav.steps button b { width:24px; height:24px; border-radius:50%; background:var(--card2); display:grid; place-items:center; font-size:12px; }
+  nav.steps button.on { color:var(--txt); } nav.steps button.on b { background:var(--acc); color:#1c0a00; }
+  nav.steps button.done b { background:#14532d; color:#bbf7d0; }
+  .cta { position:fixed; left:0; right:0; bottom:calc(58px + env(safe-area-inset-bottom)); z-index:24; padding:10px 16px; background:linear-gradient(transparent,var(--bg) 40%); }
+  .cta .btn { max-width:528px; margin:0 auto; display:block; width:100%; }
+  .stage { position:relative; width:min(100%,calc(62vh*9/16)); margin:0 auto 12px; aspect-ratio:9/16; background:#000; border-radius:14px; overflow:hidden; border:1px solid var(--line); }
+  .stage canvas { width:100%; height:100%; display:block; }
+  .prog { height:10px; border-radius:6px; background:var(--card2); overflow:hidden; } .prog i { display:block; height:100%; width:0; background:var(--acc); transition:width .2s; }
+  .note { font-size:12px; color:var(--mut); background:var(--card2); border-radius:10px; padding:8px 10px; margin-top:10px; }
+  .note.warn { background:#422006; color:#fde68a; }
+  .sfxbtns { display:grid; grid-template-columns:repeat(3,1fr); gap:8px; }
+  .vcard { border:2px solid var(--line); border-radius:16px; padding:12px; margin-bottom:12px; background:var(--card); }
+  .vcard.on { border-color:var(--acc); box-shadow:0 0 0 3px rgba(251,146,60,.2); }
+  .strip { display:flex; gap:4px; overflow-x:auto; } .strip img { width:36px; height:64px; object-fit:cover; border-radius:5px; flex:none; background:#000; }
+  .stage.sm { width:min(56%,calc(40vh*9/16)); }
+  #errBox { white-space:pre-wrap; word-break:break-word; }
+  .hidden { display:none !important; }
+  video.result { width:100%; border-radius:14px; background:#000; max-height:70vh; }
+  #toast { position:fixed; left:50%; bottom:150px; transform:translateX(-50%); background:#fff; color:#000; padding:8px 14px; border-radius:999px; font-size:13px; z-index:50; opacity:0; transition:opacity .2s; pointer-events:none; }
+</style>
+</head>
+<body>
+
+<header>
+  <a href="index.html" aria-label="กลับ">‹</a>
+  <div>
+    <h1>🎬 ตัดต่อคลิปพร้อมโพสต์</h1>
+    <p>สินค้า & สถานที่ · Hook 3 วิ · ซาวด์เอฟเฟกต์ · 9:16</p>
+  </div>
+</header>
+
+<main id="main"></main>
+<div class="cta" id="cta"></div>
+<nav class="steps" id="steps"></nav>
+<div id="toast"></div>
+<canvas id="cv" width="720" height="1280" hidden></canvas>
+
+<script>
+'use strict';
+// ====================================================================
+//  ค่าคงที่ / แพลตฟอร์ม
+// ====================================================================
+const $ = (id) => document.getElementById(id);
+const clamp = (v, a, b) => Math.min(b, Math.max(a, v));
+const esc = (s) => String(s ?? '').replace(/[&<>"']/g, c => ({ '&':'&amp;', '<':'&lt;', '>':'&gt;', '"':'&quot;', "'":'&#39;' }[c]));
+const sleep = (ms) => new Promise(r => setTimeout(r, ms));
+const fmtT = (s) => s.toFixed(1) + ' วิ';
+const money = (n) => '฿' + Number(n).toLocaleString('en-US');
+
+const PLAT = {
+  tiktok: { name:'TikTok Shop',    color:'#fe2c55', cta:'กดตะกร้าเหลืองเลย 🛒',      tags:['#tiktokshop','#tiktokป้ายยา','#รีวิวของดี','#ของมันต้องมี','#fyp'] },
+  shopee: { name:'Shopee',         color:'#ee4d2d', cta:'กดลิงก์ในโปรไฟล์ สั่งเลย 🧡', tags:['#shopeeaffiliate','#ช้อปปี้','#shopeethailand','#รีวิวของดี','#ของมันต้องมี'] },
+  lazada: { name:'Lazada',         color:'#f57224', cta:'กดลิงก์ในโปรไฟล์ ช้อปเลย 🛍️', tags:['#lazadaaffiliate','#ลาซาด้า','#lazadath','#รีวิวของดี','#ของมันต้องมี'] },
+  trip:   { name:'Trip.com',       color:'#287dfa', cta:'จองเลย ลิงก์ในโปรไฟล์ ✈️',    tags:['#tripcom','#เที่ยวไทย','#จองโรงแรม','#เที่ยวคุ้ม','#รีวิวที่พัก'] },
+};
+
+const HOOKS = {
+  problem: {
+    label:'😤 จี้ปัญหา', retail:[
+      'ยังทนกับปัญหานี้อยู่เหรอ? ดู*คลิปนี้*ก่อน!', 'เลิกทนได้แล้ว! {name} ช่วยได้*จริง*', 'ทำไมเพิ่งรู้จัก {name} เนี่ย!' ],
+    trip:[ 'อยากเที่ยวแต่กลัวแพง? ดู*คลิปนี้*ก่อน!', 'เที่ยวไม่ต้องเปย์หนัก ลอง*วิธีนี้*', 'ทริปนี้ทำไมเพิ่งรู้!' ] },
+  price: {
+    label:'💸 ช็อกราคา', retail:[
+      'ราคาแค่ *{price}* ได้ของแบบนี้เลยเหรอ!', '{name} แค่ *{price}* คุ้มเกินคาด', 'อย่าเพิ่งเลื่อน! *{price}* เองจริงๆ' ],
+    trip:[ 'ที่พักแบบนี้ แค่ *{price}* เอง!', 'ทริปนี้ *{price}* คุ้มเว่อร์', 'อย่าเพิ่งเลื่อน! *{price}* เที่ยวได้เลย' ] },
+  curious: {
+    label:'🤔 ชวนสงสัย', retail:[
+      'สิ่งนี้เปลี่ยนชีวิตฉัน*ใน 3 วินาที*', 'รู้ไหม? {name} ทำแบบนี้ได้ด้วย!', 'ของมันต้องมีที่*ไม่ค่อยมีใครบอก*' ],
+    trip:[ 'ที่เที่ยวนี้*ลับมาก* ใครรู้บ้าง?', 'ห้องพักนี้มี*อะไรแบบนี้*ด้วย!', 'เที่ยวที่นี่ ต้องรู้*ข้อนี้*' ] },
+  proof: {
+    label:'⭐ รีวิวจริง', retail:[
+      'ลองใช้แล้ว*ว้าว*จริงๆ ต้องบอกต่อ', 'รีวิว {name} จาก*การใช้จริง*', 'ใช้มาสักพัก สรุปให้ใน*วิดีโอเดียว*' ],
+    trip:[ 'ไปมาแล้ว บอกเลย*คุ้ม*', 'รีวิวจาก*ประสบการณ์จริง*', 'พักมาแล้ว สรุปให้*ครบ*' ] },
+  urgent: {
+    label:'⏰ เร่งด่วน', retail:[
+      '*โปรนี้*อย่าพลาด! รีบดู', 'ก่อนราคาขยับ! {name} *{price}*', 'ดูให้จบ แล้ว*รีบกด*' ],
+    trip:[ '*จองก่อน* ราคาอาจเปลี่ยน!', 'โปรนี้ใครอยากเที่ยว*รีบดู*', 'ที่พักนี้ *{price}* ดูให้จบ!' ] },
+};
+
+const PLACE = {
+  food:  { label:'🍜 ร้านอาหาร', unit:'ต่อคน', shots:['ป้ายร้าน/หน้าร้าน','เมนูเด่นแบบโคลสอัพ (ควัน/ซอส/ชีสยืด)','บรรยากาศในร้าน','ป้ายราคา/เมนู','คำชิมคำแรก'],
+    tags:['#ร้านอร่อย','#รีวิวร้านอาหาร','#กินอะไรดี'], cta:'📍 พิกัดอยู่ในโปรไฟล์ ไปตามกัน!' },
+  hotel: { label:'🏨 โรงแรม/ที่พัก', unit:'ต่อคืน', shots:['วิวหรือหน้าโรงแรม','เปิดประตูเข้าห้อง (room tour)','เตียง/ห้องน้ำ','สระ/อาหารเช้า/ส่วนกลาง','วิวจากระเบียง'],
+    tags:['#รีวิวโรงแรม','#รีวิวที่พัก','#โรงแรมสวย'], cta:'จองเลย ลิงก์ในโปรไฟล์ 🏨' },
+  spot:  { label:'🏝️ ที่เที่ยว/กิจกรรม', unit:'ต่อคน', shots:['มุมวิวที่ว้าวที่สุด','ทางเข้า/ป้ายสถานที่','กิจกรรมที่ทำจริง','ผู้คน/บรรยากาศ','ค่าเข้า/ตั๋ว'],
+    tags:['#เที่ยวไทย','#ที่เที่ยว','#ที่เที่ยวสวย'], cta:'จองตั๋วเลย ลิงก์ในโปรไฟล์ 🎟️' },
+};
+const HOOKS_PLACE = {
+  food: {
+    problem:['ไม่รู้จะกินอะไร? ลอง*ร้านนี้*','ร้านนี้ใน{area} *ต้องมา*','เบื่อร้านเดิมๆ? {name} ตอบโจทย์'],
+    price:['กินอิ่มแค่ *{price}* {unit}!','{name} *{price}* คุ้มเกินคาด','อย่าเพิ่งเลื่อน! *{price}* ได้ขนาดนี้'],
+    curious:['ร้านลับใน{area} *ใครรู้บ้าง?*','เมนูนี้ *ต้องสั่ง* ที่{name}','ทำไมคน*ต่อคิว*ร้านนี้'],
+    proof:['ไปกินมาแล้ว บอกเลย*อร่อย*','รีวิว {name} จาก*การไปจริง*','ชิมแล้ว สรุปให้*ครบ*'],
+    urgent:['ไป{area} ต้อง*แวะร้านนี้*!','เซฟไว้เลย *พิกัดร้านเด็ด*','ดูให้จบ แล้ว*ไปกินกัน*'] },
+  hotel: {
+    problem:['อยากพักสบาย แต่กลัวแพง? ดู*ที่นี่*','หาที่พักใน{area}อยู่? *จบที่นี่*','ห้องพักแบบนี้ *ต้องดู*'],
+    price:['ที่พักแบบนี้ แค่ *{price}* {unit}!','{name} *{price}* {unit} คุ้มเว่อร์','อย่าเพิ่งเลื่อน! *{price}* พักได้เลย'],
+    curious:['เปิดประตูเข้าห้อง แล้ว*ว้าว*','ที่พักใน{area} *วิวแบบนี้*เลยเหรอ','ห้องนี้มี*อะไร*ที่คุณคาดไม่ถึง'],
+    proof:['พักมาแล้ว บอกเลย*คุ้ม*','รีวิว {name} จาก*การพักจริง*','Room tour ครบ *จบในคลิปเดียว*'],
+    urgent:['*จองก่อน* ราคาอาจเปลี่ยน!','ที่พัก{area} *เซฟไว้เลย*','ดูให้จบ แล้ว*รีบจอง*'] },
+  spot: {
+    problem:['ไม่รู้จะเที่ยวไหน? *ที่นี่เลย*','เที่ยว{area} ห้าม*พลาด*ที่นี่','เบื่อที่เดิมๆ? ลอง*ที่นี่*'],
+    price:['เที่ยวสนุกแค่ *{price}* {unit}!','{name} *{price}* คุ้มเว่อร์','อย่าเพิ่งเลื่อน! *{price}* เที่ยวได้เลย'],
+    curious:['ที่เที่ยวลับใน{area} *ใครรู้บ้าง?*','มุมนี้ใน{name} *ต้องมา*','เที่ยวที่นี่ ต้องรู้*ข้อนี้*'],
+    proof:['ไปมาแล้ว บอกเลย*คุ้ม*','รีวิว {name} จาก*ประสบการณ์จริง*','ไปเที่ยวมา สรุปให้*ครบ*'],
+    urgent:['ไป{area} *เซฟไว้เลย*!','*จองตั๋ว*ก่อนไป ถูกกว่า!','ดูให้จบ แล้ว*รีบไป*'] },
+};
+
+// ====================================================================
+//  state
+// ====================================================================
+const KEY = 'affEditor.v2';
+const S = {
+  step: 1, plat: 'tiktok', kind: 'product', placeType: 'food', area: '', rating: '', name: '', price: '', promo: '',
+  clips: [], timeline: [], pool: [], variants: [], vi: 0, beat: 0, err: '', analyzed: false,
+  target: 20, strict: 3,
+  hookStyle: 'problem', hook: '', hookIdx: 0, points: '', cta: '',
+  priceSticker: true, disclose: true, fit: 'cover',
+  sfxOn: true, musicOn: true, volOrig: 1, volSfx: 0.8, volMusic: 0.2,
+  quality: '720', busy: false, result: null, genCaption: '', audioFile: null,
+};
+const PERSIST = ['plat','kind','placeType','area','rating','name','price','promo','target','strict','hookStyle','points','priceSticker','disclose','fit','sfxOn','musicOn','volOrig','volSfx','volMusic','quality'];
+try { Object.assign(S, JSON.parse(localStorage.getItem(KEY) || '{}')); } catch (e) {}
+const persist = () => { try { localStorage.setItem(KEY, JSON.stringify(Object.fromEntries(PERSIST.map(k => [k, S[k]])))); } catch (e) {} };
+let clipSeq = 0;
+
+// เชื่อมกับรายการสินค้าในศูนย์วางแผน (index.html)
+let hubItems = [];
+try { const d = JSON.parse(localStorage.getItem('affHub.v1')); if (d && Array.isArray(d.items)) hubItems = d.items; } catch (e) {}
+(function applyQuery() {
+  const id = new URLSearchParams(location.search).get('item'); if (!id) return;
+  const it = hubItems.find(x => String(x.id) === id); if (!it) return;
+  S.name = it.name || S.name; S.price = it.price || S.price;
+  if (PLAT[it.source]) S.plat = it.source;
+  applyHubKind(it);
+})();
+
+function applyHubKind(it) {
+  if (it.cat === 'hotel') { S.kind = 'place'; S.placeType = 'hotel'; }
+  else if (it.cat === 'ticket') { S.kind = 'place'; S.placeType = 'spot'; }
+  else S.kind = 'product';
+}
+function toast(m) { const t = $('toast'); t.textContent = m; t.style.opacity = 1; clearTimeout(t._h); t._h = setTimeout(() => t.style.opacity = 0, 1800); }
+async function copy(text) {
+  try { await navigator.clipboard.writeText(text); } catch (e) {
+    const ta = document.createElement('textarea'); ta.value = text; document.body.appendChild(ta); ta.select(); document.execCommand('copy'); ta.remove();
+  }
+  toast('คัดลอกแล้ว ✓');
+}
+
+// ====================================================================
+//  Hook
+// ====================================================================
+function hookOptions(style = S.hookStyle) {
+  const isPlace = S.kind === 'place', grp = HOOKS[style];
+  const list = isPlace ? HOOKS_PLACE[S.placeType][style] : (S.plat === 'trip' ? grp.trip : grp.retail);
+  const price = S.price ? money(S.price) : '', area = (S.area || '').trim(), unit = isPlace ? PLACE[S.placeType].unit : '';
+  return list.filter(t => (price || !t.includes('{price}')) && (area || !t.includes('{area}')))
+    .map(t => t.replace(/\{name\}/g, S.name || (isPlace ? 'ที่นี่' : 'ตัวนี้')).replace(/\{price\}/g, price).replace(/\{area\}/g, area).replace(/\{unit\}/g, unit));
+}
+function pickHook(next) {
+  const o = hookOptions(); if (!o.length) return;
+  S.hookIdx = next ? (S.hookIdx + 1) % o.length : 0;
+  S.hook = o[S.hookIdx];
+}
+
+// ====================================================================
+//  วิเคราะห์คลิป — ตัดช่วงมืด / เบลอ / นิ่ง / เงียบ ออกอัตโนมัติ
+// ====================================================================
+function mediaErr(el) {
+  const c = el.error && el.error.code;
+  if (c === 4) return 'เบราว์เซอร์เล่นไฟล์นี้ไม่ได้ (รูปแบบ/โค้ดเดคไม่รองรับ เช่น HEVC หรือ .mov บางแบบ) ลองถ่ายด้วยโหมด “ความเข้ากันได้สูงสุด/H.264” แล้วลองใหม่';
+  if (c === 3) return 'ถอดรหัสวิดีโอไม่ได้ ไฟล์อาจเสียหรือใช้โค้ดเดคที่เครื่องไม่รองรับ';
+  if (c === 2) return 'อ่านไฟล์ไม่สำเร็จ (ปัญหาการโหลดไฟล์)';
+  return 'โหลดวิดีโอไม่ทัน (ไฟล์ใหญ่เกินไปหรือเบราว์เซอร์บล็อกการเล่นไฟล์) ลองใช้คลิปที่สั้น/เล็กลง';
+}
+function once(el, ev, ms = 45000) {
+  return new Promise((res, rej) => {
+    const cl = () => { el.removeEventListener(ev, ok); el.removeEventListener('error', er); clearTimeout(h); };
+    const ok = () => { cl(); res(); }, er = () => { cl(); rej(new Error(mediaErr(el))); };
+    const h = setTimeout(er, ms);
+    el.addEventListener(ev, ok); el.addEventListener('error', er);
+  });
+}
+function seek(v, t, fast) {
+  return new Promise(res => {
+    if (!v.seeking && v.readyState >= 2 && Math.abs(v.currentTime - t) < 0.04) return res();
+    let done = false;
+    const f = () => { if (done) return; done = true; v.removeEventListener('seeked', f); clearTimeout(h); res(); };
+    const h = setTimeout(f, 1500);
+    v.addEventListener('seeked', f);
+    if (fast && v.fastSeek) v.fastSeek(t); else v.currentTime = t;
+  });
+}
+async function audioEnergy(file, N) {
+  if (file.size > 80e6) return null;
+  const Ctx = window.OfflineAudioContext || window.webkitOfflineAudioContext; if (!Ctx) return null;
+  const ab = await new Ctx(1, 1, 44100).decodeAudioData(await file.arrayBuffer());
+  const d = ab.getChannelData(0), per = Math.floor(d.length / N), out = [];
+  for (let i = 0; i < N; i++) {
+    let s = 0, c = 0; for (let j = i * per; j < (i + 1) * per; j += 7) { s += d[j] * d[j]; c++; }
+    out.push(Math.sqrt(s / Math.max(1, c)));
+  }
+  return out;
+}
+const pct = (arr, p) => { const a = [...arr].sort((x, y) => x - y); return a[Math.min(a.length - 1, Math.floor(a.length * p))] || 0; };
+
+const BLANK = 'data:image/gif;base64,R0lGODlhAQABAIAAAC4oJgAAACH5BAAAAAAALAAAAAABAAEAAAICRAEAOw==';
+async function analyzeImage(clip) {
+  const img = new Image(); img.src = clip.url;
+  try { await img.decode(); } catch (e) { throw new Error('เปิดไฟล์รูปนี้ไม่ได้ (ถ้าเป็น HEIC ลองส่งเป็น JPG/PNG)'); }
+  clip.img = img; clip.w = img.naturalWidth; clip.h = img.naturalHeight; clip.dur = 3;
+  const g = document.createElement('canvas'); g.width = g.height = 64; const gx = g.getContext('2d', { willReadFrequently: true });
+  gx.drawImage(img, 0, 0, 64, 64); const d = gx.getImageData(0, 0, 64, 64).data; let b = 0;
+  for (let i = 0; i < 4096; i++) b += 0.299 * d[i*4] + 0.587 * d[i*4+1] + 0.114 * d[i*4+2]; b /= 4096;
+  const th = document.createElement('canvas'); th.width = 72; th.height = 128; const tx = th.getContext('2d'), s = Math.max(72 / img.naturalWidth, 128 / img.naturalHeight);
+  tx.drawImage(img, (72 - img.naturalWidth * s) / 2, (128 - img.naturalHeight * s) / 2, img.naturalWidth * s, img.naturalHeight * s);
+  const bs = b < 35 ? 0 : b < 70 ? (b - 35) / 35 * 0.6 : b <= 200 ? 1 : Math.max(0.3, 1 - (b - 200) / 55 * 0.7);
+  clip.samples = [{ t0: 0, t1: 3, bright: b, sharp: 1, motion: 0, audio: 0, thumb: th.toDataURL('image/jpeg', 0.6), sn: 1, mn: 0.5, an: 0, bs, score: 0.4 + 0.15 + 0.3 * bs, dark: b < 45, blur: false, still: false }];
+  clip.hasAudio = false;
+}
+async function analyzeClip(clip, onProg, deadline) {
+  if (clip.kind === 'image') { await analyzeImage(clip); onProg && onProg(1); return; }
+  const v = document.createElement('video');
+  v.muted = true; v.playsInline = true; v.preload = 'auto'; v.src = clip.url;
+  await once(v, 'loadedmetadata');
+  const dur = v.duration; clip.dur = dur; clip.w = v.videoWidth; clip.h = v.videoHeight;
+  const audio = null; // ไม่ถอดรหัสเสียง เพื่อความเร็ว
+  const g = document.createElement('canvas'); g.width = g.height = 64;
+  const gx = g.getContext('2d', { willReadFrequently: true });
+  const th = document.createElement('canvas'); th.width = 72; th.height = 128; const tx = th.getContext('2d');
+  const gray = () => {
+    gx.drawImage(v, 0, 0, 64, 64); const d = gx.getImageData(0, 0, 64, 64).data, o = new Float32Array(4096);
+    for (let i = 0; i < 4096; i++) o[i] = 0.299 * d[i*4] + 0.587 * d[i*4+1] + 0.114 * d[i*4+2];
+    return o;
+  };
+  const neutral = (t) => ({ tm: t, neutral: true, bright: 120, sharp: 0, motion: 0, audio: 0, thumb: BLANK, g: null });
+  const grab = async (t) => {
+    await seek(v, t, true);
+    if (v.readyState < 2) await once(v, 'loadeddata', 800).catch(() => {});
+    const A = gray(), s = Math.max(72 / v.videoWidth, 128 / v.videoHeight);
+    tx.drawImage(v, (72 - v.videoWidth * s) / 2, (128 - v.videoHeight * s) / 2, v.videoWidth * s, v.videoHeight * s);
+    let b = 0; for (let k = 0; k < 4096; k++) b += A[k]; b /= 4096;
+    let ls = 0, ls2 = 0, c = 0;
+    for (let y = 1; y < 63; y++) for (let x = 1; x < 63; x++) {
+      const k = y * 64 + x, l = 4 * A[k] - A[k-1] - A[k+1] - A[k-64] - A[k+64]; ls += l; ls2 += l * l; c++;
+    }
+    return { tm: t, bright: b, sharp: ls2 / c - (ls / c) ** 2, audio: 0, thumb: th.toDataURL('image/jpeg', 0.6), g: A };
+  };
+  // รอบที่ 1: ครอบคลุมทั้งคลิป (ไม่ว่าจะยาวแค่ไหน)
+  const N = clamp(Math.ceil(dur / 1.0), 4, 60), step = dur / N, refineN = step > 1.5 ? 36 : 0, total = N + refineN;
+  const pts = []; let errs = 0, done = 0;
+  for (let i = 0; i < N; i++) {
+    const t = Math.min(dur - 0.05, i * step + step / 2);
+    if (performance.now() > deadline) pts.push(neutral(t));
+    else try { pts.push(await grab(t)); } catch (e) { errs++; pts.push(neutral(t)); }
+    onProg && onProg(++done / total);
+  }
+  if (errs > N / 2) throw new Error('อ่านภาพจากคลิปไม่ได้ (ถอดรหัสเฟรมไม่สำเร็จ)');
+  // รอบที่ 2: คลิปยาว → ซูมอ่านละเอียดรอบจุดที่น่าสนใจที่สุด
+  if (refineN && performance.now() < deadline - 3000) {
+    const rough = (p) => p.neutral ? -1 : p.sharp * (p.bright < 45 ? 0 : p.bright > 215 ? 0.4 : 1);
+    const top = [...pts].sort((a, b) => rough(b) - rough(a)).slice(0, 6);
+    for (const c of top) {
+      for (const k of [-3, -2, -1, 1, 2, 3]) {
+        const t = c.tm + k * 0.8; if (t < 0.05 || t > dur - 0.05) { onProg && onProg(++done / total); continue; }
+        if (performance.now() < deadline) { try { pts.push(await grab(t)); } catch (e) {} }
+        onProg && onProg(++done / total);
+      }
+    }
+  }
+  pts.sort((a, b) => a.tm - b.tm);
+  const raw = pts;
+  raw.forEach((r, i) => {
+    r.t0 = i ? (raw[i - 1].tm + r.tm) / 2 : 0; r.t1 = i < raw.length - 1 ? (r.tm + raw[i + 1].tm) / 2 : dur;
+    const q = raw[i - 1] || raw[i + 1]; let m = 0;
+    if (r.g && q && q.g) { for (let k = 0; k < 4096; k++) m += Math.abs(r.g[k] - q.g[k]); m /= 4096; }
+    r.motion = m;
+  });
+  raw.forEach(r => { r.g = null; });
+  v.removeAttribute('src'); v.load();
+  const okr = raw.filter(r => !r.neutral), pS = pct(okr.map(r => r.sharp), 0.9) || 1, pM = pct(okr.map(r => r.motion), 0.9) || 1, pA = pct(okr.map(r => r.audio), 0.9) || 1;
+  const hasAudio = !!audio && pA > 0.004;
+  raw.forEach(r => {
+    if (r.neutral) { r.sn = r.mn = 0.5; r.an = 0; r.bs = 1; r.score = 0.5; r.dark = r.blur = r.still = false; return; }
+    r.sn = clamp(r.sharp / pS, 0, 1); r.mn = clamp(r.motion / pM, 0, 1); r.an = hasAudio ? clamp(r.audio / pA, 0, 1) : 0;
+    const b = r.bright;
+    r.bs = b < 35 ? 0 : b < 70 ? (b - 35) / 35 * 0.6 : b <= 200 ? 1 : Math.max(0.3, 1 - (b - 200) / 55 * 0.7);
+    const w = hasAudio ? [0.32, 0.30, 0.20, 0.18] : [0.40, 0.35, 0.25, 0];
+    r.score = w[0] * r.sn + w[1] * r.mn + w[2] * r.bs + w[3] * r.an;
+    r.dark = b < 45; r.blur = r.sn < 0.4; r.still = r.motion < 1.0 && r.mn < 0.35;
+  });
+  clip.samples = raw; clip.hasAudio = hasAudio;
+}
+
+const THR = [0.30, 0.42, 0.52];
+function reasonOf(r, strict) {
+  if (r.dark) return 'มืดเกินไป';
+  if (r.blur && strict >= 2) return 'ภาพเบลอ/ไม่ชัด';
+  if (r.still && strict >= 3) return 'ภาพนิ่งเกินไป';
+  if (r.score < THR[strict - 1]) return 'ไม่น่าสนใจพอ';
+  return '';
+}
+function buildSegments(clip, ci, strict, MAX = 3.2) {
+  if (clip.kind === 'image') {
+    const r = clip.samples[0], len = clamp(MAX * 0.75, 1.2, 3), why = reasonOf(r, strict);
+    const seg = { id: clip.id + ':0', clip, ci, t0: 0, t1: len, score: r.score, motion: r.mn, thumb: r.thumb, reason: why, caption: '' };
+    return why ? { good: [], bad: [seg] } : { good: [seg], bad: [] };
+  }
+  const MIN = 0.7, sm = clip.samples, good = [], bad = [];
+  const isGood = sm.map(r => !reasonOf(r, strict));
+  const groups = []; // [{good, from, to}]
+  sm.forEach((r, i) => { const g = isGood[i]; const L = groups[groups.length - 1]; if (L && L.good === g) L.to = i; else groups.push({ good: g, from: i, to: i }); });
+  const mk = (a, b, goodFlag, reason) => {
+    const part = sm.slice(a, b + 1), best = part.reduce((x, y) => y.score > x.score ? y : x);
+    const t0s = sm[a].t0, t1s = Math.min(clip.dur, sm[b].t1); let t0 = t0s, t1 = t1s;
+    if (t1 - t0 > MAX) { t0 = clamp(best.tm - MAX / 2, t0s, t1s - MAX); t1 = t0 + MAX; } // ตัดให้สั้นรอบเฟรมที่ดีที่สุด
+    return { id: clip.id + ':' + t0.toFixed(2), clip, ci, t0, t1,
+      score: part.reduce((s, r) => s + r.score, 0) / part.length, motion: part.reduce((s, r) => s + r.mn, 0) / part.length,
+      thumb: best.thumb, reason, caption: '' };
+  };
+  groups.forEach(gr => {
+    const len = sm[gr.to].t1 - sm[gr.from].t0;
+    if (gr.good) {
+      if (len < MIN && clip.dur > MIN * 1.5) return;
+      let a = gr.from; while (a <= gr.to) {
+        let b = a, acc = sm[a].t1 - sm[a].t0;
+        while (b < gr.to && acc < MAX) { b++; acc += sm[b].t1 - sm[b].t0; }
+        const seg = mk(a, b, true, ''); a = b + 1;
+        if (seg.t1 - seg.t0 >= MIN || clip.dur <= MIN * 1.5) good.push(seg);
+      }
+    } else if (len >= 0.5) {
+      const rs = {}; for (let i = gr.from; i <= gr.to; i++) { const r = reasonOf(sm[i], strict) || 'ไม่น่าสนใจพอ'; rs[r] = (rs[r] || 0) + 1; }
+      bad.push(mk(gr.from, gr.to, false, Object.entries(rs).sort((x, y) => y[1] - x[1])[0][0]));
+    }
+  });
+  return { good, bad };
+}
+// 3 เวอร์ชันตัดต่อที่ต่างกัน ให้ผู้ใช้เลือกเอง
+const VCFG = [
+  { id: 'fast',  name: '⚡ จังหวะเร็ว',  desc: 'โทนพลังงานสูง เปิดด้วยช็อตเด็ดที่สุด แล้วเล่าต่อเนื่อง ตัดถี่ ช็อตสั้น สีสด ซับตัวใหญ่เด้ง บีทเร็ว', max: 1.3, order: 'time',  hook: 'motion', style: ['price', 'urgent'],  tgt: 1,   cut: 'whoosh', zoom: 1.5, music: 1,
+    beat: 1.0, beatSfx: true, speedDull: 1.4, tone: 'พลังงานสูง', tint: 'rgba(255,90,40,0.10)', tintOp: 'overlay', vignette: false, subStyle: 'pop', bpm: 132, soft: false, trans: 'flash', flashA: 0.45, hookAnim: 'slam' },
+  { id: 'story', name: '📖 เล่าเรื่อง',   desc: 'โทนเป็นกันเอง ภาพไหลต่อเนื่องตามลำดับที่ถ่าย สีธรรมชาติ ซับในกล่องดำอ่านง่าย บีทสบายๆ',     max: 2.4, order: 'time',  hook: 'first', style: ['problem', 'proof'], tgt: 1,   cut: 'pop',    zoom: 1,   music: 0.8,
+    beat: 1.6, beatSfx: false, speedDull: 1.2, tone: 'เป็นกันเอง', tint: null, tintOp: '', vignette: false, subStyle: 'box', bpm: 108, soft: false, trans: 'flash', flashA: 0.18, hookAnim: 'slide' },
+  { id: 'calm',  name: '🎞️ ภาพสวยเน้นๆ', desc: 'โทนซีนีมาติก ช็อตยาวต่อเนื่อง สีอุ่นนุ่ม มีขอบมืด ซับบางสะอาด เปลี่ยนฉากแบบเฟด ดนตรีช้า',   max: 3.4, order: 'time',  hook: 'first', style: ['curious', 'proof'], tgt: 0.9, cut: 'tick',   zoom: 0.5, music: 0.6,
+    beat: 2.4, beatSfx: false, speedDull: 0, tone: 'ซีนีมาติก', tint: 'rgba(255,200,140,0.22)', tintOp: 'soft-light', vignette: true, subStyle: 'clean', bpm: 84, soft: true, trans: 'dip', flashA: 0, hookAnim: 'fade' },
+];
+function hookFor(v) {
+  for (const st of v.style) { const o = hookOptions(st); if (o.length) return { text: o[v.i % o.length], style: st }; }
+  const o = hookOptions('problem'); return { text: o[0] || '', style: 'problem' };
+}
+function buildVariant(c, i) {
+  const cand = [], dropped = [];
+  S.clips.forEach((cl, ci) => { if (!cl.samples) return; const r = buildSegments(cl, ci, S.strict, c.max); cand.push(...r.good); dropped.push(...r.bad); });
+  const target = S.target * c.tgt, byScore = [...cand].sort((a, b) => b.score - a.score), picked = []; let total = 0;
+  for (const s of byScore) { if (total >= target) break; picked.push(s); total += s.t1 - s.t0; }
+  // เนื้อหาน้อยเกินไป → กู้ช่วงที่ดีที่สุดจากที่ตัดทิ้ง
+  const rest = [...dropped].sort((a, b) => b.score - a.score);
+  while (total < Math.min(6, target) && rest.length) { const s = rest.shift(); s.reason = ''; s.restored = true; picked.push(s); total += s.t1 - s.t0; dropped.splice(dropped.indexOf(s), 1); }
+  // ทำให้ภาพต่อเนื่อง: เติมช่องว่างสั้นๆ ระหว่างช็อตของคลิปเดียวกัน (ถ้าช่องนั้นไม่ใช่ช่วงที่ตัดทิ้ง)
+  const byClip = {}; picked.forEach(x => (byClip[x.ci] = byClip[x.ci] || []).push(x));
+  Object.values(byClip).forEach(arr => {
+    arr.sort((a, b) => a.t0 - b.t0);
+    for (let k = 1; k < arr.length; k++) {
+      const a = arr[k - 1], b = arr[k], gap = b.t0 - a.t1;
+      if (a.clip.kind === 'image' || gap <= 0 || gap > 1.2) continue;
+      if (dropped.some(d => d.ci === a.ci && d.t0 < b.t0 && d.t1 > a.t1)) continue;
+      a.t1 = b.t0;
+    }
+  });
+  const v = { ...c, i, timeline: [], pool: dropped, hook: '', hookStyle: 'problem' };
+  if (!picked.length) return v;
+  const hs = (s) => s.score * 0.55 + s.motion * 0.35 + Math.min(1, (s.t1 - s.t0) / 2.6) * 0.3; // ชอบช่วงที่ยาวพอคลุม Hook 3 วิ
+  const sel = c.hook === 'first' ? (s) => -s.ci * 1e6 - s.t0 : c.hook === 'motion' ? (s) => s.motion * 0.7 + s.score * 0.3 : c.hook === 'pretty' ? (s) => s.score + Math.min(1, (s.t1 - s.t0) / 2.6) * 0.2 : hs;
+  const hookSeg = picked.reduce((x, y) => sel(y) > sel(x) ? y : x);
+  let others = picked.filter(s => s !== hookSeg);
+  if (c.order === 'time') others.sort((a, b) => a.ci - b.ci || a.t0 - b.t0);
+  else if (c.order === 'score') others.sort((a, b) => b.score - a.score);
+  else { // สลับคลิปไปมาให้จังหวะไม่ซ้ำ
+    const by = {}; others.sort((a, b) => a.t0 - b.t0).forEach(s => (by[s.ci] = by[s.ci] || []).push(s));
+    const q = Object.values(by); others = []; while (q.some(a => a.length)) q.forEach(a => a.length && others.push(a.shift()));
+  }
+  v.timeline = [hookSeg, ...others];
+  v.pool = [...cand.filter(s => !picked.includes(s)), ...dropped];
+  return v;
+}
+function syncVariant() { const V = S.variants[S.vi]; if (V) { V.hook = S.hook; V.hookStyle = S.hookStyle; V.timeline = S.timeline; V.pool = S.pool; } }
+function selectVariant(i) {
+  syncVariant(); S.vi = i; const V = S.variants[i]; S.timeline = V.timeline; S.pool = V.pool; S.hook = V.hook; S.hookStyle = V.hookStyle;
+}
+function refreshHooks() {
+  if (!S.variants.length) return;
+  S.variants.forEach(v => { const h = hookFor(v); v.hook = h.text; v.hookStyle = h.style; });
+  const V = S.variants[S.vi]; S.hook = V.hook; S.hookStyle = V.hookStyle;
+}
+function autoAssemble() {
+  S.variants = VCFG.map(buildVariant);
+  S.variants.forEach(v => { const h = hookFor(v); v.hook = h.text; v.hookStyle = h.style; });
+  S.vi = clamp(S.vi, 0, VCFG.length - 1); const V = S.variants[S.vi];
+  S.timeline = V.timeline; S.pool = V.pool; S.hook = V.hook; S.hookStyle = V.hookStyle;
+}
+const totalLen = () => S.timeline.reduce((s, x) => s + (x.t1 - x.t0), 0);
+
+// ====================================================================
+//  ซาวด์เอฟเฟกต์ (สังเคราะห์ด้วย WebAudio ไม่ต้องมีไฟล์เสียง)
+// ====================================================================
+const SFX = {
+  _noise(ac, dur) { const b = ac.createBuffer(1, Math.ceil(ac.sampleRate * dur), ac.sampleRate), d = b.getChannelData(0); for (let i = 0; i < d.length; i++) d[i] = Math.random() * 2 - 1; const n = ac.createBufferSource(); n.buffer = b; return n; },
+  _env(ac, out, t, peak, att, dec) { const g = ac.createGain(); g.gain.setValueAtTime(0.0001, t); g.gain.exponentialRampToValueAtTime(peak, t + att); g.gain.exponentialRampToValueAtTime(0.0001, t + att + dec); g.connect(out); return g; },
+  whoosh(ac, out, t = ac.currentTime) {
+    const n = this._noise(ac, 0.6), f = ac.createBiquadFilter(); f.type = 'bandpass'; f.Q.value = 1.1;
+    f.frequency.setValueAtTime(250, t); f.frequency.exponentialRampToValueAtTime(4200, t + 0.3);
+    n.connect(f).connect(this._env(ac, out, t, 0.55, 0.12, 0.3)); n.start(t); n.stop(t + 0.6);
+  },
+  boom(ac, out, t = ac.currentTime) {
+    const o = ac.createOscillator(); o.type = 'sine'; o.frequency.setValueAtTime(170, t); o.frequency.exponentialRampToValueAtTime(38, t + 0.45);
+    o.connect(this._env(ac, out, t, 1.0, 0.005, 0.6)); o.start(t); o.stop(t + 0.7);
+    const n = this._noise(ac, 0.4), f = ac.createBiquadFilter(); f.type = 'lowpass'; f.frequency.value = 900;
+    n.connect(f).connect(this._env(ac, out, t, 0.6, 0.003, 0.25)); n.start(t); n.stop(t + 0.4);
+  },
+  pop(ac, out, t = ac.currentTime) {
+    const o = ac.createOscillator(); o.type = 'sine'; o.frequency.setValueAtTime(1000, t); o.frequency.exponentialRampToValueAtTime(320, t + 0.09);
+    o.connect(this._env(ac, out, t, 0.6, 0.004, 0.12)); o.start(t); o.stop(t + 0.2);
+  },
+  ding(ac, out, t = ac.currentTime) {
+    [1318.5, 2637, 3951].forEach((fr, i) => { const o = ac.createOscillator(); o.type = 'sine'; o.frequency.value = fr;
+      o.connect(this._env(ac, out, t, [0.5, 0.25, 0.1][i], 0.004, 0.9 - i * 0.2)); o.start(t); o.stop(t + 1); });
+  },
+  cash(ac, out, t = ac.currentTime) {
+    const n = this._noise(ac, 0.08), f = ac.createBiquadFilter(); f.type = 'highpass'; f.frequency.value = 3000;
+    n.connect(f).connect(this._env(ac, out, t, 0.5, 0.002, 0.06)); n.start(t); n.stop(t + 0.08);
+    [2093, 2637, 3136].forEach((fr, i) => { const o = ac.createOscillator(); o.type = 'triangle'; o.frequency.value = fr;
+      o.connect(this._env(ac, out, t + 0.07 + i * 0.075, 0.45, 0.003, 0.5)); o.start(t + 0.07 + i * 0.075); o.stop(t + 0.9); });
+  },
+  tick(ac, out, t = ac.currentTime) {
+    const n = this._noise(ac, 0.05), f = ac.createBiquadFilter(); f.type = 'highpass'; f.frequency.value = 5000;
+    n.connect(f).connect(this._env(ac, out, t, 0.35, 0.002, 0.04)); n.start(t); n.stop(t + 0.05);
+  },
+};
+const SFX_LIST = [['boom','💥 เปิดฮุก'],['whoosh','💨 ตัดคลิป'],['pop','🫧 ข้อความเด้ง'],['ding','🔔 ราคา'],['cash','💰 ปุ่มซื้อ'],['tick','⚡ แฟลช']];
+
+// เพลงพื้นหลังสังเคราะห์เบาๆ (บีทสนุก 120 BPM)
+function scheduleMusic(ac, out, t0, dur, bpm = 120, soft = false) {
+  const beat = 60 / bpm, bass = [55, 55, 65.41, 49], n = Math.ceil(dur / beat) + 2;
+  for (let b = 0; b < n; b++) {
+    const t = t0 + b * beat;
+    const k = ac.createOscillator(); k.frequency.setValueAtTime(140, t); k.frequency.exponentialRampToValueAtTime(42, t + 0.12);
+    k.connect(SFX._env(ac, out, t, 0.9, 0.003, 0.18)); k.start(t); k.stop(t + 0.25);
+    if (!soft) {
+    const h = SFX._noise(ac, 0.05), hf = ac.createBiquadFilter(); hf.type = 'highpass'; hf.frequency.value = 7000;
+    h.connect(hf).connect(SFX._env(ac, out, t + beat / 2, 0.22, 0.002, 0.04)); h.start(t + beat / 2); h.stop(t + beat / 2 + 0.05);
+    if (b % 2 === 1) { const s = SFX._noise(ac, 0.15), sf = ac.createBiquadFilter(); sf.type = 'bandpass'; sf.frequency.value = 1800;
+      s.connect(sf).connect(SFX._env(ac, out, t, 0.4, 0.002, 0.12)); s.start(t); s.stop(t + 0.15); }
+    }
+    const o = ac.createOscillator(); o.type = 'triangle'; o.frequency.value = bass[Math.floor(b / 4) % 4] * 2;
+    o.connect(SFX._env(ac, out, t, 0.55, 0.01, beat * 0.9)); o.start(t); o.stop(t + beat);
+  }
+}
+let testAc = null;
+function testSfx(name) {
+  const Ctx = window.AudioContext || window.webkitAudioContext; testAc = testAc || new Ctx(); testAc.resume();
+  const g = testAc.createGain(); g.gain.value = S.volSfx; g.connect(testAc.destination); SFX[name](testAc, g);
+}
+
+// ====================================================================
+//  วาดข้อความ
+// ====================================================================
+const FONT = '"IBM Plex Sans Thai","Noto Sans Thai",sans-serif';
+const segmenter = (typeof Intl !== 'undefined' && Intl.Segmenter) ? new Intl.Segmenter('th', { granularity: 'word' }) : null;
+function tokens(text) {
+  const out = [];
+  text.split('*').forEach((p, i) => { if (!p) return; const hl = i % 2 === 1;
+    if (segmenter) for (const s of segmenter.segment(p)) out.push({ t: s.segment, hl }); else for (const ch of p) out.push({ t: ch, hl }); });
+  for (let i = out.length - 2; i >= 0; i--) if (out[i].t === '฿' && out[i].hl === out[i + 1].hl) { out[i].t += out[i + 1].t; out.splice(i + 1, 1); } // ไม่ให้ ฿ แยกจากตัวเลข
+  return out;
+}
+function layoutText(ctx, text, maxW) {
+  const lines = [];
+  text.split('\n').forEach(par => {
+    let cur = [], w = 0;
+    tokens(par).forEach(tk => {
+      const m = ctx.measureText(tk.t).width;
+      if (w + m > maxW && cur.length && tk.t.trim()) { lines.push({ tk: cur, w }); cur = []; w = 0; }
+      if (!cur.length && !tk.t.trim()) return;
+      cur.push({ ...tk, m }); w += m;
+    });
+    if (cur.length) lines.push({ tk: cur, w });
+  });
+  return lines;
+}
+function drawRich(ctx, text, cx, y, fs, maxW, hlColor, align = 'center', opt = {}) {
+  ctx.font = `${opt.weight || 700} ${fs}px ${FONT}`; ctx.textBaseline = 'top'; ctx.textAlign = 'left'; ctx.lineJoin = 'round';
+  const lines = layoutText(ctx, text, maxW), lh = fs * 1.3;
+  lines.forEach((ln, i) => {
+    let x = align === 'center' ? cx - ln.w / 2 : cx;
+    ln.tk.forEach(tk => {
+      if (opt.stroke !== false) { ctx.lineWidth = fs * 0.18; ctx.strokeStyle = '#000'; ctx.strokeText(tk.t, x, y + i * lh); }
+      if (opt.shadow) { ctx.shadowColor = 'rgba(0,0,0,.8)'; ctx.shadowBlur = fs * 0.3; }
+      ctx.fillStyle = tk.hl ? hlColor : '#fff'; ctx.fillText(tk.t, x, y + i * lh); ctx.shadowBlur = 0; x += tk.m;
+    });
+  });
+  return lines.length * lh;
+}
+function measureRich(ctx, text, fs, maxW, weight = 700) {
+  ctx.font = `${weight} ${fs}px ${FONT}`; const ln = layoutText(ctx, text, maxW);
+  return { w: ln.reduce((m, l) => Math.max(m, l.w), 0), h: ln.length * fs * 1.3 };
+}
+function buildSubs(total, hasHook) {
+  const lines = pointLines(); if (!lines.length) return [];
+  const start = hasHook ? 3.0 : 0.6, end = Math.max(start + 2, total - 1.5), avail = end - start;
+  const sum = lines.reduce((a, l) => a + Math.max(8, l.length), 0), out = []; let c = start;
+  for (const l of lines) { let d = clamp(avail * Math.max(8, l.length) / sum, 1.2, 3.8); d = Math.min(d, end - c); if (d < 0.8) break; out.push({ text: l, a: c, b: c + d }); c += d; }
+  return out;
+}
+function rrect(ctx, x, y, w, h, r) { ctx.beginPath(); ctx.moveTo(x + r, y); ctx.arcTo(x + w, y, x + w, y + h, r); ctx.arcTo(x + w, y + h, x, y + h, r); ctx.arcTo(x, y + h, x, y, r); ctx.arcTo(x, y, x + w, y, r); ctx.closePath(); }
+const easeOutBack = (x) => { x = clamp(x, 0, 1); const c1 = 1.70158, c3 = c1 + 1; return 1 + c3 * (x - 1) ** 3 + c1 * (x - 1) ** 2; };
+const easeOut = (x) => 1 - (1 - clamp(x, 0, 1)) ** 3;
+
+// ====================================================================
+//  เอนจินเล่น/อัดวิดีโอ (canvas + MediaRecorder + WebAudio)
+// ====================================================================
+const cv = $('cv'), cx = cv.getContext('2d');
+let abortFlag = false;
+
+function pickMime() {
+  const c = ['video/mp4;codecs=avc1.640028,mp4a.40.2', 'video/mp4;codecs=avc1,mp4a.40.2', 'video/mp4', 'video/webm;codecs=vp9,opus', 'video/webm;codecs=vp8,opus', 'video/webm'];
+  return (window.MediaRecorder && c.find(m => MediaRecorder.isTypeSupported(m))) || '';
+}
+function hookText() { return (S.hook || '').trim(); }
+function pointLines() { return S.points.split('\n').map(s => s.trim()).filter(Boolean); }
+function capFor(i) { const s = S.timeline[i]; return s.caption && s.caption.trim() ? s.caption.trim() : ''; }
+function ctaDefault() {
+  if (S.kind !== 'place') return PLAT[S.plat].cta;
+  const pl = PLACE[S.placeType]; return S.plat === 'trip' || S.placeType !== 'food' ? (S.plat === 'trip' ? PLAT.trip.cta : pl.cta) : pl.cta;
+}
+function ctaText() { return (S.cta || '').trim() || ctaDefault(); }
+
+async function runVideo({ record, onProg }) {
+  if (!S.timeline.length) throw new Error('ยังไม่มีช่วงวิดีโอในไทม์ไลน์');
+  const Q = S.quality === '1080' ? { w: 1080, h: 1920, br: 9e6 } : { w: 720, h: 1280, br: 5e6 };
+  const W = cv.width = Q.w, H = cv.height = Q.h;
+  const brand = PLAT[S.plat].color, tl = S.timeline, V = S.variants[S.vi] || { cut: 'whoosh', zoom: 1, music: 1 };
+  abortFlag = false;
+
+  // --- ต้องเริ่มในจังหวะที่ผู้ใช้กดปุ่ม (ปลดล็อกเสียง/วิดีโอบนมือถือ) ---
+  if (record && !(window.MediaRecorder && cv.captureStream)) throw new Error('เบราว์เซอร์นี้ไม่รองรับการอัดวิดีโอ ลองใช้ Chrome หรือ Safari รุ่นใหม่');
+  const AC = window.AudioContext || window.webkitAudioContext, ac = new AC(); ac.resume();
+  const decks = new Map();
+  tl.forEach(s => { if (s.clip.kind === 'image' || decks.has(s.clip.id)) return;
+    const v = document.createElement('video'); v.playsInline = true; v.preload = 'auto'; v.src = s.clip.url; v.setAttribute('playsinline', '');
+    decks.set(s.clip.id, v); });
+  const unlock = [...decks.values()].map(v => v.play().then(() => v.pause()).catch(() => {}));
+
+  const master = ac.createGain(), dest = ac.createMediaStreamDestination();
+  master.connect(dest); if (!record) master.connect(ac.destination);
+  const sfxBus = ac.createGain(); sfxBus.gain.value = S.sfxOn ? S.volSfx : 0; sfxBus.connect(master);
+  const musBus = ac.createGain(); musBus.gain.value = S.musicOn ? S.volMusic * V.music : 0; musBus.connect(master);
+  decks.forEach(v => { const src = ac.createMediaElementSource(v), g = ac.createGain(); g.gain.value = S.volOrig; src.connect(g).connect(master); });
+
+  try { await document.fonts.load(`700 48px ${FONT}`); await document.fonts.load(`700 48px "IBM Plex Sans Thai"`, 'ก'); } catch (e) {}
+  await Promise.all(unlock);
+  await Promise.all([...decks.values()].map(v => v.readyState >= 1 ? 0 : once(v, 'loadedmetadata')));
+
+  let wake = null; try { wake = await navigator.wakeLock?.request('screen'); } catch (e) {}
+
+  // --- อัดวิดีโอ ---
+  let rec = null, chunks = [], mime = '';
+  if (record) {
+    mime = pickMime();
+    const stream = new MediaStream([...cv.captureStream(30).getVideoTracks(), ...dest.stream.getAudioTracks()]);
+    rec = new MediaRecorder(stream, mime ? { mimeType: mime, videoBitsPerSecond: Q.br, audioBitsPerSecond: 128000 } : {});
+    rec.ondataavailable = e => e.data && e.data.size && chunks.push(e.data);
+    rec.start(250);
+  }
+
+  // --- สถานะการวาด ---
+  const base = document.createElement('canvas'); base.width = W; base.height = H; const bx = base.getContext('2d');
+  const small = document.createElement('canvas'); small.width = 36; small.height = 64; const sx = small.getContext('2d');
+  bx.fillStyle = '#000'; bx.fillRect(0, 0, W, H);
+  const estTotal = totalLen() + tl.length * 0.15 + 1.3;
+  let cur = null, t0w = 0, finished = false, tailStart = null, lastFrame = -1;
+  const flags = { price: false, cta: false };
+  const now = () => (performance.now() - t0w) / 1000;
+  const B = S.beat || V.beat || 1.6, MARG_X = W * 0.07, TXT_CX = W * 0.46, TXT_W = W * 0.76;
+
+  function paintBase(v, k = 0) { // k = ความคืบหน้า 0–1 ใช้กับรูปภาพ (Ken Burns)
+    const vw = v.videoWidth || v.naturalWidth, vh = v.videoHeight || v.naturalHeight; if (!vw) return;
+    const kz = 1 + 0.12 * k, px = (k - 0.5) * W * 0.04;
+    if (S.fit === 'blur') {
+      sx.drawImage(v, 0, 0, 36, 64); bx.imageSmoothingEnabled = true; bx.drawImage(small, 0, 0, W, H);
+      bx.fillStyle = 'rgba(0,0,0,.4)'; bx.fillRect(0, 0, W, H);
+      const s = Math.min(W / vw, H / vh) * kz; bx.drawImage(v, (W - vw * s) / 2 + px, (H - vh * s) / 2, vw * s, vh * s);
+    } else {
+      const s = Math.max(W / vw, H / vh) * kz; bx.drawImage(v, (W - vw * s) / 2 + px, (H - vh * s) / 2, vw * s, vh * s);
+    }
+  }
+  const subs = buildSubs(estTotal, !!hookText());
+
+  function frame() {
+    if (finished) return;
+    const t = now();
+    const ts = cur ? t - cur.startW : 0;
+    if (cur && cur.img) paintBase(cur.img, clamp(ts / cur.len, 0, 1));
+    else if (cur && cur.ready && cur.v.readyState >= 2 && cur.v.currentTime !== lastFrame) { paintBase(cur.v); lastFrame = cur.v.currentTime; }
+    // ซูมเน้นจังหวะ (punch zoom)
+    let z = 1;
+    if (cur) { // ทุกจังหวะ (beat) ภาพจะเปลี่ยนระยะซูม เหมือนตัดสลับมุมกล้อง ไม่ให้ค้างภาพเดิมนาน
+      const bi = Math.floor(ts / B), bt = ts - bi * B;
+      if (bi !== cur.lastBeat) { cur.lastBeat = bi; cur.beatT = t; if (bi > 0 && V.beatSfx) sfx('tick'); }
+      z = [1.0, 1.17, 1.04, 1.27, 1.1][(bi + cur.i) % 5] + 0.04 * clamp(bt / B, 0, 1) + (bt < 0.18 ? 0.04 * (1 - bt / 0.18) : 0);
+      if (cur.i === 0 && ts < 0.5) z += 0.14 * (1 - easeOut(ts / 0.5));
+    }
+    z = 1 + (z - 1) * V.zoom;
+    cx.setTransform(1, 0, 0, 1, 0, 0);
+    cx.fillStyle = '#000'; cx.fillRect(0, 0, W, H);
+    cx.save(); cx.translate(W / 2, H / 2); cx.scale(z, z); cx.translate(-W / 2, -H / 2); cx.drawImage(base, 0, 0); cx.restore();
+    // เงาไล่สีด้านล่าง ให้อ่านตัวอักษรง่าย
+    const gr = cx.createLinearGradient(0, H * 0.45, 0, H); gr.addColorStop(0, 'rgba(0,0,0,0)'); gr.addColorStop(1, 'rgba(0,0,0,.45)'); cx.fillStyle = gr; cx.fillRect(0, H * 0.45, W, H * 0.55);
+    if (V.tint) { cx.save(); cx.globalCompositeOperation = V.tintOp; cx.fillStyle = V.tint; cx.fillRect(0, 0, W, H); cx.restore(); }
+    if (V.vignette) { const vg = cx.createRadialGradient(W / 2, H / 2, H * 0.25, W / 2, H / 2, H * 0.75); vg.addColorStop(0, 'rgba(0,0,0,0)'); vg.addColorStop(1, 'rgba(0,0,0,.5)'); cx.fillStyle = vg; cx.fillRect(0, 0, W, H); }
+
+    // ---------- HOOK 0–3 วินาที ----------
+    const ht = hookText();
+    if (ht && t < 3.4) {
+      const ha = V.hookAnim || 'slam', out = 1 - clamp((t - 3.0) / 0.4, 0, 1);
+      let sc = 1, dy = 0, al = 1;
+      if (ha === 'slam') sc = 0.5 + 0.5 * easeOutBack(t / 0.32); else if (ha === 'slide') { dy = (1 - easeOut(t / 0.4)) * H * 0.04; al = easeOut(t / 0.3); } else al = easeOut(t / 0.7);
+      cx.save(); cx.globalAlpha = out * al; cx.translate(TXT_CX, H * 0.205 + dy); cx.scale(sc, sc);
+      cx.fillStyle = 'rgba(0,0,0,.35)'; // แผ่นหลังข้อความ
+      cx.font = `700 ${W * 0.085}px ${FONT}`; const ln = layoutText(cx, ht, TXT_W); const bh = ln.length * W * 0.085 * 1.3;
+      rrect(cx, -TXT_W / 2 - 18, -14, TXT_W + 36, bh + 28, 26); cx.fill();
+      drawRich(cx, ht, 0, 0, W * 0.085, TXT_W, '#ffe23b'); cx.restore();
+    }
+    if (t < 0.14) { cx.fillStyle = `rgba(255,255,255,${0.85 * (1 - t / 0.14)})`; cx.fillRect(0, 0, W, H); }
+
+    if (cur && cur.beatT && t - cur.beatT < 0.09 && cur.lastBeat > 0 && V.trans !== 'dip') { cx.fillStyle = `rgba(255,255,255,${0.16 * (1 - (t - cur.beatT) / 0.09)})`; cx.fillRect(0, 0, W, H); }
+    // แฟลชตอนตัดคลิป
+    if (cur && cur.i > 0) {
+      if (V.trans === 'dip') { if (ts < 0.3) { cx.fillStyle = `rgba(0,0,0,${0.9 * (ts < 0.1 ? 1 : 1 - (ts - 0.1) / 0.2)})`; cx.fillRect(0, 0, W, H); } }
+      else if (ts < 0.12) { cx.fillStyle = `rgba(255,255,255,${(V.flashA ?? 0.4) * (1 - ts / 0.12)})`; cx.fillRect(0, 0, W, H); }
+    }
+
+    // ---------- ข้อความจุดเด่นของแต่ละช่วง ----------
+    if (cur) {
+      const cap = capFor(cur.i), cts = ts - 0.15;
+      if (cap && cts > 0 && !(cur.i === 0 && t < 3.4)) {
+        if (!cur.capPop) { cur.capPop = true; sfx('pop'); }
+        const k = easeOutBack(cts / 0.28);
+        cx.save(); cx.translate(TXT_CX, H * 0.545); cx.scale(0.6 + 0.4 * k, 0.6 + 0.4 * k); cx.globalAlpha = clamp(cts / 0.12, 0, 1);
+        drawRich(cx, cap, 0, 0, W * 0.062, TXT_W, '#ffe23b'); cx.restore();
+      }
+    }
+
+    // ---------- ซับไตเติล (ตามสคริปต์ที่ผู้ใช้ใส่) ----------
+    const sb = subs.find(x => t >= x.a && t < x.b);
+    if (sb) {
+      const tt = t - sb.a, out = 1 - clamp((t - (sb.b - 0.15)) / 0.15, 0, 1), st = V.subStyle || 'box';
+      cx.save(); cx.globalAlpha = out;
+      if (st === 'pop') {
+        const k = easeOutBack(tt / 0.25), fs = W * 0.07; cx.translate(TXT_CX, H * 0.6); cx.scale(0.7 + 0.3 * k, 0.7 + 0.3 * k); drawRich(cx, sb.text, 0, 0, fs, TXT_W, '#ffe23b');
+      } else if (st === 'box') {
+        const fs = W * 0.052, m = measureRich(cx, sb.text, fs, TXT_W * 0.92); cx.globalAlpha = out * easeOut(tt / 0.2); cx.translate(TXT_CX, H * 0.615);
+        cx.fillStyle = 'rgba(0,0,0,.62)'; rrect(cx, -m.w / 2 - 22, -12, m.w + 44, m.h + 24, 22); cx.fill();
+        drawRich(cx, sb.text, 0, 0, fs, TXT_W * 0.92, '#ffd84a', 'center', { stroke: false, weight: 600 });
+      } else {
+        cx.globalAlpha = out * easeOut(tt / 0.4); drawRich(cx, sb.text, TXT_CX, H * 0.63 - (1 - easeOut(tt / 0.5)) * -10, W * 0.05, TXT_W, '#ffe9b0', 'center', { stroke: false, weight: 600, shadow: true });
+      }
+      cx.restore();
+    }
+
+    // ---------- ป้ายราคา ----------
+    if (S.priceSticker && S.price && t > 1.5) {
+      if (!flags.price) { flags.price = true; sfx('ding'); }
+      const k = easeOutBack((t - 1.5) / 0.4), wob = Math.sin(t * 5) * 0.015;
+      cx.save(); cx.translate(MARG_X + W * 0.2, H * 0.475); cx.rotate(-0.07 + wob); cx.scale(k, k);
+      const sub = S.promo || (S.kind === 'place' ? PLACE[S.placeType].unit : ''), w = W * 0.4, h = H * (sub ? 0.082 : 0.062);
+      cx.fillStyle = brand; rrect(cx, -w / 2, -h / 2, w, h, 20); cx.fill(); cx.lineWidth = 5; cx.strokeStyle = '#fff'; cx.stroke();
+      cx.fillStyle = '#fff'; cx.textAlign = 'center'; cx.textBaseline = 'middle'; cx.font = `700 ${W * 0.075}px ${FONT}`;
+      cx.fillText(money(S.price), 0, sub ? -h * 0.14 : 0);
+      if (sub) { cx.font = `600 ${W * 0.035}px ${FONT}`; cx.fillText(S.promo ? sub : '/' + sub.replace('ต่อ', ''), 0, h * 0.28, w - 20); }
+      cx.restore();
+    }
+
+    // ---------- CTA ปิดท้าย ----------
+    if (cur && cur.i === tl.length - 1 && (tailStart !== null || ts >= cur.ctaAt)) {
+      if (!flags.cta) { flags.cta = true; flags.ctaT = t; sfx('cash'); }
+      const k = easeOutBack((t - flags.ctaT) / 0.35), pul = 1 + Math.sin(t * 8) * 0.025;
+      cx.save(); cx.translate(TXT_CX, H * 0.715); cx.scale(k * pul, k * pul);
+      const w = W * 0.78, h = H * 0.07; cx.fillStyle = brand; rrect(cx, -w / 2, -h / 2, w, h, h / 2); cx.fill(); cx.lineWidth = 5; cx.strokeStyle = '#fff'; cx.stroke();
+      cx.fillStyle = '#fff'; cx.textAlign = 'center'; cx.textBaseline = 'middle'; cx.font = `700 ${W * 0.056}px ${FONT}`; cx.fillText(ctaText(), 0, 0, w - 30);
+      cx.restore();
+      cx.font = `700 ${W * 0.09}px ${FONT}`; cx.textAlign = 'center'; cx.fillStyle = '#fff'; cx.textBaseline = 'middle';
+      cx.fillText('👇', TXT_CX, H * 0.715 + H * 0.06 + Math.abs(Math.sin(t * 6)) * 14);
+    }
+
+    // ---------- ป้ายโฆษณา + แถบเวลา ----------
+    if (S.disclose) {
+      cx.font = `600 ${W * 0.03}px ${FONT}`; cx.textAlign = 'left'; cx.textBaseline = 'middle';
+      const label = '#โฆษณา · ลิงก์พันธมิตร', tw = cx.measureText(label).width;
+      cx.fillStyle = 'rgba(0,0,0,.5)'; rrect(cx, MARG_X, H * 0.085, tw + 28, W * 0.06, W * 0.03); cx.fill();
+      cx.fillStyle = '#fff'; cx.fillText(label, MARG_X + 14, H * 0.085 + W * 0.03);
+    }
+    if (S.kind === 'place' && (S.area || S.rating) && t > 0.4) {
+      const k = easeOutBack((t - 0.4) / 0.35), parts = [S.area && '📍 ' + S.area.trim(), S.rating && '⭐ ' + S.rating].filter(Boolean).join('  ');
+      cx.save(); cx.globalAlpha = clamp(k, 0, 1); cx.font = `700 ${W * 0.042}px ${FONT}`; cx.textAlign = 'left'; cx.textBaseline = 'middle';
+      const tw = cx.measureText(parts).width, y0 = H * (S.disclose ? 0.085 + 0.045 : 0.085);
+      cx.fillStyle = brand; rrect(cx, MARG_X, y0, tw + 36, W * 0.08, W * 0.04); cx.fill();
+      cx.fillStyle = '#fff'; cx.fillText(parts, MARG_X + 18, y0 + W * 0.041); cx.restore();
+    }
+    cx.fillStyle = brand; cx.fillRect(0, 0, W * clamp(t / estTotal, 0, 1), Math.max(6, H * 0.005));
+    if (!record && showGuide) drawGuide();
+    onProg && onProg(clamp(t / estTotal, 0, 1));
+    requestAnimationFrame(frame);
+  }
+  function drawGuide() {
+    cx.save(); cx.strokeStyle = 'rgba(0,255,200,.8)'; cx.setLineDash([14, 10]); cx.lineWidth = 3;
+    cx.strokeRect(W * 0.04, H * 0.09, W * 0.80, H * 0.69); cx.restore();
+  }
+  function sfx(n) { if (S.sfxOn) SFX[n](ac, sfxBus); }
+
+  // ---------- เริ่มเล่น ----------
+  let userBuf = null;
+  if (S.audioFile && S.musicOn) { try { userBuf = await ac.decodeAudioData(await S.audioFile.arrayBuffer()); } catch (e) { showErr('เปิดไฟล์เสียงไม่ได้ จึงใช้เพลงสังเคราะห์แทน', new Error(S.audioFile.name)); } }
+  const T0 = ac.currentTime + 0.15;
+  if (userBuf) { const src = ac.createBufferSource(); src.buffer = userBuf; src.loop = true; src.connect(musBus); src.start(T0); }
+  else if (S.musicOn) scheduleMusic(ac, musBus, T0, estTotal + 2, V.bpm || 120, !!V.soft);
+  if (S.sfxOn) SFX.boom(ac, sfxBus, T0);
+  await sleep(150); t0w = performance.now(); requestAnimationFrame(frame);
+
+  let prevV = null;
+  for (let i = 0; i < tl.length && !abortFlag; i++) {
+    const s = tl[i], v = decks.get(s.clip.id), len = s.t1 - s.t0;
+    if (i > 0 && V.cut !== 'none') sfx(V.cut);
+    if (s.clip.kind === 'image') { // รูปภาพ: แสดงพร้อมซูมช้าๆ
+      cur = { i, img: s.clip.img, ready: true, len, startW: now(), ctaAt: Math.max(0, len - 1.2) }; prevV = null;
+      await new Promise(r => { const id = setInterval(() => { if (abortFlag || now() - cur.startW >= len) { clearInterval(id); r(); } }, 8); });
+      continue;
+    }
+    cur = { i, v, ready: false, startW: now(), ctaAt: Math.max(0, len - 1.2) };
+    // ช็อตต่อเนื่องจากคลิปเดิม ไม่ต้อง seek (ไม่มีหน่วง)
+    const contiguous = prevV === v && !v.paused && Math.abs(v.currentTime - s.t0) < 0.3;
+    const rate = V.speedDull && s.motion < 0.45 ? V.speedDull : 1; // ช็อตที่เคลื่อนไหวน้อย เร่งความเร็วให้ไม่เนือย
+    v.playbackRate = rate;
+    if (!contiguous) { await seek(v, s.t0); v.play().catch(() => {}); }
+    cur.ready = true; cur.startW = now();
+    const nx = tl[i + 1], nv = nx && decks.get(nx.clip.id);
+    if (nx && nv && nv !== v) { try { nv.currentTime = nx.t0; } catch (e) {} } // เตรียมช็อตถัดไปล่วงหน้า
+    const pw = performance.now();
+    await new Promise(r => { const id = setInterval(() => { if (abortFlag || v.currentTime >= s.t1 - 0.02 || v.ended || performance.now() - pw > (len / rate + 1) * 1000) { clearInterval(id); r(); } }, 8); });
+    prevV = v;
+    if (!(nx && nv === v && Math.abs(nx.t0 - v.currentTime) < 0.3)) v.pause();
+  }
+  if (!abortFlag) { tailStart = now(); await sleep(1300); }
+  finished = true;
+  musBus.gain.setTargetAtTime(0, ac.currentTime, 0.1);
+  await sleep(250);
+  let blob = null;
+  if (rec) { await new Promise(r => { rec.onstop = r; try { rec.stop(); } catch (e) { r(); } }); blob = abortFlag ? null : new Blob(chunks, { type: (mime || 'video/webm').split(';')[0] }); }
+  decks.forEach(v => { v.pause(); v.removeAttribute('src'); v.load(); });
+  try { ac.close(); } catch (e) {} try { wake && wake.release(); } catch (e) {}
+  return blob;
+}
+let showGuide = false; // เส้นกรอบเขียวแนะนำพื้นที่ปลอดภัย ปิดไว้เป็นค่าเริ่มต้น
+
+// ====================================================================
+//  UI
+// ====================================================================
+const STEPS = [['คลิป', 1], ['ตัดต่อ', 2], ['Hook/เสียง', 3], ['ส่งออก', 4]];
+function renderNav() {
+  $('steps').innerHTML = STEPS.map(([n, i]) => {
+    const done = (i === 1 && S.clips.length) || (i === 2 && S.analyzed) || (i === 3 && hookText());
+    return `<button data-step="${i}" class="${S.step === i ? 'on' : done ? 'done' : ''}"><b>${done && S.step !== i ? '✓' : i}</b>${n}</button>`;
+  }).join('');
+}
+function setStep(n) { if (S.busy) return; syncVariant(); S.step = n; render(); window.scrollTo(0, 0); }
+
+function render() {
+  renderNav(); persist();
+  const m = $('main'); const stage = cv.parentNode && cv.parentNode.classList?.contains('stage') ? cv : null;
+  if (stage) { document.body.appendChild(cv); cv.hidden = true; }
+  const fn = [null, viewClips, viewEdit, viewHook, viewExport][S.step]; m.innerHTML = errBox() + fn();
+  const st = $('stage'); if (st) { st.appendChild(cv); cv.hidden = false; }
+  afterRender();
+}
+function errBox() { return `<div id="errBox" class="note warn ${S.err ? '' : 'hidden'}" style="margin:0 0 12px">${esc(S.err)}</div>`; }
+function showErr(prefix, err) { S.err = prefix + ': ' + ((err && err.message) || err); const b = $('errBox'); if (b) { b.textContent = S.err; b.classList.remove('hidden'); } }
+function ctaBtn(html, id, dis) { $('cta').innerHTML = html ? `<button class="btn pri block" id="${id}" ${dis ? 'disabled' : ''}>${html}</button>` : ''; }
+
+function viewClips() {
+  ctaBtn(S.clips.length ? (S.analyzed ? '🔄 วิเคราะห์ใหม่ & ตัดอัตโนมัติ' : '✂️ วิเคราะห์ & ตัดอัตโนมัติ') : '', 'goAnalyze');
+  const hubOpts = hubItems.length ? `<label class="lbl">เลือกจากรายการสินค้าในศูนย์วางแผน</label>
+    <select class="inp" id="hubPick"><option value="">— เลือกสินค้า —</option>${hubItems.map(i => `<option value="${esc(i.id)}">${esc(i.emoji || '')} ${esc(i.name)} (฿${Number(i.price).toLocaleString()})</option>`).join('')}</select>` : '';
+  return `
+  <h2>1) เลือกคลิปที่ถ่ายไว้</h2>
+  <p class="sub">ส่งคลิปดิบมาได้เลย (หลายคลิปได้) ระบบจะตัดส่วนมืด เบลอ ภาพนิ่ง ที่ไม่น่าสนใจออกให้เอง วิดีโอไม่ถูกอัปโหลดไปไหน ประมวลผลบนเครื่องนี้ทั้งหมด</p>
+  <div class="card">
+    <h3>ประเภทคลิป</h3>
+    <div class="chips"><button class="chip ${S.kind === 'product' ? 'on' : ''}" data-kind="product">🛍️ รีวิวสินค้า</button><button class="chip ${S.kind === 'place' ? 'on' : ''}" data-kind="place">📍 รีวิวสถานที่</button></div>
+    ${S.kind === 'place' ? `<div class="chips" style="margin-top:10px">${Object.entries(PLACE).map(([k, v]) => `<button class="chip ${S.placeType === k ? 'on' : ''}" data-ptype="${k}">${v.label}</button>`).join('')}</div>
+    <div class="note">🎥 ภาพที่ควรถ่าย: ${PLACE[S.placeType].shots.map(esc).join(' → ')}</div>` : ''}
+    <h3 style="margin-top:16px">แพลตฟอร์มที่จะโพสต์</h3>
+    <div class="chips">${Object.entries(PLAT).map(([k, v]) => `<button class="chip ${S.plat === k ? 'on' : ''}" data-plat="${k}">${v.name}</button>`).join('')}</div>
+    ${hubOpts}
+    <label class="lbl">${S.kind === 'place' ? 'ชื่อ' + PLACE[S.placeType].label.split(' ').slice(1).join(' ') : 'ชื่อสินค้า'}</label><input class="inp" data-bind="name" value="${esc(S.name)}" placeholder="เช่น หูฟังบลูทูธตัดเสียงรบกวน" />
+    ${S.kind === 'place' ? `<div class="row"><div class="grow"><label class="lbl">ทำเล / จังหวัด</label><input class="inp" data-bind="area" value="${esc(S.area)}" placeholder="เช่น หัวหิน" /></div>
+    <div class="grow"><label class="lbl">คะแนน (ไม่บังคับ)</label><input class="inp" data-bind="rating" value="${esc(S.rating)}" placeholder="4.8" /></div></div>` : ''}
+    <div class="row"><div class="grow"><label class="lbl">${S.kind === 'place' ? 'ราคา (บาท ' + PLACE[S.placeType].unit + ')' : 'ราคา (บาท)'}</label><input class="inp" data-bind="price" inputmode="numeric" value="${esc(S.price)}" placeholder="590" /></div>
+    <div class="grow"><label class="lbl">โปร (ไม่บังคับ)</label><input class="inp" data-bind="promo" value="${esc(S.promo)}" placeholder="${S.kind === 'place' ? 'เช่น เริ่มต้น / ลด 20%' : 'ลด 30% วันนี้'}" /></div></div>
+  </div>
+  <div class="card">
+    <h3>📝 ซับไตเติล / สคริปต์ <span class="tag">ไม่บังคับ</span></h3>
+    <textarea class="inp" rows="4" data-bind="points" placeholder="พิมพ์ทีละบรรทัด 1 ข้อความ จะขึ้นเป็นซับบนวิดีโอทีละบรรทัดอัตโนมัติ&#10;ครอบคำเด่นด้วย *ดาว* เช่น ราคา *฿199* เอง">${esc(S.points)}</textarea>
+    <div class="row" style="margin-top:8px"><button class="btn sm grow" data-draft="1">✨ ร่างให้ (แก้ได้)</button><button class="btn sm grow" data-clearpts="1">ล้าง</button></div>
+  </div>
+  <label class="drop" for="file"><b>📹🖼️ แตะเพื่อเลือกวิดีโอ / รูปภาพ</b><span>เลือกได้หลายไฟล์ ผสมวิดีโอกับรูปได้ · MP4, MOV, JPG, PNG</span></label>
+  <input type="file" id="file" accept="video/*,image/*" multiple hidden />
+  <div class="card" style="margin-top:14px;${S.clips.length ? '' : 'display:none'}">
+    <h3>ไฟล์ของคุณ (${S.clips.length})</h3>
+    ${S.clips.map(c => `<div class="clip">${c.kind === 'image' ? `<img src="${c.url}" alt="" style="width:44px;height:64px;object-fit:cover;border-radius:8px" />` : `<video src="${c.url}#t=0.2" muted playsinline preload="metadata"></video>`}
+      <div class="grow"><div style="font-size:14px;word-break:break-all">${esc(c.file.name)}</div>
+      <div class="sub" style="margin:0">${c.kind === 'image' ? '🖼️ รูปภาพ · ' : c.dur ? fmtT(c.dur) + ' · ' : ''}${c.samples && c.kind !== 'image' ? 'อ่านแล้ว ' + c.samples.length + ' จุด · ' : ''}${(c.file.size / 1048576).toFixed(1)} MB</div></div>
+      <button class="x" data-rmclip="${c.id}">✕</button></div>`).join('')}
+  </div>`;
+}
+
+function viewEdit() {
+  if (!S.analyzed) { ctaBtn('', ''); return `<h2>2) ตัดต่ออัตโนมัติ</h2><p class="sub">ยังไม่ได้วิเคราะห์คลิป กลับไปขั้นตอนที่ 1 ก่อนนะ</p><button class="btn block" data-step="1">‹ กลับไปเลือกคลิป</button>`; }
+  ctaBtn('ต่อไป: Hook & เสียง ›', 'goHook');
+  const used = totalLen(), orig = S.clips.reduce((s, c) => s + (c.dur || 0), 0);
+  const segRow = (s, i, inTl) => `<div class="seg"><img src="${s.thumb || BLANK}" alt="" />
+    <div class="meta">
+      <div class="row" style="flex-wrap:wrap;gap:6px">${inTl && i === 0 ? '<span class="tag hook">🪝 HOOK</span>' : inTl ? `<span class="tag">#${i + 1}</span>` : ''}
+        <span class="tag">${fmtT(s.t1 - s.t0)}</span><span class="tag">${s.clip.kind === 'image' ? '🖼️ รูป ' + (s.ci + 1) : 'คลิป ' + (s.ci + 1) + ' · ' + s.t0.toFixed(1) + '–' + s.t1.toFixed(1)}</span>
+        ${!inTl && s.reason ? `<span class="tag bad">ตัด: ${esc(s.reason)}</span>` : ''}${!inTl && !s.reason ? '<span class="tag ok">ดี · สำรอง</span>' : ''}${s.restored ? '<span class="tag ok">กู้คืน</span>' : ''}</div>
+      <div class="bar"><i style="width:${Math.round(s.score * 100)}%"></i></div>
+      ${inTl ? `<input class="inp" data-segcap="${i}" value="${esc(s.caption)}" placeholder="${esc(i === 0 ? 'ข้อความ Hook ตั้งค่าในขั้นตอนถัดไป' : 'ข้อความเพิ่มเฉพาะช็อตนี้ (ไม่บังคับ)')}" ${i === 0 ? 'disabled' : ''} />` : ''}
+    </div>
+    ${inTl ? `<div class="ctl"><button data-up="${i}" ${i <= 1 ? 'disabled' : ''}>↑</button><button data-down="${i}" ${i === 0 || i === S.timeline.length - 1 ? 'disabled' : ''}>↓</button><button data-del="${i}">✕</button></div>`
+           : `<div class="ctl"><button data-add="${i}" style="width:auto;padding:0 10px">+ ใช้</button></div>`}</div>`;
+  const cutSec = S.pool.filter(s => s.reason).reduce((a, s) => a + (s.t1 - s.t0), 0);
+  return `
+  <h2>2) เลือกเวอร์ชันที่ชอบ</h2>
+  <p class="sub">ระบบตัดให้ 3 แบบจากคลิปเดียวกัน แตะ ▶ เพื่อดูตัวอย่างแล้วเลือกอันที่ใช่ (ดูตัวอย่างไม่ต้องรอสร้างไฟล์)</p>
+  <div class="stage sm" id="stage"></div>
+  <div class="prog" id="prog" style="margin-bottom:10px"><i></i></div>
+  <button class="btn block hidden" id="btnStop" style="margin-bottom:12px">⏹ หยุดดูตัวอย่าง</button>
+  ${S.variants.map((v, i) => { const on = S.vi === i, len = v.timeline.reduce((a, x) => a + x.t1 - x.t0, 0); return `<div class="vcard ${on ? 'on' : ''}" data-vsel="${i}">
+    <div class="row" style="justify-content:space-between;gap:8px"><b>${v.name}</b><span class="tag">${v.timeline.length} ช็อต · ${fmtT(len)}</span></div>
+    <div style="margin-top:4px"><span class="tag hook">โทน: ${v.tone}</span> <span class="tag">ซับ: ${{ pop: 'ตัวใหญ่เด้ง', box: 'กล่องดำ', clean: 'บางสะอาด' }[v.subStyle]}</span></div>
+    <p class="sub" style="margin:4px 0 8px">${v.desc}</p>
+    <div class="strip">${v.timeline.slice(0, 10).map(x => `<img src="${x.thumb}" alt="" />`).join('')}</div>
+    <div class="note" style="margin-top:8px">🪝 ${esc((v.hook || '').replace(/\*/g, ''))}</div>
+    <div class="row" style="margin-top:10px"><button class="btn sm grow ${on ? 'pri' : ''}" data-vsel="${i}">${on ? '✓ เลือกอยู่' : 'เลือกเวอร์ชันนี้'}</button><button class="btn sm grow" data-vprev="${i}">▶ ดูตัวอย่าง</button></div></div>`; }).join('')}
+  <h3 style="margin:18px 0 8px;font-size:15px">✂️ ปรับแต่งเวอร์ชันที่เลือก: ${esc((S.variants[S.vi] || {}).name || '')}</h3>
+  <div class="card">
+    <div class="row" style="justify-content:space-between"><b>ความยาวคลิปสุดท้าย</b><span class="tag ok">ตอนนี้ ${fmtT(used)}</span></div>
+    <div class="chips" style="margin-top:10px">${[15, 20, 30, 45, 60].map(n => `<button class="chip ${S.target === n ? 'on' : ''}" data-target="${n}">${n} วิ</button>`).join('')}</div>
+    <label class="lbl">ความเข้มงวดในการตัดส่วนที่ไม่น่าสนใจ</label>
+    <div class="chips">${[[1, 'เบา'], [2, 'ปานกลาง'], [3, 'เข้ม']].map(([n, l]) => `<button class="chip ${S.strict === n ? 'on' : ''}" data-strict="${n}">${l}</button>`).join('')}</div>
+    <label class="lbl">จังหวะเปลี่ยนมุมภาพ (ซูมสลับทุกกี่วินาที — ยิ่งถี่ยิ่งไม่เนือย)</label>
+    <div class="chips">${[[0, 'ตามเวอร์ชัน'], [0.8, 'ถี่มาก 0.8'], [1.2, 'ถี่ 1.2'], [1.8, 'ปกติ 1.8'], [2.6, 'ช้า 2.6']].map(([n, l]) => `<button class="chip ${(S.beat || 0) === n ? 'on' : ''}" data-beat="${n}">${l}</button>`).join('')}</div>
+    <div class="note">ต้นฉบับ ${fmtT(orig)} → ใช้ ${S.timeline.length} ช่วง ${fmtT(used)} · ตัดทิ้งอัตโนมัติ ${fmtT(cutSec)}</div>
+    ${used < Math.min(10, S.target) ? '<div class="note warn">คลิปที่ใช้ได้มีน้อย ลองลดความเข้มงวด หรือถ่ายเพิ่มให้ภาพสว่างและนิ่งขึ้น</div>' : ''}
+  </div>
+  <div class="card"><h3>🎞️ ลำดับในคลิปสุดท้าย</h3>${S.timeline.map((s, i) => segRow(s, i, true)).join('') || '<p class="sub">ไม่มีช่วงที่ใช้ได้</p>'}</div>
+  ${S.pool.length ? `<div class="card"><h3>🗂️ ช่วงที่ไม่ได้ใช้ (${S.pool.length})</h3><p class="sub" style="margin-bottom:4px">แตะ “+ ใช้” เพื่อเอากลับมาต่อท้ายไทม์ไลน์</p>${S.pool.map((s, i) => segRow(s, i, false)).join('')}</div>` : ''}`;
+}
+
+function viewHook() {
+  ctaBtn('ต่อไป: ดูตัวอย่าง & ส่งออก ›', 'goExport');
+  if (!S.hook) pickHook(false);
+  const opts = hookOptions();
+  return `
+  <h2>3) Hook 3 วินาที & เสียง</h2>
+  <p class="sub">3 วินาทีแรกจะมีเสียงกระแทก แฟลช ซูมเข้า และข้อความใหญ่ เพื่อหยุดนิ้วคนดู</p>
+  <div class="card"><h3>🪝 สไตล์ Hook</h3>
+    <div class="chips">${Object.entries(HOOKS).map(([k, v]) => `<button class="chip ${S.hookStyle === k ? 'on' : ''}" data-hookstyle="${k}">${v.label}</button>`).join('')}</div>
+    <label class="lbl">ข้อความ Hook (ครอบด้วย *ดาว* = ตัวเหลืองเด่น)</label>
+    <textarea class="inp" rows="2" data-bind="hook">${esc(S.hook)}</textarea>
+    <div class="row" style="margin-top:8px"><button class="btn sm" data-rehook="1">🔀 สุ่มประโยคใหม่ (${opts.length})</button></div>
+    <label class="lbl">ซับไตเติล / สคริปต์ — บรรทัดละ 1 ข้อความ (ขึ้นต่อจาก Hook ทีละบรรทัด)</label>
+    <textarea class="inp" rows="4" data-bind="points" placeholder="${S.kind === 'place' ? 'วิวทะเลจากห้อง&#10;อาหารเช้าจัดเต็ม&#10;เดินไปตลาดได้' : 'ทนทาน ใช้ได้นาน&#10;พกพาสะดวก&#10;ส่งฟรีทั่วไทย'}">${esc(S.points)}</textarea>
+    <label class="lbl">ข้อความปุ่มปิดท้าย (เว้นว่าง = ใช้ค่าเริ่มต้น)</label>
+    <input class="inp" data-bind="cta" value="${esc(S.cta)}" placeholder="${esc(ctaDefault())}" />
+  </div>
+  <div class="card"><h3>🎨 รูปแบบภาพ</h3>
+    <div class="chips"><button class="chip ${S.fit === 'cover' ? 'on' : ''}" data-fit="cover">เต็มจอ (ครอปกลาง)</button><button class="chip ${S.fit === 'blur' ? 'on' : ''}" data-fit="blur">พอดีภาพ + พื้นเบลอ</button></div>
+    <label class="sw"><span>ป้ายราคาเด้ง${S.price ? '' : ' <span class="tag">ใส่ราคาในขั้นตอนที่ 1</span>'}${S.kind === 'place' ? '<br><span class="sub" style="margin:0;font-size:11px">ป้ายทำเล 📍 และคะแนน ⭐ ขึ้นมุมบนซ้ายอัตโนมัติ</span>' : ''}</span><input type="checkbox" data-chk="priceSticker" ${S.priceSticker ? 'checked' : ''} /></label>
+    <label class="sw"><span>ป้าย “#โฆษณา · ลิงก์พันธมิตร”<br><span class="sub" style="margin:0;font-size:11px">แนะนำให้เปิด เพื่อเปิดเผยว่าเป็นลิงก์ Affiliate</span></span><input type="checkbox" data-chk="disclose" ${S.disclose ? 'checked' : ''} /></label>
+  </div>
+  <div class="card"><h3>🔊 เสียง</h3>
+    <label class="sw"><span>ซาวด์เอฟเฟกต์อัตโนมัติ</span><input type="checkbox" data-chk="sfxOn" ${S.sfxOn ? 'checked' : ''} /></label>
+    <div class="sfxbtns">${SFX_LIST.map(([k, l]) => `<button class="btn sm" data-sfx="${k}">${l}</button>`).join('')}</div>
+    <label class="lbl">ความดังซาวด์เอฟเฟกต์</label><input type="range" min="0" max="1" step="0.05" data-rng="volSfx" value="${S.volSfx}" />
+    <label class="sw"><span>เพลงพื้นหลังจังหวะสนุก (สังเคราะห์เอง ไม่มีลิขสิทธิ์)</span><input type="checkbox" data-chk="musicOn" ${S.musicOn ? 'checked' : ''} /></label>
+    <label class="lbl">เพลง/เสียงพากย์ของคุณ (ไม่บังคับ — ใช้แทนเพลงสังเคราะห์)</label>
+    <div class="row"><label class="btn sm grow" for="audioFile" style="display:grid;place-items:center">${S.audioFile ? '🎵 ' + esc(S.audioFile.name) : '🎵 เลือกไฟล์เสียง (MP3, M4A, WAV)'}</label>${S.audioFile ? '<button class="btn sm" data-rmaudio="1">ลบ</button>' : ''}</div>
+    <input type="file" id="audioFile" accept="audio/*" hidden />
+    <div class="note">ใช้เพลงที่มีสิทธิ์ใช้งานเท่านั้น เสียงพากย์ให้เพิ่มความดังเพลงขึ้นและลดเสียงต้นฉบับ</div>
+    <label class="lbl">ความดังเพลง</label><input type="range" min="0" max="0.6" step="0.02" data-rng="volMusic" value="${S.volMusic}" />
+    <label class="lbl">ความดังเสียงต้นฉบับในคลิป</label><input type="range" min="0" max="1.5" step="0.05" data-rng="volOrig" value="${S.volOrig}" />
+  </div>`;
+}
+
+function draftScript() {
+  const n = (S.name || '').trim(), pr = S.price ? money(S.price) : '', ar = (S.area || '').trim(), pl = S.kind === 'place';
+  if (!pl) return [n ? `*${n}* ตัวนี้ดีจริง` : '*ตัวนี้* ดีจริง', 'ใช้งานง่าย ใช้ได้ทุกวัน', 'ดูรายละเอียดจริงในคลิป', pr ? `ตอนนี้ *${pr}* เอง` : 'ราคาน่ารัก', 'กดลิงก์ดูรายละเอียดได้เลย'].join('\n');
+  const t = S.placeType;
+  if (t === 'food') return [n ? `*${n}* ร้านนี้ต้องมา` : '*ร้านนี้* ต้องมา', 'เมนูเด่นคือจานนี้', 'บรรยากาศในร้านแบบนี้', pr ? `งบแค่ *${pr}* ต่อคน` : 'ราคาโอเคเลย', ar ? `พิกัด ${ar} ตามไปกินกัน` : 'เซฟพิกัดไว้ตามไปกินกัน'].join('\n');
+  if (t === 'hotel') return [n ? `*${n}* ที่พักนี้น่าสนใจ` : '*ที่พักนี้* น่าสนใจ', 'เปิดห้องมาเจอแบบนี้', 'ส่วนกลางและวิวรอบๆ', pr ? `ราคา *${pr}* ต่อคืน` : 'เช็กราคาล่าสุดในลิงก์', 'ดูโปรจองได้ที่ลิงก์'].join('\n');
+  return [n ? `*${n}* ที่เที่ยวนี้ห้ามพลาด` : '*ที่นี่* ห้ามพลาด', 'มุมนี้คือไฮไลต์', 'กิจกรรมที่ทำได้จริง', pr ? `ตั๋วเริ่มต้น *${pr}* ต่อคน` : 'เช็กราคาตั๋วในลิงก์', ar ? `ไป${ar}แวะที่นี่` : 'เซฟไว้ไปเที่ยวกัน'].join('\n');
+}
+function buildCaption() {
+  const hook = hookText().replace(/\*/g, ''), p = PLAT[S.plat], pl = S.kind === 'place';
+  const unit = pl ? PLACE[S.placeType].unit : '';
+  const head = S.name ? `${S.name}${S.price ? ' ' + money(S.price) + (pl ? ' ' + unit : '') : ''}${S.promo ? ' · ' + S.promo : ''}` : '';
+  const loc = pl ? [S.area && '📍 ' + S.area.trim(), S.rating && '⭐ ' + S.rating].filter(Boolean).join('  ') : '';
+  const tags = pl ? [...PLACE[S.placeType].tags, ...p.tags.slice(0, 2), S.area && '#' + S.area.replace(/\s+/g, '')].filter(Boolean) : p.tags;
+  const lines = [hook, '', head, loc, pointLines().map(x => '✅ ' + x).join('\n'), '', ctaText(), S.disclose ? '#โฆษณา #ลิงก์พันธมิตร' : '', tags.join(' ')];
+  return lines.filter((l, i) => l || (i > 0 && lines[i - 1])).join('\n').replace(/\n{3,}/g, '\n\n').trim();
+}
+function viewExport() {
+  ctaBtn('', '');
+  const mime = pickMime(), isMp4 = mime.startsWith('video/mp4');
+  S.genCaption = S.genCaption || buildCaption();
+  return `
+  <h2>4) ตัวอย่าง & ส่งออก</h2>
+  <p class="sub">เวอร์ชันที่เลือก: <b>${esc((S.variants[S.vi] || {}).name || '')}</b> · สร้างไฟล์ใช้เวลาเท่าความยาวคลิป (~${Math.round(totalLen() + 2)} วิ) เพราะเบราว์เซอร์อัดแบบเรียลไทม์ อยากให้เสร็จไวขึ้นให้เลือกความยาว 15–20 วิ และคุณภาพ 720p เปิดหน้านี้ค้างไว้ระหว่างสร้าง</p>
+  <div class="stage" id="stage"></div>
+  <div class="prog" id="prog"><i></i></div>
+  <div class="row" style="margin:12px 0"><button class="btn grow" id="btnPrev">▶ ดูตัวอย่าง</button><button class="btn pri grow" id="btnRender">🎬 สร้างวิดีโอ</button></div>
+  <button class="btn block hidden" id="btnStop">⏹ หยุด</button>
+  <div class="card"><h3>ตั้งค่าไฟล์</h3>
+    <div class="chips"><button class="chip ${S.quality === '720' ? 'on' : ''}" data-q="720">720×1280 (เร็ว)</button><button class="chip ${S.quality === '1080' ? 'on' : ''}" data-q="1080">1080×1920 (คมชัด)</button></div>
+    <label class="sw"><span>เส้นแนะนำพื้นที่ปลอดภัย (เฉพาะดูตัวอย่าง)</span><input type="checkbox" id="guide" ${showGuide ? 'checked' : ''} /></label>
+    ${isMp4 || !mime ? '' : '<div class="note warn">เบราว์เซอร์นี้บันทึกเป็น .webm — แอป TikTok/Shopee บางเครื่องอาจไม่รับ แนะนำใช้ Chrome รุ่นล่าสุดบน Android หรือ Safari บน iPhone ที่บันทึกเป็น .mp4 ได้</div>'}
+    ${mime ? '' : '<div class="note warn">เบราว์เซอร์นี้ไม่รองรับการอัดวิดีโอ ลองใช้ Chrome หรือ Safari รุ่นใหม่</div>'}
+  </div>
+  <div class="card hidden" id="resultCard"><h3>✅ วิดีโอพร้อมโพสต์</h3><video class="result" id="resVid" controls playsinline></video>
+    <div class="row" style="margin-top:10px"><a class="btn pri grow" id="dl" style="text-align:center;line-height:50px;text-decoration:none;color:#1c0a00">⬇ บันทึกไฟล์</a><button class="btn grow hidden" id="share">📤 แชร์</button></div>
+    <div class="note">ถ้าปุ่มบันทึกไม่ทำงาน ให้กดค้างที่วิดีโอแล้วเลือก “บันทึกวิดีโอ/Download”</div></div>
+  <div class="card"><h3>📝 แคปชั่น + แฮชแท็ก</h3><textarea class="inp" rows="9" id="capTxt">${esc(S.genCaption)}</textarea>
+    <div class="row" style="margin-top:8px"><button class="btn sm grow" id="capCopy">📋 คัดลอก</button><button class="btn sm grow" id="capGen">🔄 สร้างใหม่จากข้อมูลล่าสุด</button></div></div>`;
+}
+
+// ====================================================================
+//  อีเวนต์
+// ====================================================================
+function afterRender() {
+  const af = $('audioFile'); if (af) af.onchange = () => { if (af.files[0]) { S.audioFile = af.files[0]; render(); } };
+  const f = $('file'); if (f) f.onchange = async () => { for (const file of f.files) addClip(file); f.value = ''; S.analyzed = false; render(); };
+  const g = $('goAnalyze'); if (g) g.onclick = doAnalyze;
+  const h = $('goHook'); if (h) h.onclick = () => setStep(3);
+  const e = $('goExport'); if (e) e.onclick = () => { S.genCaption = ''; setStep(4); };
+  const hp = $('hubPick'); if (hp) hp.onchange = () => { const it = hubItems.find(x => String(x.id) === hp.value); if (!it) return;
+    S.name = it.name; S.price = it.price; if (PLAT[it.source]) S.plat = it.source; applyHubKind(it); S.hook = ''; render(); };
+  if ($('stage')) { cx.fillStyle = '#111'; cx.fillRect(0, 0, cv.width, cv.height); }
+  const stp = $('btnStop'); if (stp) stp.onclick = () => { abortFlag = true; };
+  if (S.step === 4) bindExport();
+  document.querySelectorAll('.clip video').forEach(v => v.addEventListener('loadedmetadata', () => {
+    const c = S.clips.find(x => x.url === v.currentSrc.split('#')[0]); if (c && !c.dur && isFinite(v.duration)) c.dur = v.duration; }, { once: true }));
+}
+function addClip(file) {
+  const isImg = file.type.startsWith('image/') || /\.(jpe?g|png|webp|heic|heif|gif)$/i.test(file.name);
+  const isVid = file.type.startsWith('video/') || /\.(mp4|mov|m4v|webm)$/i.test(file.name);
+  if (!isImg && !isVid) return;
+  S.clips.push({ id: 'c' + (++clipSeq), file, url: URL.createObjectURL(file), kind: isImg ? 'image' : 'video' });
+}
+async function doAnalyze() {
+  if (S.busy || !S.clips.length) return;
+  S.busy = true; S.err = ''; S.clips.forEach(c => { c.samples = null; });
+  $('cta').innerHTML = `<div class="card" style="margin:0 auto;max-width:528px"><div id="aTxt" style="font-size:13px;margin-bottom:6px">กำลังวิเคราะห์…</div><div class="prog"><i id="aBar"></i></div></div>`;
+  const failed = [], t0 = performance.now(), prog = S.clips.map(() => 0); let nextI = 0;
+  const upd = () => { const a = prog.reduce((x, y) => x + y, 0) / prog.length; $('aBar').style.width = (a * 100) + '%'; $('aTxt').textContent = `กำลังอ่านไฟล์ ${Math.round(a * 100)}% · ${Math.round((performance.now() - t0) / 1000)} วิ`; };
+  const worker = async () => {
+    while (nextI < S.clips.length) {
+      const i = nextI++, c = S.clips[i];
+      try { await analyzeClip(c, p => { prog[i] = p; upd(); }, t0 + 30000); }
+      catch (err) { console.error(err); c.samples = null; failed.push(`• ${c.file.name} (${c.file.type || 'ไม่ทราบชนิด'}, ${(c.file.size / 1048576).toFixed(0)} MB)\n  ${err.message}`); }
+      prog[i] = 1; upd();
+    }
+  };
+  await Promise.all([worker(), worker(), worker()]); // อ่านพร้อมกันสูงสุด 3 ไฟล์
+  S.busy = false;
+  if (!S.clips.some(c => c.samples)) { S.err = 'วิเคราะห์ไม่สำเร็จ\n' + failed.join('\n'); render(); return; }
+  if (failed.length) S.err = 'ข้ามบางคลิปที่อ่านไม่ได้:\n' + failed.join('\n');
+  autoAssemble(); S.analyzed = true; setStep(2);
+  toast(S.timeline.length ? 'ตัดอัตโนมัติ 3 เวอร์ชันแล้ว เลือกอันที่ชอบได้เลย' : 'ไม่พบช่วงที่ใช้ได้');
+}
+
+function setBusy(b) {
+  S.busy = b; ['btnPrev', 'btnRender'].forEach(id => { const e = $(id); if (e) e.disabled = b; });
+  const st = $('btnStop'); if (st) st.classList.toggle('hidden', !b);
+}
+async function startPlay(record) {
+  if (S.busy) return; if (!S.timeline.length) return toast('ยังไม่มีช่วงวิดีโอ');
+  S.err = ''; const eb = $('errBox'); if (eb) eb.classList.add('hidden');
+  setBusy(true); const rc = $('resultCard'); if (rc) rc.classList.add('hidden');
+  const bar = $('prog') && $('prog').firstElementChild, prog = (p) => { if (bar) bar.style.width = (p * 100) + '%'; };
+  try {
+    const blob = await runVideo({ record, onProg: prog });
+    if (blob && blob.size) showResult(blob);
+    else if (record && !abortFlag) throw new Error('ได้ไฟล์ว่างเปล่า เบราว์เซอร์ไม่ส่งข้อมูลจากตัวอัดวิดีโอ');
+  } catch (err) { console.error(err); showErr(record ? 'สร้างวิดีโอไม่สำเร็จ' : 'ดูตัวอย่างไม่สำเร็จ', err); }
+  setBusy(false); prog(0);
+}
+function bindExport() {
+  $('btnPrev').onclick = () => startPlay(false);
+  $('btnRender').onclick = () => startPlay(true);
+  $('guide').onchange = (e) => { showGuide = e.target.checked; };
+}
+function showResult(blob) {
+  if (S.result) URL.revokeObjectURL(S.result.url);
+  const ext = blob.type.includes('mp4') ? 'mp4' : 'webm', url = URL.createObjectURL(blob), name = `affiliate-${S.plat}-${Date.now()}.${ext}`;
+  S.result = { url, blob, name };
+  $('resVid').src = url; $('dl').href = url; $('dl').download = name; $('resultCard').classList.remove('hidden');
+  const file = new File([blob], name, { type: blob.type });
+  let canShareFile = false; try { canShareFile = !!(navigator.canShare && navigator.canShare({ files: [file] })); } catch (e) {}
+  if (canShareFile) { const b = $('share'); b.classList.remove('hidden'); b.onclick = () => navigator.share({ files: [file], text: $('capTxt').value }).catch(() => {}); }
+  $('resultCard').scrollIntoView({ behavior: 'smooth', block: 'center' });
+}
+
+document.addEventListener('click', (e) => {
+  const q = (s) => e.target.closest(s);
+  let b;
+  if ((b = q('[data-vprev]'))) { if (S.busy) return; selectVariant(+b.dataset.vprev); render(); window.scrollTo(0, 0); return startPlay(false); }
+  if ((b = q('[data-vsel]'))) { if (S.busy) return; selectVariant(+b.dataset.vsel); return render(); }
+  if ((b = q('[data-step]'))) return setStep(+b.dataset.step);
+  if (q('[data-draft]')) { S.points = draftScript(); toast('ร่างให้แล้ว แก้ให้ตรงกับของจริงได้เลย'); return render(); }
+  if (q('[data-rmaudio]')) { S.audioFile = null; return render(); }
+  if (q('[data-clearpts]')) { S.points = ''; return render(); }
+  if ((b = q('[data-kind]'))) { S.kind = b.dataset.kind; S.hook = ''; S.cta = ''; refreshHooks(); return render(); }
+  if ((b = q('[data-ptype]'))) { S.placeType = b.dataset.ptype; S.hook = ''; S.cta = ''; refreshHooks(); return render(); }
+  if ((b = q('[data-plat]'))) { S.plat = b.dataset.plat; S.hook = ''; S.cta = ''; refreshHooks(); return render(); }
+  if ((b = q('[data-rmclip]'))) { const i = S.clips.findIndex(c => c.id === b.dataset.rmclip); URL.revokeObjectURL(S.clips[i].url); S.clips.splice(i, 1); S.analyzed = false; return render(); }
+  if ((b = q('[data-target]'))) { S.target = +b.dataset.target; autoAssemble(); return render(); }
+  if ((b = q('[data-beat]'))) { S.beat = +b.dataset.beat || 0; return render(); }
+  if ((b = q('[data-strict]'))) { S.strict = +b.dataset.strict; autoAssemble(); return render(); }
+  if ((b = q('[data-up]'))) { const i = +b.dataset.up, t = S.timeline; [t[i - 1], t[i]] = [t[i], t[i - 1]]; return render(); }
+  if ((b = q('[data-down]'))) { const i = +b.dataset.down, t = S.timeline; [t[i + 1], t[i]] = [t[i], t[i + 1]]; return render(); }
+  if ((b = q('[data-del]'))) { const [s] = S.timeline.splice(+b.dataset.del, 1); s.reason = s.reason || ''; S.pool.unshift(s); return render(); }
+  if ((b = q('[data-add]'))) { const [s] = S.pool.splice(+b.dataset.add, 1); s.reason = ''; S.timeline.push(s); return render(); }
+  if ((b = q('[data-hookstyle]'))) { S.hookStyle = b.dataset.hookstyle; pickHook(false); return render(); }
+  if ((b = q('[data-rehook]'))) { pickHook(true); return render(); }
+  if ((b = q('[data-fit]'))) { S.fit = b.dataset.fit; return render(); }
+  if ((b = q('[data-q]'))) { S.quality = b.dataset.q; return render(); }
+  if ((b = q('[data-sfx]'))) return testSfx(b.dataset.sfx);
+  if (q('#capCopy')) return copy($('capTxt').value);
+  if (q('#capGen')) { S.genCaption = buildCaption(); $('capTxt').value = S.genCaption; return toast('สร้างแคปชั่นใหม่แล้ว'); }
+});
+document.addEventListener('input', (e) => {
+  const t = e.target;
+  if (t.dataset.bind) { S[t.dataset.bind] = t.value; persist(); }
+  else if (t.dataset.segcap !== undefined) S.timeline[+t.dataset.segcap].caption = t.value;
+  else if (t.dataset.rng) { S[t.dataset.rng] = +t.value; persist(); }
+});
+document.addEventListener('change', (e) => { const t = e.target; if (t.dataset.chk) { S[t.dataset.chk] = t.checked; persist(); } });
+
+render();
+</script>
+</body>
+</html>
